@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>房贷计算器 - 还款方式对比 · 提前还款 · 还贷vs理财</title>
+  <meta name="description" content="免费在线房贷计算器，支持商业贷款、公积金贷款、组合贷款，自动对比等额本息与等额本金，提前还款方案分析，还贷与理财收益对比">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#12122B;--bg-alt:#1A1A3D;--surface:rgba(30,30,66,0.85);--surface-solid:#1E1E42;
+      --border:rgba(255,255,255,0.08);--border-light:rgba(255,255,255,0.06);
+      --text:#FFFFFF;--text-sec:#B0B0D8;--text-muted:#6B6B8D;
+      --accent-start:#00D4FF;--accent-end:#7A20FF;
+      --green:#00FF88;--purple:#7A20FF;--cyan:#00D4FF;
+      --shadow:0 8px 24px rgba(0,0,0,0.3);
+      --radius:12px;--radius-lg:16px;
+    }
+    body{font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;background:linear-gradient(180deg,#12122B 0%,#1A1A3D 100%);color:var(--text);line-height:1.6;min-height:100vh}
+    .container{max-width:960px;margin:0 auto;padding:0 20px}
+
+    .header{text-align:center;padding:40px 0 8px}
+    .header h1{font-family:'Inter','Noto Sans SC',sans-serif;font-size:2.4rem;font-weight:600;letter-spacing:.08em;background:linear-gradient(90deg,#00D4FF,#7A20FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header p{color:var(--text-muted);font-size:.88rem;letter-spacing:.12em}
+
+    .input-bar{background:rgba(18,18,43,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 0}
+    .input-bar .container{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+    .input-bar .fg{flex:1;min-width:140px}
+    .input-bar .fg label{display:block;font-size:.78rem;color:var(--text-sec);margin-bottom:4px;font-weight:500}
+    .iw{position:relative;display:flex;align-items:center}
+    .iw input,.iw select{width:100%;padding:9px 40px 9px 12px;border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-size:.92rem;font-family:'DM Mono',monospace;color:#fff;background:rgba(20,20,50,0.6);transition:border-color .2s,box-shadow .2s}
+    .iw input:focus,.iw select:focus{outline:none;border-color:#00D4FF;box-shadow:0 0 12px rgba(0,212,255,0.2)}
+    .iw select{padding:9px 32px 9px 12px;font-family:inherit;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6B8D' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+    .iw input::-webkit-outer-spin-button,.iw input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .iw input{-moz-appearance:textfield}
+    .is{position:absolute;right:11px;color:var(--text-muted);font-size:.8rem;pointer-events:none}
+    .lh{font-size:.72rem;color:var(--text-muted);font-weight:400}
+
+    .tab-nav{position:sticky;top:0;z-index:100;background:rgba(18,18,43,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:12px 0 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .tab-track{position:relative;display:flex;overflow-x:auto;scrollbar-width:none}
+    .tab-track::-webkit-scrollbar{display:none}
+    .tab-btn{flex-shrink:0;padding:10px 18px;font-size:.88rem;font-weight:500;color:var(--text-muted);background:none;border:none;cursor:pointer;transition:color .2s;white-space:nowrap;font-family:inherit}
+    .tab-btn:hover{color:var(--text-sec)}
+    .tab-btn.active{color:#00D4FF}
+    .tab-indicator{position:absolute;bottom:0;height:2.5px;background:linear-gradient(90deg,#00D4FF,#7A20FF);border-radius:2px 2px 0 0;transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1)}
+
+    .content{padding:24px 0 64px}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block;animation:fs .3s ease}
+    @keyframes fs{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    .sub-card{background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:16px;padding:18px 20px;box-shadow:0 8px 24px rgba(0,0,0,0.3);margin-bottom:20px}
+    .sub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px}
+    .sub-card .fg label{display:block;font-size:.78rem;color:var(--text-sec);margin-bottom:4px;font-weight:500}
+    .sub-card .iw input,.sub-card .iw select{font-size:.88rem;padding:8px 36px 8px 11px}
+    .sub-card .iw select{padding:8px 30px 8px 11px}
+    .sub-card .is{right:10px;font-size:.76rem}
+
+    .calc-btn{width:100%;padding:12px 20px;background:linear-gradient(90deg,#00D4FF,#7A20FF);color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;transition:box-shadow .2s,transform .1s;font-family:inherit;box-shadow:0 0 16px rgba(0,212,255,0.3)}
+    .calc-btn:hover{box-shadow:0 0 24px rgba(0,212,255,0.5);transform:translateY(-1px)}
+    .calc-btn:active{transform:scale(.98)}
+
+    .btn-row{text-align:center;margin-bottom:20px}
+
+    .mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:400px){.mg{grid-template-columns:1fr}}
+    .mc{background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;animation:ci .4s ease forwards}
+    .mc:nth-child(1){animation-delay:0s}.mc:nth-child(2){animation-delay:.05s}.mc:nth-child(3){animation-delay:.1s}.mc:nth-child(4){animation-delay:.15s}
+    .mc.ab{border:1.5px solid rgba(122,32,255,0.4);background:rgba(122,32,255,0.08)}
+    .mc.tb{border:1.5px solid rgba(0,212,255,0.4);background:rgba(0,212,255,0.08)}
+    @keyframes ci{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    .ml{display:block;font-size:.74rem;color:var(--text-muted);margin-bottom:3px}
+    .mv{display:block;font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500}
+    .mv .u{font-size:.72em;color:var(--text-sec);font-weight:300;margin-left:2px}
+    .ms{display:block;font-size:.72rem;color:var(--text-muted);margin-top:2px}
+
+    .cmp-tbl{width:100%;border-collapse:collapse;margin-top:14px;background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;animation:ci .4s ease forwards;animation-delay:.12s}
+    .cmp-tbl th,.cmp-tbl td{padding:10px 14px;font-size:.84rem;text-align:right;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .cmp-tbl th{font-weight:600;color:var(--text-sec);background:rgba(20,20,50,0.6);font-size:.8rem}
+    .cmp-tbl th:first-child,.cmp-tbl td:first-child{text-align:left}
+    .cmp-tbl td{font-family:'DM Mono',monospace;font-size:.82rem;color:#fff}
+    .cmp-tbl thead th{border-bottom:2px solid rgba(255,255,255,0.06)}
+    .tg{color:#00FF88;font-weight:600}.ta{color:#7A20FF}
+
+    .chart-wrap{margin-top:14px;background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;animation:ci .4s ease forwards;animation-delay:.2s}
+    .chart-wrap svg{width:100%;height:auto;display:block}
+    .chart-leg{display:flex;justify-content:center;gap:18px;margin-top:10px}
+    .chart-leg-item{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--text-sec)}
+    .chart-leg-dot{width:10px;height:10px;border-radius:50%}
+
+    .ratio-bar{margin-top:14px;background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:12px;padding:14px 18px;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;animation:ci .4s ease forwards;animation-delay:.25s}
+    .ratio-lbl{font-size:.74rem;color:var(--text-muted);margin-bottom:6px}
+    .ratio-trk{height:20px;border-radius:6px;overflow:hidden;display:flex;background:rgba(255,255,255,0.06)}
+    .ratio-p{background:linear-gradient(90deg,#00D4FF,#7A20FF);display:flex;align-items:center;justify-content:center;font-size:.62rem;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden}
+    .ratio-i{background:rgba(107,107,141,0.5);display:flex;align-items:center;justify-content:center;font-size:.62rem;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden}
+
+    .cpg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    @media(max-width:500px){.cpg{grid-template-columns:1fr}}
+    .cpc{border-radius:12px;padding:18px;background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;animation:ci .4s ease forwards}
+    .cpc:nth-child(1){animation-delay:.05s}.cpc:nth-child(2){animation-delay:.12s}
+    .cpc.pa{border:1.5px solid rgba(122,32,255,0.5);background:rgba(122,32,255,0.08)}
+    .cpc.pb{border:1.5px solid rgba(0,212,255,0.5);background:rgba(0,212,255,0.08)}
+    .cph{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .pt{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px;color:#fff}
+    .pa .pt{background:#7A20FF}.pb .pt{background:#00D4FF}
+    .pn{font-size:.9rem;font-weight:600}
+    .cm{margin-bottom:10px}
+    .cml{font-size:.73rem;color:var(--text-muted)}
+    .cmv{font-family:'DM Mono',monospace;font-size:1.02rem;font-weight:500}
+    .cmv.hi{color:#00FF88;font-size:1.15rem;font-weight:600}
+    .cms{font-size:.72rem;color:var(--text-muted)}
+
+    .sep{height:1px;background:rgba(255,255,255,0.06);margin:18px 0;opacity:0;animation:ci .4s ease forwards;animation-delay:.2s}
+    .sl{font-size:.82rem;font-weight:600;color:var(--text-sec);margin-bottom:10px;opacity:0;animation:ci .4s ease forwards;animation-delay:.2s}
+
+    .rbox{background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:14px;border:1px solid rgba(0,212,255,0.15);padding:16px 18px;box-shadow:0 8px 24px rgba(0,0,0,0.3);opacity:0;animation:ci .4s ease forwards;animation-delay:.3s}
+    .rbox-title{font-size:.82rem;font-weight:600;margin-bottom:8px}
+    .ri{display:flex;align-items:baseline;gap:6px;font-size:.84rem;color:var(--text-sec);margin-bottom:5px;line-height:1.55}
+    .ri:last-child{margin-bottom:0}
+    .ra{color:#00D4FF;font-weight:600;flex-shrink:0}
+    .ri strong{color:#00D4FF}
+    .ri em{font-style:normal;font-family:'DM Mono',monospace;color:#00FF88;font-weight:500}
+
+    .stress-sec{margin-top:14px;opacity:0;animation:ci .4s ease forwards;animation-delay:.32s}
+    .stress-desc{font-size:.76rem;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
+    .stress-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .stress-card{flex:1;min-width:78px;padding:10px 6px;background:rgba(20,20,50,0.6);border-radius:10px;text-align:center}
+    .stress-rate{font-size:.7rem;color:var(--text-sec);font-weight:500}
+    .stress-val{font-family:'DM Mono',monospace;font-size:.86rem;font-weight:500;margin-top:3px}
+    .stress-val.pos{color:#00FF88}.stress-val.zero{color:var(--text-muted)}
+    .stress-note{font-size:.7rem;color:var(--text-muted);margin-top:8px;font-style:italic;line-height:1.5}
+
+    .inv-bars{margin:12px 0;opacity:0;animation:ci .4s ease forwards;animation-delay:.15s}
+    .inv-bar{margin-bottom:12px}
+    .inv-bar-lbl{font-size:.78rem;color:var(--text-sec);margin-bottom:4px;display:flex;justify-content:space-between}
+    .inv-bar-trk{height:28px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden}
+    .inv-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500;color:#fff}
+
+    .sens-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px;margin-top:10px}
+    .sens-card{padding:8px;background:rgba(20,20,50,0.6);border-radius:8px;text-align:center;font-size:.72rem}
+    .sens-card .rate{color:var(--text-sec);font-weight:500}
+    .sens-card .verdict{font-weight:600;margin-top:2px;font-size:.7rem}
+    .sens-card .verdict.v-prepay{color:#B040FF}.sens-card .verdict.v-invest{color:#00D4FF}
+
+    .share-area{margin-top:16px;display:flex;gap:8px;opacity:0;animation:ci .4s ease forwards;animation-delay:.42s}
+    .sbtn{flex:1;padding:8px 12px;background:rgba(30,30,66,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,0.1);border-radius:8px;font-size:.8rem;color:#00D4FF;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center}
+    .sbtn:hover{border-color:#00D4FF;color:#00D4FF}
+
+    .footer{text-align:center;padding:20px 0 40px;color:var(--text-muted);font-size:.78rem;line-height:1.9}
+    .footer .author{font-weight:500;color:#B0B0D8}
+
+    .placeholder{text-align:center;color:var(--text-muted);font-size:.9rem;padding:50px 20px;line-height:2}
+
+    /* ── Portion toggle (new) ── */
+    .portion-bar{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+    .pbtn{padding:7px 16px;font-size:.84rem;font-weight:500;color:var(--text-muted);background:rgba(20,20,50,0.6);border:1.5px solid rgba(255,255,255,0.1);border-radius:7px;cursor:pointer;transition:all .2s;font-family:inherit}
+    .pbtn:hover{color:var(--text-sec);border-color:rgba(255,255,255,0.15)}
+    .pbtn.active{color:#00D4FF;border-color:#00D4FF;background:rgba(0,212,255,0.08)}
+    .pbtn-note{font-size:.74rem;color:var(--text-muted);margin-left:auto}
+
+    @media(max-width:768px){
+      .header{padding:28px 0 6px}.header h1{font-size:1.8rem}
+      .tab-btn{padding:8px 14px;font-size:.82rem}
+      .mv{font-size:1.1rem}
+      .sub-card{padding:14px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <h1>房贷计算器</h1>
+  <p>自动对比 · 提前还款 · 智能决策</p>
+</header>
+
+<div class="input-bar">
+  <div class="container">
+    <div class="fg" style="flex:.7;min-width:120px">
+      <label>贷款类型</label>
+      <div class="iw"><select id="inp-type">
+        <option value="commercial">商业贷款</option>
+        <option value="fund">公积金贷款</option>
+        <option value="combined">组合贷款</option>
+      </select></div>
+    </div>
+    <div class="fg loan-single"><label id="lbl-amount">贷款总额</label><div class="iw"><input type="number" id="inp-amount" value="100" min="1" step="1"><span class="is">万元</span></div></div>
+    <div class="fg loan-single"><label id="lbl-rate">年利率</label><div class="iw"><input type="number" id="inp-rate" value="3.5" min="0.01" step="0.01"><span class="is">%</span></div></div>
+    <div class="fg loan-combined" style="display:none"><label>商贷金额</label><div class="iw"><input type="number" id="inp-com-amount" value="70" min="0" step="1"><span class="is">万元</span></div></div>
+    <div class="fg loan-combined" style="display:none"><label>商贷利率</label><div class="iw"><input type="number" id="inp-com-rate" value="3.5" min="0.01" step="0.01"><span class="is">%</span></div></div>
+    <div class="fg loan-combined" style="display:none"><label>公积金金额</label><div class="iw"><input type="number" id="inp-fund-amount" value="30" min="0" step="1"><span class="is">万元</span></div></div>
+    <div class="fg loan-combined" style="display:none"><label>公积金利率</label><div class="iw"><input type="number" id="inp-fund-rate" value="2.85" min="0.01" step="0.01"><span class="is">%</span></div></div>
+    <div class="fg" style="flex:.5;min-width:100px"><label>贷款年限</label><div class="iw"><input type="number" id="inp-years" value="30" min="1" max="30" step="1"><span class="is">年</span></div></div>
+  </div>
+</div>
+
+<nav class="tab-nav"><div class="container">
+  <div class="tab-track" id="tabTrack">
+    <button class="tab-btn active" data-tab="0">还款方式对比</button>
+    <button class="tab-btn" data-tab="1">提前还款</button>
+    <button class="tab-btn" data-tab="2">还贷 · 理财</button>
+    <div class="tab-indicator" id="tabIndicator"></div>
+  </div>
+</div></nav>
+
+<main class="content"><div class="container">
+
+  <!-- TAB 0 -->
+  <section class="tab-panel active" id="panel-0">
+    <div class="btn-row"><button class="calc-btn" id="btn0">开始对比</button></div>
+    <div id="sec-compare"><div class="placeholder">填写贷款信息，点击「开始对比」<br>自动对比等额本息与等额本金</div></div>
+  </section>
+
+  <!-- TAB 1 -->
+  <section class="tab-panel" id="panel-1">
+    <div class="portion-bar" id="pp-portion-bar" style="display:none">
+      <button class="pbtn active" data-portion="com">商贷</button>
+      <button class="pbtn" data-portion="fund">公积金</button>
+      <span class="pbtn-note">商贷利率更高，优先还商贷更省利息</span>
+    </div>
+    <div class="sub-card">
+      <div class="sub-grid">
+        <div class="fg"><label>还款方式</label><div class="iw"><select id="pp-method"><option value="epi">等额本息</option><option value="ep">等额本金</option></select></div></div>
+        <div class="fg"><label>已还期数</label><div class="iw"><input type="number" id="pp-paid" value="36" min="0" step="1"><span class="is">个月</span></div></div>
+        <div class="fg"><label>提前还款金额</label><div class="iw"><input type="number" id="pp-amount" value="10" min="0.1" step="0.1"><span class="is">万元</span></div></div>
+      </div>
+      <button class="calc-btn" id="btn1">分析提前还款</button>
+    </div>
+    <div id="sec-prepay"></div>
+  </section>
+
+  <!-- TAB 2 -->
+  <section class="tab-panel" id="panel-2">
+    <div class="portion-bar" id="inv-portion-bar" style="display:none">
+      <button class="pbtn active" data-portion="com">商贷</button>
+      <button class="pbtn" data-portion="fund">公积金</button>
+      <span class="pbtn-note">商贷利率更高，优先还商贷更省利息</span>
+    </div>
+    <div class="sub-card">
+      <div class="sub-grid">
+        <div class="fg"><label>还款方式</label><div class="iw"><select id="inv-method"><option value="epi">等额本息</option><option value="ep">等额本金</option></select></div></div>
+        <div class="fg"><label>已还期数</label><div class="iw"><input type="number" id="inv-paid" value="36" min="0" step="1"><span class="is">个月</span></div></div>
+        <div class="fg"><label>提前还款金额</label><div class="iw"><input type="number" id="inv-amount" value="10" min="0.1" step="0.1"><span class="is">万元</span></div></div>
+        <div class="fg"><label>理财年化收益率 <span class="lh">（保守估计）</span></label><div class="iw"><input type="number" id="inv-return" value="2.5" min="0.01" step="0.01"><span class="is">%</span></div></div>
+      </div>
+      <button class="calc-btn" id="btn2">开始对比</button>
+    </div>
+    <div id="sec-invest"></div>
+  </section>
+
+</div></main>
+
+<footer class="footer">
+  <p>本计算器仅供参考，实际还款金额以银行合同为准。利率为LPR浮动时，结果会随利率调整变化。组合贷款中商贷与公积金分别计算。</p>
+  <p>作者：<span class="author">罗伯特大毛腿</span></p>
+</footer>
+
+<script>
+(function(){
+  var W=10000;
+
+  function $(id){return document.getElementById(id)}
+  function num(id){return parseFloat($(id).value)||0}
+  function fmt(v,d){if(d===undefined)d=2;var s=v.toFixed(d);var p=s.split('.');p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');return p.join('.')}
+  function fw(v){return(v/W).toFixed(2)}
+  function fp(m){m=Math.ceil(m);if(m<=0)return'\u5DF2\u8FD8\u6E05';var y=Math.floor(m/12),mo=m%12;if(y===0)return mo+'\u4E2A\u6708';if(mo===0)return y+'\u5E74';return y+'\u5E74'+mo+'\u4E2A\u6708'}
+
+  function epiM(P,r,n){if(r===0)return P/n;return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)}
+  function epFirst(P,r,n){return P/n+P*r}
+  function epiB(P,r,n,k){if(r===0)return P-P/n*k;return P*(Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1)}
+  function epB(P,n,k){return Math.max(0,P*(1-k/n))}
+  function epRemI(B,r,rem){return r*B*(rem+1)/2}
+
+  /* ── Core calc (EP sSaved fix) ── */
+  function calcCore(P,r,n,paid,A,method){
+    var B,Bp,rem,M,origI,sMonths=0,sSaved=0,rNewM=0,rSaved=0,rDelta=0,mp=P/n;
+    if(method==='epi'){
+      B=epiB(P,r,n,paid);Bp=Math.max(0,B-A);rem=n-paid;M=epiM(B,r,rem);
+      origI=M*rem-B;
+      if(Bp<=0.01){sMonths=0;sSaved=origI}
+      else if(r===0){sMonths=Math.ceil(Bp/M);sSaved=0}
+      else if(M<=Bp*r){sMonths=999;sSaved=0}
+      else{sMonths=Math.ceil(Math.log(M/(M-Bp*r))/Math.log(1+r));sSaved=origI-(M*sMonths-Bp)}
+      if(Bp<=0.01){rNewM=0;rSaved=origI;rDelta=M}
+      else{rNewM=epiM(Bp,r,rem);rSaved=origI-(rNewM*rem-Bp);rDelta=M-rNewM}
+    }else{
+      B=epB(P,n,paid);Bp=Math.max(0,B-A);rem=n-paid;M=epFirst(B,r,rem);
+      origI=epRemI(B,r,rem);
+      sMonths=Bp<=0?0:Math.ceil(Bp/mp);
+      if(sMonths<=0){sSaved=origI}else{
+        var newI=r*(sMonths*Bp-mp*sMonths*(sMonths-1)/2);
+        sSaved=Math.max(0,origI-newI);
+      }
+      rNewM=Bp<=0?0:Bp/rem+Bp*r;
+      rSaved=B>0?epRemI(Bp,r,rem):0;
+      rDelta=M-rNewM;
+    }
+    return{B:B,Bp:Bp,rem:rem,M:M,origI:origI,sMonths:sMonths,sSaved:Math.max(0,sSaved),rNewM:rNewM,rSaved:Math.max(0,rSaved),rDelta:rDelta,mp:mp}
+  }
+
+  /* ── Input helpers ── */
+  function getInp(){
+    var type=$('inp-type').value,Y=num('inp-years');
+    if(!Y)return null;
+    if(type==='combined'){
+      var cA=num('inp-com-amount'),cR=num('inp-com-rate');
+      var fA=num('inp-fund-amount'),fR=num('inp-fund-rate');
+      if((!cA||!cR)&&(!fA||!fR))return null;
+      return{type:'combined',Y:Y,
+        com:cA>0&&cR>0?{A:cA,rate:cR,P:cA*W,r:cR/100/12,n:Y*12}:null,
+        fund:fA>0&&fR>0?{A:fA,rate:fR,P:fA*W,r:fR/100/12,n:Y*12}:null};
+    }
+    var A=num('inp-amount'),rate=num('inp-rate');
+    if(!A||!rate)return null;
+    return{type:type,A:A,rate:rate,Y:Y,P:A*W,r:rate/100/12,n:Y*12}
+  }
+  function getActivePortion(prefix){
+    var bar=$(prefix+'-portion-bar');
+    var a=bar.querySelector('.pbtn.active');
+    return a?a.dataset.portion:'com';
+  }
+
+  /* ══════ TAB 0 ══════ */
+  function renderCompare(){
+    var inp=getInp(),el=$('sec-compare');
+    if(!inp){el.innerHTML='<div class="placeholder">请填写完整的贷款信息</div>';return}
+    if(inp.type==='combined')renderCombinedCompare(inp,el);else renderSingleCompare(inp,el);
+  }
+
+  function renderSingleCompare(inp,el){
+    var P=inp.P,r=inp.r,n=inp.n;
+    var M=epiM(P,r,n),tiEpi=M*n-P,tpEpi=M*n,pctEpi=tiEpi/tpEpi*100;
+    var fm=epFirst(P,r,n),lm=P/n+P/n*r,tiEp=P*r*(n+1)/2,tpEp=P+tiEp,dl=fm-lm;
+    var pctEp=tiEp/tpEp*100,diff=tiEpi-tiEp;
+
+    var h='<div class="mg">';
+    h+='<div class="mc ab"><span class="ml">\u7B49\u989D\u672C\u606F \u6708\u4F9B</span><span class="mv">\u00A5'+fmt(M)+'</span><span class="ms">\u6BCF\u6708\u56FA\u5B9A</span></div>';
+    h+='<div class="mc tb"><span class="ml">\u7B49\u989D\u672C\u91D1 \u9996\u6708</span><span class="mv">\u00A5'+fmt(fm)+'</span><span class="ms">\u672B\u6708 \u00A5'+fmt(lm)+' \u00B7 \u6BCF\u6708\u9012\u51CF \u00A5'+fmt(dl,0)+'</span></div>';
+    h+='<div class="mc"><span class="ml">\u7B49\u989D\u672C\u606F \u603B\u5229\u606F</span><span class="mv">'+fw(tiEpi)+'<span class="u">\u4E07</span></span></div>';
+    h+='<div class="mc"><span class="ml">\u7B49\u989D\u672C\u91D1 \u603B\u5229\u606F</span><span class="mv">'+fw(tiEp)+'<span class="u">\u4E07</span></span></div>';
+    h+='</div>';
+
+    h+=cmpTbl(M,fm,lm,tiEpi,tiEp,tpEpi,tpEp,diff);
+    h+=ratioBars(P,tpEpi,tpEp,tiEpi,tiEp);
+
+    h+='<div class="rbox" style="margin-top:14px"><div class="rbox-title">\u5BF9\u6BD4\u7ED3\u8BBA</div>';
+    if(diff>0)h+='<div class="ri"><span class="ra">\u25B8</span>\u7B49\u989D\u672C\u91D1\u603B\u5171\u5C11\u4ED8\u5229\u606F <em>'+fw(diff)+'\u4E07</em></div>';
+    h+='<div class="ri"><span class="ra">\u25B8</span>\u7B49\u989D\u672C\u91D1\u9996\u6708\u591A\u8FD8 <em>\u00A5'+fmt(fm-M)+'</em>\uFF0C\u524D\u671F\u8FD8\u6B3E\u538B\u529B\u66F4\u5927</div>';
+    h+='<div class="ri"><span class="ra">\u25B8</span>\u7B49\u989D\u672C\u606F\u6BCF\u6708\u56FA\u5B9A\uFF0C\u4FBF\u4E8E\u89C4\u5212\u5BB6\u5EAD\u6536\u652F</div></div>';
+
+    h+='<div class="chart-wrap" id="cmpChart"></div>';
+    el.innerHTML=h;
+    drawChart('cmpChart',P,r,n,M);
+  }
+
+  function renderCombinedCompare(inp,el){
+    var com=inp.com,fund=inp.fund;
+    if(!com&&!fund){el.innerHTML='<div class="placeholder">请填写至少一笔贷款信息</div>';return}
+    var cD=null,fD=null;
+    if(com){var cM=epiM(com.P,com.r,com.n),cF=epFirst(com.P,com.r,com.n),cL=com.P/com.n+com.P/com.n*com.r,cTi=cM*com.n-com.P,cTp=com.r*com.P*(com.n+1)/2;cD={P:com.P,rate:com.rate,M:cM,fm:cF,lm:cL,tiEpi:cTi,tiEp:cTp,n:com.n,r:com.r}}
+    if(fund){var fM=epiM(fund.P,fund.r,fund.n),fF=epFirst(fund.P,fund.r,fund.n),fL=fund.P/fund.n+fund.P/fund.n*fund.r,fTi=fM*fund.n-fund.P,fTp=fund.r*fund.P*(fund.n+1)/2;fD={P:fund.P,rate:fund.rate,M:fM,fm:fF,lm:fL,tiEpi:fTi,tiEp:fTp,n:fund.n,r:fund.r}}
+
+    var tM=(cD?cD.M:0)+(fD?fD.M:0),tF=(cD?cD.fm:0)+(fD?fD.fm:0),tL=(cD?cD.lm:0)+(fD?fD.lm:0);
+    var tTiE=(cD?cD.tiEpi:0)+(fD?fD.tiEpi:0),tTiP=(cD?cD.tiEp:0)+(fD?fD.tiEp:0);
+    var tP=(cD?cD.P:0)+(fD?fD.P:0),tTpE=tP+tTiE,tTpP=tP+tTiP,diff=tTiE-tTiP;
+
+    var h='<div class="mg">';
+    h+='<div class="mc ab"><span class="ml">\u7EC4\u5408 \u7B49\u989D\u672C\u606F\u6708\u4F9B</span><span class="mv">\u00A5'+fmt(tM)+'</span><span class="ms">\u6BCF\u6708\u56FA\u5B9A</span></div>';
+    h+='<div class="mc tb"><span class="ml">\u7EC4\u5408 \u7B49\u989D\u672C\u91D1\u9996\u6708</span><span class="mv">\u00A5'+fmt(tF)+'</span><span class="ms">\u672B\u6708 \u00A5'+fmt(tL)+' \u00B7 \u6BCF\u6708\u9012\u51CF \u00A5'+fmt(tF-tL,0)+'</span></div>';
+    h+='<div class="mc"><span class="ml">\u7EC4\u5408 \u7B49\u989D\u672C\u606F\u603B\u5229\u606F</span><span class="mv">'+fw(tTiE)+'<span class="u">\u4E07</span></span></div>';
+    h+='<div class="mc"><span class="ml">\u7EC4\u5408 \u7B49\u989D\u672C\u91D1\u603B\u5229\u606F</span><span class="mv">'+fw(tTiP)+'<span class="u">\u4E07</span></span></div>';
+    h+='</div>';
+
+    h+=cmpTbl(tM,tF,tL,tTiE,tTiP,tTpE,tTpP,diff);
+    h+=ratioBars(tP,tTpE,tTpP,tTiE,tTiP);
+
+    h+='<div class="chart-wrap" id="cmpChart"></div>';
+
+    h+='<div class="sep"></div><div class="sl">\u5404\u8D37\u6B3E\u660E\u7EC6</div>';
+    if(cD)h+=loanDetailCard('\u5546\u8D37','#7A20FF',cD);
+    if(fD)h+=loanDetailCard('\u516C\u79EF\u91D1','#00D4FF',fD);
+
+    h+='<div class="rbox" style="margin-top:14px"><div class="rbox-title">\u5BF9\u6BD4\u7ED3\u8BBA</div>';
+    if(diff>0)h+='<div class="ri"><span class="ra">\u25B8</span>\u7B49\u989D\u672C\u91D1\u603B\u5171\u5C11\u4ED8\u5229\u606F <em>'+fw(diff)+'\u4E07</em></div>';
+    h+='<div class="ri"><span class="ra">\u25B8</span>\u7B49\u989D\u672C\u91D1\u9996\u6708\u591A\u8FD8 <em>\u00A5'+fmt(tF-tM)+'</em>\uFF0C\u524D\u671F\u538B\u529B\u66F4\u5927</div>';
+    h+='<div class="ri"><span class="ra">\u25B8</span>\u7B49\u989D\u672C\u606F\u6BCF\u6708\u56FA\u5B9A\u00A5'+fmt(tM)+'\uFF0C\u4FBF\u4E8E\u89C4\u5212</div>';
+    if(cD&&fD)h+='<div class="ri"><span class="ra">\u25B8</span>\u5546\u8D37\u5360\u6BD4 '+fw(cD.P)+'\u4E07\uFF08'+(cD.P/tP*100).toFixed(0)+'%\uFF09\uFF0C\u516C\u79EF\u91D1 '+fw(fD.P)+'\u4E07\uFF08'+(fD.P/tP*100).toFixed(0)+'%\uFF09</div>';
+    h+='</div>';
+    el.innerHTML=h;
+    drawCombinedChart('cmpChart',com,fund);
+  }
+
+  /* Shared render helpers */
+  function cmpTbl(M,fm,lm,tiEpi,tiEp,tpEpi,tpEp,diff){
+    var h='<table class="cmp-tbl"><thead><tr><th></th><th>\u7B49\u989D\u672C\u606F</th><th>\u7B49\u989D\u672C\u91D1</th><th>\u5DEE\u989D</th></tr></thead><tbody>';
+    h+='<tr><td>\u9996\u6708\u6708\u4F9B</td><td>\u00A5'+fmt(M)+'</td><td>\u00A5'+fmt(fm)+'</td><td class="ta">\u00A5'+fmt(fm-M)+'</td></tr>';
+    h+='<tr><td>\u672B\u6708\u6708\u4F9B</td><td>\u00A5'+fmt(M)+'</td><td>\u00A5'+fmt(lm)+'</td><td class="tg">\u2013\u00A5'+fmt(M-lm)+'</td></tr>';
+    h+='<tr><td>\u652F\u4ED8\u5229\u606F</td><td>'+fw(tiEpi)+'\u4E07</td><td>'+fw(tiEp)+'\u4E07</td><td class="tg">'+(diff>0?'\u2013':'')+fw(Math.abs(diff))+'\u4E07</td></tr>';
+    h+='<tr><td>\u8FD8\u6B3E\u603B\u989D</td><td>'+fw(tpEpi)+'\u4E07</td><td>'+fw(tpEp)+'\u4E07</td><td class="tg">'+(diff>0?'\u2013':'')+fw(Math.abs(diff))+'\u4E07</td></tr>';
+    h+='</tbody></table>';return h;
+  }
+  function ratioBars(P,tpEpi,tpEp,tiEpi,tiEp){
+    var h='',mx=Math.max(tpEpi,tpEp);
+    var wE=(tpEpi/mx*100).toFixed(1),wP2=(tpEp/mx*100).toFixed(1);
+    var pE=(P/tpEpi*100).toFixed(1),iE=(tiEpi/tpEpi*100).toFixed(1);
+    var pP=(P/tpEp*100).toFixed(1),iP=(tiEp/tpEp*100).toFixed(1);
+    h+='<div class="ratio-bar"><div class="ratio-lbl">\u7B49\u989D\u672C\u606F \u00B7 \u8FD8\u6B3E\u603B\u989D '+fw(tpEpi)+'\u4E07\uFF08\u672C\u91D1 '+fw(P)+'\u4E07 + \u5229\u606F '+fw(tiEpi)+'\u4E07\uFF09</div>';
+    h+='<div class="ratio-trk" style="width:'+wE+'%;min-width:200px"><div class="ratio-p" style="width:'+pE+'%">\u672C\u91D1</div><div class="ratio-i" style="width:'+iE+'%">\u5229\u606F '+fw(tiEpi)+'\u4E07</div></div></div>';
+    h+='<div class="ratio-bar"><div class="ratio-lbl">\u7B49\u989D\u672C\u91D1 \u00B7 \u8FD8\u6B3E\u603B\u989D '+fw(tpEp)+'\u4E07\uFF08\u672C\u91D1 '+fw(P)+'\u4E07 + \u5229\u606F '+fw(tiEp)+'\u4E07\uFF09</div>';
+    h+='<div class="ratio-trk" style="width:'+wP2+'%;min-width:200px"><div class="ratio-p" style="width:'+pP+'%">\u672C\u91D1</div><div class="ratio-i" style="width:'+iP+'%">\u5229\u606F '+fw(tiEp)+'\u4E07</div></div></div>';
+    return h;
+  }
+  function loanDetailCard(label,color,d){
+    var h='<div class="sub-card" style="margin-bottom:14px;opacity:0;animation:ci .4s ease forwards">';
+    h+='<div class="cph"><span class="pt" style="background:'+color+'">'+label+'</span><span class="pn">'+fw(d.P)+'\u4E07 \u00B7 '+d.rate+'%</span></div>';
+    h+='<div class="mg" style="margin-top:10px">';
+    h+='<div class="cm"><div class="cml">\u7B49\u989D\u672C\u606F\u6708\u4F9B</div><div class="cmv">\u00A5'+fmt(d.M)+'</div></div>';
+    h+='<div class="cm"><div class="cml">\u7B49\u989D\u672C\u91D1\u9996\u6708</div><div class="cmv">\u00A5'+fmt(d.fm)+'</div></div>';
+    h+='<div class="cm"><div class="cml">\u7B49\u989D\u672C\u606F\u603B\u5229\u606F</div><div class="cmv">'+fw(d.tiEpi)+'\u4E07</div></div>';
+    h+='<div class="cm"><div class="cml">\u7B49\u989D\u672C\u91D1\u603B\u5229\u606F</div><div class="cmv">'+fw(d.tiEp)+'\u4E07</div></div>';
+    h+='</div></div>';return h;
+  }
+
+  function drawChart(id,P,r,n,M){
+    var step=Math.max(1,Math.ceil(n/80)),dE=[],dP=[],lbs=[];
+    for(var k=1;k<=n;k+=step){dE.push(M);dP.push(P/n+(P-P*(k-1)/n)*r);lbs.push(k)}
+    if(lbs[lbs.length-1]!==n){dE.push(M);dP.push(P/n+P/n*r);lbs.push(n)}
+    $(id).innerHTML=buildChartSVG(dE,dP);
+  }
+  function drawCombinedChart(id,com,fund){
+    if(com&&!fund){drawChart(id,com.P,com.r,com.n,epiM(com.P,com.r,com.n));return}
+    if(!com&&fund){drawChart(id,fund.P,fund.r,fund.n,epiM(fund.P,fund.r,fund.n));return}
+    var n=com.n,step=Math.max(1,Math.ceil(n/80)),dE=[],dP=[],lbs=[];
+    var eT=epiM(com.P,com.r,com.n)+epiM(fund.P,fund.r,fund.n);
+    for(var k=1;k<=n;k+=step){
+      dE.push(eT);
+      dP.push(com.P/com.n+com.P*(1-(k-1)/com.n)*com.r+fund.P/fund.n+fund.P*(1-(k-1)/fund.n)*fund.r);
+      lbs.push(k);
+    }
+    if(lbs[lbs.length-1]!==n){dE.push(eT);dP.push(com.P/com.n+com.P/com.n*com.r+fund.P/fund.n+fund.P/fund.n*fund.r);lbs.push(n)}
+    $(id).innerHTML=buildChartSVG(dE,dP);
+  }
+  function buildChartSVG(dE,dP){
+    var mx=Math.max.apply(null,dP)*1.05,mn=Math.min(dE[0],Math.min.apply(null,dP))*0.92;
+    var WW=560,HH=240,pad={t:15,r:15,b:35,l:55},cW=WW-pad.l-pad.r,cH=HH-pad.t-pad.b,len=dE.length;
+    function xS(i){return pad.l+(i/(len-1))*cW}
+    function yS(v){return pad.t+cH-((v-mn)/(mx-mn))*cH}
+    var s='<svg viewBox="0 0 '+WW+' '+HH+'" xmlns="http://www.w3.org/2000/svg" style="font-family:DM Mono,monospace">';
+    for(var i=0;i<=4;i++){var yv=mn+(mx-mn)*(i/4),yy=yS(yv);s+='<line x1="'+pad.l+'" y1="'+yy+'" x2="'+(WW-pad.r)+'" y2="'+yy+'" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';s+='<text x="'+(pad.l-6)+'" y="'+(yy+3)+'" text-anchor="end" fill="#6B6B8D" font-size="10">'+Math.round(yv)+'</text>'}
+    var area='M '+xS(0)+' '+yS(dE[0]);for(var i=1;i<len;i++)area+=' L '+xS(i)+' '+yS(dE[i]);for(var i=len-1;i>=0;i--)area+=' L '+xS(i)+' '+yS(dP[i]);area+=' Z';s+='<path d="'+area+'" fill="rgba(0,212,255,0.08)"/>';
+    var p1='M '+xS(0)+' '+yS(dE[0]);for(var i=1;i<len;i++)p1+=' L '+xS(i)+' '+yS(dE[i]);s+='<path d="'+p1+'" fill="none" stroke="#00D4FF" stroke-width="2"/>';
+    var p2='M '+xS(0)+' '+yS(dP[0]);for(var i=1;i<len;i++)p2+=' L '+xS(i)+' '+yS(dP[i]);s+='<path d="'+p2+'" fill="none" stroke="#7A20FF" stroke-width="2"/>';
+    s+='</svg>';
+    s+='<div class="chart-leg"><div class="chart-leg-item"><span class="chart-leg-dot" style="background:#00D4FF"></span>\u7B49\u989D\u672C\u606F</div><div class="chart-leg-item"><span class="chart-leg-dot" style="background:#7A20FF"></span>\u7B49\u989D\u672C\u91D1</div></div>';
+    return s;
+  }
+
+  /* ══════ TAB 1 ══════ */
+  function renderPrepay(){
+    var inp=getInp(),el=$('sec-prepay');
+    if(!inp){el.innerHTML='<div class="placeholder">请先填写上方贷款信息，再点击按钮</div>';return}
+    var P,r,n,rate,isCom=false,isFund=false;
+    if(inp.type==='combined'){
+      var por=getActivePortion('pp'),loan=por==='com'?inp.com:inp.fund;
+      if(!loan){el.innerHTML='<div class="placeholder">请填写所选贷款类型的信息</div>';return}
+      P=loan.P;r=loan.r;n=loan.n;rate=loan.rate;isCom=por==='com';isFund=por==='fund';
+    }else{P=inp.P;r=inp.r;n=inp.n;rate=inp.rate}
+
+    var paid=num('pp-paid'),prepay=num('pp-amount'),method=$('pp-method').value;
+    if(!prepay){el.innerHTML='<div class="placeholder">请输入提前还款金额</div>';return}
+    if(paid>=n){el.innerHTML='<div style="color:var(--text-muted);padding:20px 0;text-align:center">\u5DF2\u8FD8\u671F\u6570\u4E0D\u80FD\u8D85\u8FC7\u603B\u671F\u6570</div>';return}
+
+    var pv=prepay*W,c=calcCore(P,r,n,paid,pv,method);
+    if(pv>=c.B)pv=c.B;
+
+    var portionLabel='';
+    if(inp.type==='combined')portionLabel=isCom?'\u5546\u8D37':'\u516C\u79EF\u91D1';
+
+    var h='<div class="sl">'+(portionLabel?portionLabel+' ':'')+'\u5F53\u524D\u72B6\u6001</div>';
+    h+='<div class="mg" style="margin-bottom:12px">';
+    h+='<div class="mc"><span class="ml">\u5269\u4F59\u672C\u91D1</span><span class="mv">'+fw(c.B)+'<span class="u">\u4E07</span></span></div>';
+    h+='<div class="mc"><span class="ml">\u5269\u4F59\u5229\u606F</span><span class="mv">'+fw(c.origI)+'<span class="u">\u4E07</span></span></div>';
+    h+='<div class="mc"><span class="ml">\u5269\u4F59\u671F\u6570</span><span class="mv">'+c.rem+'<span class="u">\u671F</span></span><span class="ms">\u7EA6'+fp(c.rem)+'</span></div>';
+    h+='<div class="mc"><span class="ml">\u5F53\u524D\u6708\u4F9B</span><span class="mv">\u00A5'+fmt(c.M)+'</span></div>';
+    h+='</div><div class="sep"></div>';
+
+    h+='<div class="cpg">';
+    h+='<div class="cpc pa"><div class="cph"><span class="pt">A</span><span class="pn">\u7F29\u77ED\u5E74\u9650</span></div>';
+    h+='<div class="cm"><div class="cml">\u6708\u4F9B</div><div class="cmv">\u00A5'+fmt(c.M)+' <span style="font-size:.73rem;color:var(--text-muted)">\uFF08\u4E0D\u53D8\uFF09</span></div></div>';
+    if(c.sMonths<=0||c.Bp<=0.01){h+='<div class="cm"><div class="cml">\u65B0\u8FD8\u6B3E\u671F\u9650</div><div class="cmv hi">\u5DF2\u8FD8\u6E05</div></div>'}
+    else{h+='<div class="cm"><div class="cml">\u65B0\u8FD8\u6B3E\u671F\u9650</div><div class="cmv">'+fp(c.sMonths)+'</div><div class="cms">\u7F29\u77ED '+fp(c.rem-c.sMonths)+'</div></div>'}
+    h+='<div class="cm"><div class="cml">\u8282\u7701\u5229\u606F</div><div class="cmv hi">'+fw(c.sSaved)+'\u4E07</div></div></div>';
+
+    h+='<div class="cpc pb"><div class="cph"><span class="pt">B</span><span class="pn">\u51CF\u5C11\u6708\u4F9B</span></div>';
+    h+='<div class="cm"><div class="cml">\u65B0\u6708\u4F9B</div><div class="cmv">\u00A5'+fmt(c.rNewM)+'</div><div class="cms">\u6BCF\u6708\u5C11\u8FD8 \u00A5'+fmt(c.rDelta)+'</div></div>';
+    h+='<div class="cm"><div class="cml">\u8FD8\u6B3E\u671F\u9650</div><div class="cmv"><span style="font-size:.82rem;color:var(--text-muted)">\u4E0D\u53D8 \u00B7 '+fp(c.rem)+'</span></div></div>';
+    h+='<div class="cm"><div class="cml">\u8282\u7701\u5229\u606F</div><div class="cmv hi">'+fw(c.rSaved)+'\u4E07</div></div></div>';
+    h+='</div>';
+
+    /* LPR stress test */
+    if(isFund){
+      h+='<div class="stress-sec"><div class="sl">\u5229\u7387\u53D8\u52A8\u5206\u6790</div>';
+      h+='<div class="stress-note">\u516C\u79EF\u91D1\u8D37\u6B3E\u5229\u7387\u7531\u653F\u7B56\u5B9A\u4EF7\uFF0C\u4E0D\u8DDF\u968FLPR\u6D6E\u52A8\u3002\u5982\u9047\u653F\u7B56\u8C03\u606F\uFF0C\u63D0\u524D\u8FD8\u6B3E\u8282\u7701\u7684\u5229\u606F\u4F1A\u76F8\u5E94\u53D8\u5316\uFF0C\u4F46\u6838\u5FC3\u903B\u8F91\u4E0D\u53D8\u3002</div>';
+      h+='</div>';
+    }else{
+      var deltas=[-0.5,-0.3,0,0.3,0.5];
+      var labels=['LPR-0.5%','LPR-0.3%','\u5F53\u524D\u5229\u7387','LPR+0.3%','LPR+0.5%'];
+      h+='<div class="stress-sec"><div class="sl">LPR\u5229\u7387\u538B\u529B\u6D4B\u8BD5</div>';
+      h+='<div class="stress-desc">\u5982\u679C\u672A\u6765LPR\u53D8\u52A8\uFF0C\u65B9\u6848A\uFF08\u7F29\u77ED\u5E74\u9650\uFF09\u8282\u7701\u7684\u5229\u606F\u4F1A\u5982\u4F55\u53D8\u5316\uFF1F</div>';
+      h+='<div class="stress-grid">';
+      for(var si=0;si<deltas.length;si++){
+        var testRate=rate+deltas[si],sv;
+        if(method==='epi'){
+          var tr=testRate/100/12;
+          if(tr<=0){sv=0}else{
+            var tb=epiB(P,tr,n,paid),tbp=Math.max(0,tb-pv),tm=epiM(tb,tr,c.rem);
+            if(tbp<=0.01){sv=tm*c.rem-tb}
+            else if(tm<=tbp*tr){sv=0}
+            else{var tna=Math.ceil(Math.log(tm/(tm-tbp*tr))/Math.log(1+tr));sv=(tm*c.rem-tb)-(tm*tna-tbp)}
+          }
+        }else{
+          var tr2=testRate/100/12;
+          sv=origI_ep_stress(P,n,paid,pv,tr2);
+        }
+        sv=Math.max(0,sv||0);
+        h+='<div class="stress-card"><div class="stress-rate">'+labels[si]+'</div><div class="stress-val '+(sv>0?'pos':'zero')+'">'+fw(sv)+'\u4E07</div><div style="font-size:.62rem;color:var(--text-muted)">\u65B9\u6848A\u8282\u7701</div></div>';
+      }
+      h+='</div><div class="stress-note">\u26A0\uFE0F \u8BF4\u660E\uFF1A\u672C\u6D4B\u7B97\u57FA\u4E8E\u5F53\u524D\u5229\u7387\u3002LPR\u6BCF\u5E74\u91CD\u5B9A\u4EF7\uFF0C\u5B9E\u9645\u8282\u7701\u91D1\u989D\u4F1A\u968F\u5229\u7387\u6CE2\u52A8\uFF0C\u4F46\u63D0\u524D\u8FD8\u8D37\u80FD\u7701\u5229\u606F\u7684\u6838\u5FC3\u903B\u8F91\u4E0D\u53D8\u3002</div></div>';
+    }
+
+    var diff=c.sSaved-c.rSaved;
+    h+='<div class="rbox" style="margin-top:14px"><div class="rbox-title">\u51B3\u7B56\u5EFA\u8BAE</div>';
+    if(diff>0.01*W){h+='<div class="ri"><span class="ra">\u25B8</span>\u8FFD\u6C42\u7701\u5229\u606F \u2192 <strong>\u9009\u65B9\u6848A</strong>\uFF0C\u6BD4\u65B9\u6848B\u591A\u7701 <em>'+fw(diff)+'\u4E07</em></div>'}
+    else if(diff<-0.01*W){h+='<div class="ri"><span class="ra">\u25B8</span>\u8FFD\u6C42\u7701\u5229\u606F \u2192 <strong>\u9009\u65B9\u6848B</strong>\uFF0C\u6BD4\u65B9\u6848A\u591A\u7701 <em>'+fw(-diff)+'\u4E07</em></div>'}
+    else{h+='<div class="ri"><span class="ra">\u25B8</span>\u4E24\u79CD\u65B9\u6848\u8282\u7701\u5229\u606F\u63A5\u8FD1\uFF0C\u5DEE\u5F02\u4E0D\u5927</div>'}
+    if(c.rDelta>0){h+='<div class="ri"><span class="ra">\u25B8</span>\u51CF\u8F7B\u6708\u4F9B\u538B\u529B \u2192 <strong>\u9009\u65B9\u6848B</strong>\uFF0C\u6BCF\u6708\u5C11\u8FD8 <em>\u00A5'+fmt(c.rDelta)+'</em></div>'}
+    if(c.sMonths>0&&c.Bp>0.01){h+='<div class="ri"><span class="ra">\u25B8</span>\u7F29\u77ED\u5E74\u9650\u610F\u5473\u7740\u65E9 '+fp(c.rem-c.sMonths)+' \u8FD8\u6E05\u8D37\u6B3E\uFF0C\u65E0\u503A\u4E00\u8EAB\u8F7B</div>'}
+    if(c.sSaved>c.rSaved*1.3){h+='<div class="ri" style="margin-top:4px;padding-top:6px;border-top:1px dashed var(--border)"><span class="ra">\u25B8</span>\u5F3A\u70C8\u63A8\u8350\u65B9\u6848A\uFF1A\u4F60\u8282\u7701\u7684\u5229\u606F\u663E\u8457\u66F4\u591A\u3002\u524D\u63D0\u662F\u4F60\u5F53\u524D\u6708\u4F9B\u538B\u529B\u4E0D\u5927\u3002</div>'}
+
+    if(inp.type==='combined'&&isCom&&inp.fund){
+      h+='<div class="ri" style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)"><span class="ra">\u25B8</span>\u7EC4\u5408\u8D37\u6B3E\u4E2D\uFF0C\u5546\u8D37\u5229\u7387\u66F4\u9AD8\uFF0C\u4F18\u5148\u8FD8\u5546\u8D37\u662F\u591A\u6570\u60C5\u51B5\u4E0B\u7684\u6700\u4F18\u9009\u62E9</div>';
+    }
+    if(inp.type==='combined'&&isFund&&inp.com){
+      h+='<div class="ri" style="margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)"><span class="ra">\u25B8</span>\u516C\u79EF\u91D1\u5229\u7387\u4F4E\uFF0C\u5EFA\u8BAE\u4F18\u5148\u8003\u8651\u63D0\u524D\u8FD8\u5546\u8D37\uFF0C\u5C06\u591A\u4F59\u8D44\u91D1\u7528\u4E8E\u8FD8\u9AD8\u5229\u7387\u8D37\u6B3E</div>';
+    }
+    h+='</div>';
+
+    h+='<div class="share-area"><button class="sbtn" id="shareBtn">\u{1F517} \u590D\u5236\u5206\u4EAB\u94FE\u63A5</button></div>';
+    el.innerHTML=h;
+
+    $('shareBtn').addEventListener('click',function(){
+      var params=new URLSearchParams();
+      if(inp.type==='combined'){params.set('type','combined');if(inp.com){params.set('ca',inp.com.A);params.set('cr',inp.com.rate)}if(inp.fund){params.set('fa',inp.fund.A);params.set('fr',inp.fund.rate)}}
+      else{params.set('type',inp.type);params.set('p',num('inp-amount'));params.set('r',num('inp-rate'))}
+      params.set('y',num('inp-years'));params.set('m',method);params.set('k',paid);params.set('a',prepay);
+      var url=location.origin+location.pathname+'?'+params.toString();
+      if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){alert('\u2705 \u5206\u4EAB\u94FE\u63A5\u5DF2\u590D\u5236\u5230\u526A\u8D34\u677F\uFF01')}).catch(function(){prompt('\u590D\u5236\u4EE5\u4E0B\u94FE\u63A5\uFF1A',url)})}
+      else{prompt('\u590D\u5236\u4EE5\u4E0B\u94FE\u63A5\uFF1A',url)}
+    });
+  }
+
+  function origI_ep_stress(P,n,paid,pv,tr){
+    var B=epB(P,n,paid),Bp=Math.max(0,B-pv),rem=n-paid,mp=P/n;
+    var origI=epRemI(B,tr,rem);
+    if(Bp<=0)return origI;
+    var sM=Math.ceil(Bp/mp);
+    if(sM<=0)return origI;
+    var newI=tr*(sM*Bp-mp*sM*(sM-1)/2);
+    return Math.max(0,origI-newI);
+  }
+
+  /* ══════ TAB 2 ══════ */
+  function renderInvest(){
+    var inp=getInp(),el=$('sec-invest');
+    if(!inp){el.innerHTML='<div class="placeholder">请先填写上方贷款信息，再点击按钮</div>';return}
+    var P,r,n,rate,isCom=false,isFund=false;
+    if(inp.type==='combined'){
+      var por=getActivePortion('inv'),loan=por==='com'?inp.com:inp.fund;
+      if(!loan){el.innerHTML='<div class="placeholder">请填写所选贷款类型的信息</div>';return}
+      P=loan.P;r=loan.r;n=loan.n;rate=loan.rate;isCom=por==='com';isFund=por==='fund';
+    }else{P=inp.P;r=inp.r;n=inp.n;rate=inp.rate}
+
+    var paid=num('inv-paid'),prepay=num('inv-amount'),retRate=num('inv-return'),method=$('inv-method').value;
+    if(!prepay||!retRate){el.innerHTML='<div class="placeholder">请输入提前还款金额和理财收益率</div>';return}
+    if(paid>=n){el.innerHTML='<div style="color:var(--text-muted);padding:20px 0;text-align:center">\u5DF2\u8FD8\u671F\u6570\u4E0D\u80FD\u8D85\u8FC7\u603B\u671F\u6570</div>';return}
+
+    var c=calcCore(P,r,n,paid,prepay*W,method);
+    var pv=Math.min(prepay*W,c.B),saved=c.sSaved,remY=c.rem/12;
+    var invProfit=pv*(Math.pow(1+retRate/100,remY)-1);
+    var winner=saved>invProfit?'prepay':'invest';
+    var be=0;if(saved>0&&pv>0&&remY>0)be=(Math.pow(1+saved/pv,1/remY)-1)*100;
+
+    var portionLabel='';
+    if(inp.type==='combined')portionLabel=isCom?'\u5546\u8D37':'\u516C\u79EF\u91D1';
+
+    var maxB=Math.max(saved,invProfit,1);
+    var h='<div class="inv-bars">';
+    h+='<div class="inv-bar"><div class="inv-bar-lbl"><span>'+(portionLabel?portionLabel+' \u00B7 ':'')+'\u63D0\u524D\u8FD8\u6B3E \u00B7 \u8282\u7701\u5229\u606F</span><span style="font-family:DM Mono,monospace;font-weight:500">'+fw(saved)+'\u4E07</span></div>';
+    h+='<div class="inv-bar-trk"><div class="inv-bar-fill" style="width:'+(saved/maxB*100).toFixed(1)+'%;background:'+(winner==='prepay'?'linear-gradient(90deg,#7A20FF,#B040FF)':'rgba(107,107,141,0.4)')+'">\u00A5'+fw(saved)+'\u4E07</div></div></div>';
+    h+='<div class="inv-bar"><div class="inv-bar-lbl"><span>\u7406\u8D22\u6536\u76CA \u00B7 \u5E74\u5316'+retRate+'%</span><span style="font-family:DM Mono,monospace;font-weight:500">'+fw(invProfit)+'\u4E07</span></div>';
+    h+='<div class="inv-bar-trk"><div class="inv-bar-fill" style="width:'+(invProfit/maxB*100).toFixed(1)+'%;background:'+(winner==='invest'?'linear-gradient(90deg,#00D4FF,#0088FF)':'rgba(107,107,141,0.4)')+'">\u00A5'+fw(invProfit)+'\u4E07</div></div></div>';
+    h+='</div>';
+
+    var winText=winner==='prepay'?'\u63D0\u524D\u8FD8\u66F4\u5212\u7B97':'\u7406\u8D22\u66F4\u5212\u7B97';
+    h+='<div class="mg">';
+    h+='<div class="mc"><span class="ml">\u63D0\u524D\u8FD8\u6B3E\u8282\u7701</span><span class="mv">'+fw(saved)+'<span class="u">\u4E07</span></span><span class="ms">\u57FA\u4E8E\u7F29\u77ED\u5E74\u9650\u65B9\u6848</span></div>';
+    h+='<div class="mc"><span class="ml">\u7406\u8D22\u9884\u671F\u6536\u76CA</span><span class="mv">'+fw(invProfit)+'<span class="u">\u4E07</span></span><span class="ms">\u590D\u5229 '+remY.toFixed(1)+' \u5E74</span></div>';
+    h+='<div class="mc"><span class="ml">\u4E24\u8005\u5DEE\u989D</span><span class="mv" style="color:var(--green)">'+fw(Math.abs(saved-invProfit))+'<span class="u">\u4E07</span></span><span class="ms">'+winText+'</span></div>';
+    h+='<div class="mc ab"><span class="ml">\u76C8\u4E8F\u5E73\u8861\u5229\u7387</span><span class="mv">'+be.toFixed(2)+'<span class="u">%</span></span><span class="ms">\u7406\u8D22\u6536\u76CA\u2265\u6B64\u5229\u7387\u65F6\u7406\u8D22\u66F4\u4F18</span></div>';
+    h+='</div>';
+
+    h+='<div class="stress-sec"><div class="sl">\u4E0D\u540C\u7406\u8D22\u6536\u76CA\u7387\u4E0B\u7684\u5EFA\u8BAE</div><div class="sens-grid">';
+    var testR=[1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0];
+    for(var i=0;i<testR.length;i++){
+      var isWin=testR[i]>be;
+      h+='<div class="sens-card"><div class="rate">'+testR[i]+'%</div><div class="verdict '+(isWin?'v-invest':'v-prepay')+'">'+(isWin?'\u7406\u8D22\u66F4\u4F18':'\u8FD8\u8D37\u66F4\u4F18')+'</div></div>';
+    }
+    h+='</div></div>';
+
+    h+='<div class="rbox" style="margin-top:14px"><div class="rbox-title">\u51B3\u7B56\u5EFA\u8BAE</div>';
+    if(winner==='prepay'){h+='<div class="ri"><span class="ra">\u25B8</span>\u6309\u5F53\u524D <strong>'+retRate+'%</strong> \u7406\u8D22\u6536\u76CA\u7387\uFF0C<strong>\u63D0\u524D\u8FD8\u8D37\u66F4\u5212\u7B97</strong></div>'}
+    else{h+='<div class="ri"><span class="ra">\u25B8</span>\u6309\u5F53\u524D <strong>'+retRate+'%</strong> \u7406\u8D22\u6536\u76CA\u7387\uFF0C<strong>\u62FF\u53BB\u7406\u8D22\u66F4\u5212\u7B97</strong></div>'}
+    h+='<div class="ri"><span class="ra">\u25B8</span>\u5F53\u7406\u8D22\u5E74\u5316\u6536\u76CA \u2265 <em>'+be.toFixed(2)+'%</em> \u65F6\uFF0C\u7406\u8D22\u624D\u80FD\u8DD1\u8D62\u63D0\u524D\u8FD8\u8D37</div>';
+    h+='<div class="ri"><span class="ra">\u25B8</span>\u623F\u8D37\u5229\u606F\u662F\u786E\u5B9A\u7684\uFF0C\u7406\u8D22\u6536\u76CA\u5B58\u5728\u4E0D\u786E\u5B9A\u6027\uFF0C\u4FDD\u5B88\u578B\u7528\u6237\u53EF\u4F18\u5148\u8003\u8651\u63D0\u524D\u8FD8\u8D37</div>';
+    if(inp.type==='combined'&&isCom&&inp.fund){
+      h+='<div class="ri" style="margin-top:4px;padding-top:6px;border-top:1px dashed var(--border)"><span class="ra">\u25B8</span>\u7EC4\u5408\u8D37\u6B3E\u4E2D\u5546\u8D37\u5229\u7387\u66F4\u9AD8\uFF0C\u7406\u8D22\u66F4\u96BE\u8DD1\u8D62\uFF0C\u5EFA\u8BAE\u4F18\u5148\u8FD8\u5546\u8D37</div>';
+    }
+    if(inp.type==='combined'&&isFund&&inp.com){
+      h+='<div class="ri" style="margin-top:4px;padding-top:6px;border-top:1px dashed var(--border)"><span class="ra">\u25B8</span>\u516C\u79EF\u91D1\u5229\u7387\u4F4E\uFF0C\u7406\u8D22\u66F4\u5BB9\u6613\u8DD1\u8D62\uFF0C\u4F46\u5EFA\u8BAE\u4F18\u5148\u628A\u5546\u8D37\u8FD8\u4E86</div>';
+    }
+    h+='</div>';
+
+    el.innerHTML=h;
+  }
+
+  /* ══════ Tabs ══════ */
+  var tabBtns=document.querySelectorAll('.tab-btn');
+  var panels=document.querySelectorAll('.tab-panel');
+  var indicator=$('tabIndicator');
+  var curTab=0;
+
+  function switchTab(i){
+    curTab=i;
+    for(var idx=0;idx<tabBtns.length;idx++){
+      tabBtns[idx].classList.toggle('active',idx===i);
+      panels[idx].classList.toggle('active',idx===i);
+    }
+    moveI(i);
+  }
+  function moveI(i){
+    var btn=tabBtns[i],tr=btn.parentElement.getBoundingClientRect(),br=btn.getBoundingClientRect();
+    indicator.style.left=(br.left-tr.left+btn.parentElement.scrollLeft)+'px';
+    indicator.style.width=br.width+'px';
+  }
+  for(var ti=0;ti<tabBtns.length;ti++)(function(btn,idx){btn.addEventListener('click',function(){switchTab(idx)})})(tabBtns[ti],ti);
+  requestAnimationFrame(function(){moveI(0)});
+  window.addEventListener('resize',function(){moveI(curTab)});
+
+  /* ══════ Loan type switching ══════ */
+  function switchLoanType(){
+    var type=$('inp-type').value;
+    var singles=document.querySelectorAll('.loan-single');
+    var combineds=document.querySelectorAll('.loan-combined');
+    var ppBar=$('pp-portion-bar');
+    var invBar=$('inv-portion-bar');
+    if(type==='combined'){
+      singles.forEach(function(el){el.style.display='none'});
+      combineds.forEach(function(el){el.style.display=''});
+      ppBar.style.display='';invBar.style.display='';
+    }else{
+      singles.forEach(function(el){el.style.display=''});
+      combineds.forEach(function(el){el.style.display='none'});
+      ppBar.style.display='none';invBar.style.display='none';
+      if(type==='fund')$('inp-rate').value='2.85';else $('inp-rate').value='3.5';
+    }
+  }
+  $('inp-type').addEventListener('change',function(){
+    switchLoanType();
+    $('sec-compare').innerHTML='<div class="placeholder">填写贷款信息，点击「开始对比」<br>自动对比等额本息与等额本金</div>';
+    $('sec-prepay').innerHTML='';$('sec-invest').innerHTML='';
+  });
+
+  /* ══════ Portion toggle ══════ */
+  function setupPortionToggle(barId,calcFn){
+    var bar=$(barId);
+    var btns=bar.querySelectorAll('.pbtn');
+    btns.forEach(function(btn){
+      btn.addEventListener('click',function(){
+        btns.forEach(function(b){b.classList.remove('active')});
+        this.classList.add('active');
+        if($(barId.replace('-portion-bar','').replace('pp','sec-prepay').replace('inv','sec-invest')).querySelector('.mg,.inv-bars,.rbox'))calcFn();
+      });
+    });
+  }
+  setupPortionToggle('pp-portion-bar',renderPrepay);
+  setupPortionToggle('inv-portion-bar',renderInvest);
+
+  /* ══════ Buttons ══════ */
+  $('btn0').addEventListener('click',renderCompare);
+  $('btn1').addEventListener('click',renderPrepay);
+  $('btn2').addEventListener('click',renderInvest);
+
+  /* ══════ URL params ══════ */
+  var pp=new URLSearchParams(location.search);
+  if(pp.has('type')){
+    var urlType=pp.get('type');
+    $('inp-type').value=urlType;
+    switchLoanType();
+    if(urlType==='combined'){
+      if(pp.has('ca'))$('inp-com-amount').value=pp.get('ca');
+      if(pp.has('cr'))$('inp-com-rate').value=pp.get('cr');
+      if(pp.has('fa'))$('inp-fund-amount').value=pp.get('fa');
+      if(pp.has('fr'))$('inp-fund-rate').value=pp.get('fr');
+    }else{
+      if(pp.has('p'))$('inp-amount').value=pp.get('p');
+      if(pp.has('r'))$('inp-rate').value=pp.get('r');
+    }
+    if(pp.has('y'))$('inp-years').value=pp.get('y');
+    if(pp.has('m'))$('pp-method').value=pp.get('m');
+    if(pp.has('k'))$('pp-paid').value=pp.get('k');
+    if(pp.has('a'))$('pp-amount').value=pp.get('a');
+    switchTab(1);
+    setTimeout(function(){renderPrepay()},300);
+  }
+
+})();
+</script>
+
+</body>
+</html>

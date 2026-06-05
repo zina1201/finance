@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>你的一小时 — 算算你的时间值多少</title>
+  <meta name="description" content="输入月薪和工作时长，算出真实时薪，看看每笔消费到底花了你多少时间">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       Design Tokens — Fintech Dark Indigo Theme
+       ═══════════════════════════════════════════ */
+    :root {
+      /* 主背景色 */
+      --bg: #12122B;
+      --bg-secondary: #1A1A3D;
+
+      /* 卡片/表面 */
+      --surface: rgba(30, 30, 66, 0.85);
+      --surface-solid: #1E1E42;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.15);
+
+      /* 强调色 — 霓虹青蓝渐变 */
+      --accent: #00D4FF;
+      --accent-secondary: #7A20FF;
+      --accent-glow: rgba(0, 212, 255, 0.12);
+      --accent-glow-strong: rgba(0, 212, 255, 0.4);
+      --accent-gradient: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
+      --accent-gradient-btn: linear-gradient(135deg, #00D4FF 0%, #0099FF 50%, #7A20FF 100%);
+
+      /* 正向/储蓄色 */
+      --positive: #22C55E;
+      --positive-dim: rgba(34, 197, 94, 0.08);
+      --positive-border: rgba(34, 197, 94, 0.15);
+
+      /* 文字色 */
+      --text: #FFFFFF;
+      --text-muted: #B0B0D8;
+      --text-dim: #6B7280;
+
+      /* 圆角 */
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      /* 阴影 */
+      --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.3);
+      --shadow-card-hover: 0 12px 32px rgba(0, 0, 0, 0.4);
+      --shadow-glow: 0 0 12px rgba(0, 212, 255, 0.4);
+      --shadow-glow-strong: 0 0 24px rgba(0, 212, 255, 0.5);
+      --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 50%, var(--bg) 100%);
+      color: var(--text);
+      font-family: 'Noto Sans SC', 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 噪点纹理覆盖层 */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .container { max-width: 520px; margin: 0 auto; padding: 48px 24px 60px; }
+
+    /* ── Hero ── */
+    .hero { margin-bottom: 44px; animation: fadeUp 0.7s ease both; }
+    .hero h1 {
+      font-size: 38px; font-weight: 900; letter-spacing: -0.03em;
+      line-height: 1.15; margin-bottom: 10px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero .subtitle { font-size: 15px; color: var(--text-muted); font-weight: 300; }
+
+    /* ── Input Section ── */
+    .input-section {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      margin-bottom: 52px;
+      box-shadow: var(--shadow-card), var(--shadow-inset);
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+
+    .input-group { margin-bottom: 22px; }
+    .input-group:last-child { margin-bottom: 0; }
+    .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+
+    .input-row { display: flex; align-items: center; gap: 8px; }
+
+    .input-row input[type="number"],
+    .input-row input[type="text"] {
+      background: rgba(18, 18, 43, 0.6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 17px;
+      font-family: 'DM Mono', monospace;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      -moz-appearance: textfield;
+    }
+
+    .input-row input[type="number"]::-webkit-inner-spin-button,
+    .input-row input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .input-row input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+    }
+
+    .input-row input[type="time"] {
+      background: rgba(18, 18, 43, 0.6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      color: var(--text);
+      font-size: 17px;
+      font-family: 'DM Mono', monospace;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-row input[type="time"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+    }
+
+    .prefix, .suffix, .sep { color: var(--text-muted); font-size: 15px; flex-shrink: 0; }
+    .sep { padding: 0 2px; }
+    .hint { display: block; font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+    .commute-input { width: 100px !important; flex: none !important; }
+    .days-input { width: 80px !important; flex: none !important; }
+
+    /* ── Result Section ── */
+    .result-section { text-align: center; margin-bottom: 60px; }
+    .result-section.show { animation: fadeUp 0.6s ease both; }
+    .result-label { font-size: 14px; color: var(--text-muted); margin-bottom: 14px; letter-spacing: 0.12em; }
+
+    .result-number {
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 76px;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 18px;
+      animation: resultReveal 0.8s cubic-bezier(0.16,1,0.3,1) both, glowNeon 3s ease-in-out 0.8s infinite alternate;
+    }
+
+    @keyframes resultReveal { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+    @keyframes glowNeon {
+      from { filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.2)); }
+      to { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.4)); }
+    }
+
+    .result-detail { font-size: 13px; color: var(--text-dim); line-height: 1.9; }
+    .result-detail strong { color: var(--text-muted); font-weight: 400; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 52px 0;
+    }
+    .items-section.show { animation: fadeUp 0.6s ease both; }
+
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .section-header h2 { font-size: 18px; font-weight: 700; }
+
+    .rate-setting { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-dim); }
+    .rate-setting input {
+      background: rgba(18, 18, 43, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 6px;
+      color: var(--text-muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      width: 44px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .rate-setting input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.15);
+    }
+
+    /* ── Item Cards ── */
+    .item-card {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 40px 20px 20px;
+      margin-bottom: 14px;
+      position: relative;
+      box-shadow: var(--shadow-card), var(--shadow-inset);
+      animation: slideIn 0.35s ease both;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .item-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-card-hover), var(--shadow-inset);
+    }
+
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideOut { to { opacity: 0; transform: translateX(30px); } }
+
+    .item-main { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .item-emoji { font-size: 20px; line-height: 1; flex-shrink: 0; }
+
+    .item-name {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Noto Sans SC', sans-serif;
+      outline: none;
+      padding: 3px 0;
+      width: 130px;
+      transition: border-color 0.2s;
+    }
+    .item-name:focus { border-bottom-color: var(--accent); }
+    .item-name::placeholder { color: var(--text-dim); font-weight: 400; }
+
+    .item-price-wrap { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+    .price-symbol { color: var(--text-muted); font-size: 14px; font-family: 'DM Mono', monospace; }
+
+    .item-price {
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+      color: var(--accent);
+      font-size: 15px;
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      outline: none;
+      padding: 3px 0;
+      width: 80px;
+      text-align: right;
+      transition: border-color 0.2s;
+      -moz-appearance: textfield;
+    }
+    .item-price::-webkit-inner-spin-button,
+    .item-price::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .item-price:focus { border-bottom-color: var(--accent); }
+
+    /* ── Frequency Buttons ── */
+    .item-freq { display: flex; flex-wrap: wrap; gap: 4px; margin-left: 30px; margin-bottom: 14px; }
+
+    .freq-btn {
+      background: rgba(18, 18, 43, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'Noto Sans SC', sans-serif;
+      white-space: nowrap;
+    }
+    .freq-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .freq-btn.active {
+      background: var(--accent-gradient);
+      border-color: transparent;
+      color: #12122B;
+      font-weight: 700;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .item-equals { font-size: 14px; color: var(--text-muted); margin-left: 30px; margin-bottom: 14px; }
+    .item-equals .time-val { color: var(--text); font-weight: 700; font-family: 'DM Mono', monospace; }
+
+    /* ── Savings Block ── */
+    .item-savings {
+      background: var(--positive-dim);
+      border: 1px solid var(--positive-border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-left: 30px;
+    }
+
+    .savings-title { font-size: 12px; color: var(--positive); margin-bottom: 4px; }
+    .savings-note { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; }
+
+    .savings-grid { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; }
+    .savings-grid > div { font-size: 12px; }
+    .s-year { color: var(--text-dim); margin-right: 4px; }
+    .s-amount { color: var(--positive); font-family: 'DM Mono', monospace; font-weight: 500; }
+    .savings-ref { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+    /* ── Delete Button ── */
+    .item-delete {
+      position: absolute; top: 18px; right: 14px;
+      background: transparent; border: none;
+      color: var(--text-dim); font-size: 20px;
+      cursor: pointer; padding: 2px 6px;
+      line-height: 1; opacity: 0.4;
+      transition: opacity 0.15s, color 0.15s;
+    }
+    .item-card:hover .item-delete { opacity: 1; }
+    .item-delete:hover { color: var(--accent); }
+
+    /* ── Add Button ── */
+    .add-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 14px;
+      background: rgba(18, 18, 43, 0.3);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-family: 'Noto Sans SC', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 28px;
+    }
+    .add-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 212, 255, 0.04);
+    }
+    .add-btn span { font-size: 18px; }
+
+    /* ── Daily Total ── */
+    .daily-total {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      text-align: center;
+      box-shadow: var(--shadow-card), var(--shadow-inset);
+    }
+    .dt-label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .dt-amount { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 26px; color: var(--text); margin-bottom: 4px; }
+    .dt-time { font-size: 13px; color: var(--text-dim); }
+
+    /* ── Combined Savings ── */
+    .combined-savings {
+      background: var(--positive-dim);
+      border: 1px solid var(--positive-border);
+      border-radius: var(--radius-md);
+      padding: 24px 22px;
+      text-align: center;
+      margin-top: 14px;
+    }
+    .cs-header { font-size: 15px; font-weight: 700; color: var(--positive); margin-bottom: 4px; }
+    .cs-note { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
+    .cs-grid { display: flex; justify-content: space-around; margin-bottom: 14px; }
+    .cs-col { text-align: center; }
+    .cs-year { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+    .cs-amount { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 22px; color: var(--positive); }
+    .cs-ref { font-size: 13px; color: var(--text-dim); }
+
+    /* ── Share Section ── */
+    .share-section { text-align: center; padding: 36px 0 0; }
+
+    .privacy-row {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-bottom: 18px; font-size: 13px; color: var(--text-dim); cursor: pointer; user-select: none;
+    }
+    .privacy-row input { accent-color: var(--accent); cursor: pointer; }
+
+    .share-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 15px 36px;
+      background: var(--accent-gradient-btn);
+      border: none;
+      border-radius: var(--radius-lg);
+      color: #12122B;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Noto Sans SC', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-glow);
+    }
+    .share-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow-strong);
+    }
+    .share-btn:active { transform: translateY(0); }
+
+    /* ── Share Preview Overlay ── */
+    .share-preview-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 10000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .share-preview-overlay img {
+      max-width: 100%; max-height: 72vh;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .share-preview-overlay p { color: var(--text-muted); font-size: 14px; margin-top: 18px; }
+    .share-preview-overlay .close-preview {
+      position: absolute; top: 20px; right: 24px;
+      background: transparent; border: none;
+      color: var(--text-muted); font-size: 28px; cursor: pointer;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 36px 0 0;
+      font-size: 12px; color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      margin-top: 48px; line-height: 2.2;
+    }
+    footer .author { color: var(--text-muted); font-weight: 700; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .hidden { display: none !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 380px) {
+      .container { padding: 32px 16px 80px; }
+      .hero h1 { font-size: 30px; }
+      .result-number { font-size: 56px; }
+      .item-name { width: 100px; }
+      .item-price { width: 60px; }
+      .savings-grid { flex-direction: column; gap: 4px; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .cs-amount { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="hero">
+      <h1>你的一小时</h1>
+      <p class="subtitle">算算你的时间，到底值多少</p>
+    </header>
+
+    <section class="input-section">
+      <div class="input-group">
+        <label>月薪（税后到手）</label>
+        <div class="input-row">
+          <span class="prefix">¥</span>
+          <input type="number" id="salary" placeholder="20000" inputmode="numeric">
+        </div>
+        <span class="hint">到手多少写多少</span>
+      </div>
+      <div class="input-group">
+        <label>上下班时间</label>
+        <div class="input-row">
+          <input type="time" id="startTime" value="09:00">
+          <span class="sep">—</span>
+          <input type="time" id="endTime" value="18:00">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>通勤单程</label>
+        <div class="input-row">
+          <input type="number" id="commute" placeholder="0" value="45" class="commute-input" inputmode="numeric">
+          <span class="suffix">分钟</span>
+        </div>
+        <span class="hint">从出门到公司</span>
+      </div>
+      <div class="input-group">
+        <label>每周上班</label>
+        <div class="input-row">
+          <input type="number" id="daysPerWeek" value="5" min="1" max="7" class="days-input" inputmode="numeric">
+          <span class="suffix">天</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-section hidden" id="resultSection">
+      <div class="result-label">你的一小时</div>
+      <div class="result-number" id="rateDisplay">¥0.00</div>
+      <div class="result-detail" id="resultDetail"></div>
+    </section>
+
+    <hr class="divider hidden" id="divider1">
+
+    <section class="items-section hidden" id="itemsSection">
+      <div class="section-header">
+        <h2>这一小时，能换什么？</h2>
+        <div class="rate-setting">年化 <input type="number" id="annualRate" value="1" step="0.1" min="0" inputmode="decimal"> %</div>
+      </div>
+
+      <div id="itemsContainer"></div>
+      <button class="add-btn" id="addItemBtn"><span>+</span> 添加一项</button>
+
+      <div class="daily-total hidden" id="dailyTotal">
+        <div class="dt-label">日常消费合计</div>
+        <div class="dt-amount" id="dtAmount"></div>
+        <div class="dt-time" id="dtTime"></div>
+      </div>
+
+      <div class="combined-savings hidden" id="combinedSavings">
+        <div class="cs-header">如果全部省下来</div>
+        <div class="cs-note" id="csNote">存进支付宝 · 按 1% 年化计算</div>
+        <div class="cs-grid">
+          <div class="cs-col"><div class="cs-year">10 年</div><div class="cs-amount" id="cs10">—</div></div>
+          <div class="cs-col"><div class="cs-year">20 年</div><div class="cs-amount" id="cs20">—</div></div>
+          <div class="cs-col"><div class="cs-year">30 年</div><div class="cs-amount" id="cs30">—</div></div>
+        </div>
+        <div class="cs-ref" id="csRef"></div>
+      </div>
+    </section>
+
+    <section class="share-section hidden" id="shareSection">
+      <label class="privacy-row"><input type="checkbox" id="hideSalary"> 隐藏月薪</label>
+      <button class="share-btn" id="shareBtn">📸 保存分享卡片</button>
+      <canvas id="shareCanvas" style="display:none"></canvas>
+    </section>
+
+    <footer>
+      <p>复利按存进支付宝年化 <span id="footerRate">1</span>% 估算，仅供参考</p>
+      <p>作者：<span class="author">罗伯特大毛腿</span></p>
+    </footer>
+  </div>
+
+  <script>
+    const EMOJI_POOL = ['☕','🚕','🍔','👟','📱','🎮','🎬','🛍️','✈️','💄','🍺','🎁','🏠','💊','📚','💇','🍿','🧋','🚬','🍰'];
+
+    const REFERENCE_MAP = [
+      { max: 2000,   text: '一双不错的运动鞋' },
+      { max: 5000,   text: '一台入门手机' },
+      { max: 10000,  text: '一趟周边旅行' },
+      { max: 20000,  text: '一趟东南亚旅行' },
+      { max: 40000,  text: '一台高配笔记本' },
+      { max: 80000,  text: '一辆代步车' },
+      { max: 150000, text: '一辆不错的新车' },
+      { max: 300000, text: '小城市公寓的首付' },
+      { max: 600000, text: '大城市一年的房租' },
+      { max: Infinity, text: '一笔可观的积蓄' },
+    ];
+
+    let state = {
+      items: [
+        { id: 1, emoji: '☕', name: '一杯奶茶', price: 15, freq: 'daily' },
+        { id: 2, emoji: '🚕', name: '打一次车', price: 40, freq: 'weekly' },
+        { id: 3, emoji: '📱', name: '一台新手机', price: 4999, freq: 'once' },
+      ],
+      nextId: 4,
+      hourlyRate: 0, totalDailyHrs: 0, salary: 0, daysPerWeek: 5,
+    };
+
+    function fmt(n) { return Math.round(n).toLocaleString('zh-CN'); }
+
+    function fmtTime(hours) {
+      if (!isFinite(hours) || hours <= 0) return '—';
+      if (hours < 1) return Math.round(hours * 60) + ' 分钟';
+      const h = Math.floor(hours), m = Math.round((hours - h) * 60);
+      if (m === 0) return h + ' 小时';
+      return h + ' 小时 ' + m + ' 分钟';
+    }
+
+    function fmtTimeLong(hours, dailyHrs) {
+      if (!isFinite(hours) || hours <= 0) return '—';
+      const base = fmtTime(hours);
+      if (dailyHrs > 0 && hours >= dailyHrs * 1.5) {
+        return base + ' ≈ ' + (hours / dailyHrs).toFixed(1) + ' 天全部劳动';
+      }
+      return base;
+    }
+
+    function getRef(amount) {
+      for (const r of REFERENCE_MAP) { if (amount < r.max) return r.text; }
+      return '一笔可观的积蓄';
+    }
+
+    function calcSavings(amount, freq, annualRate, years) {
+      if (amount <= 0) return 0;
+      if (freq === 'once') return amount * Math.pow(1 + annualRate, years);
+      const ppyMap = { daily: 365, workday: 260, weekly: 52, monthly: 12 };
+      const ppy = ppyMap[freq] || 365;
+      const r = annualRate / ppy, n = years * ppy;
+      if (r === 0) return amount * n;
+      return amount * (Math.pow(1 + r, n) - 1) / r;
+    }
+
+    const $ = id => document.getElementById(id);
+
+    /* ── Calculation ── */
+    function calculate() {
+      const salary = parseFloat($('salary').value) || 0;
+      const [sh, sm] = $('startTime').value.split(':').map(Number);
+      const [eh, em] = $('endTime').value.split(':').map(Number);
+      const commute = parseFloat($('commute').value) || 0;
+      const dpw = parseFloat($('daysPerWeek').value) || 5;
+
+      let workMin = (eh * 60 + em) - (sh * 60 + sm);
+      if (workMin <= 0) workMin += 24 * 60;
+
+      const totalHrs = (workMin + commute * 2) / 60;
+      const monthDays = dpw * 52 / 12;
+      const hourly = (totalHrs * monthDays) > 0 ? salary / (totalHrs * monthDays) : 0;
+
+      state = { ...state, hourlyRate: hourly, totalDailyHrs: totalHrs, salary, daysPerWeek: dpw };
+
+      const show = salary > 0 && hourly > 0 && isFinite(hourly);
+      $('resultSection').classList.toggle('hidden', !show);
+      $('divider1').classList.toggle('hidden', !show);
+      $('itemsSection').classList.toggle('hidden', !show);
+      $('shareSection').classList.toggle('hidden', !show);
+
+      if (show) {
+        $('resultSection').classList.add('show');
+        $('itemsSection').classList.add('show');
+        animateNumber($('rateDisplay'), hourly);
+        const hrs = totalHrs.toFixed(1).replace('.0', '');
+        $('resultDetail').innerHTML =
+          `每天投入 <strong>${hrs} 小时</strong>（含通勤） · 每周 <strong>${dpw}天</strong> · 月薪 <strong>¥${fmt(salary)}</strong>`;
+      }
+
+      updateAllItems();
+      updateTotals();
+      $('footerRate').textContent = (parseFloat($('annualRate').value) || 1).toFixed(1).replace(/\.0$/, '');
+    }
+
+    function animateNumber(el, target) {
+      const start = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - start) / 700, 1);
+        el.textContent = '¥' + (target * (1 - Math.pow(1 - p, 3))).toFixed(2);
+        if (p < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+
+    /* ── Items ── */
+    function createItemCard(item) {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.dataset.id = item.id;
+      const ar = (parseFloat($('annualRate')?.value) || 1).toFixed(1).replace(/\.0$/, '');
+      card.innerHTML = `
+        <button class="item-delete" title="删除">×</button>
+        <div class="item-main">
+          <span class="item-emoji">${item.emoji}</span>
+          <input class="item-name" type="text" value="${item.name}" placeholder="消费项目">
+          <div class="item-price-wrap">
+            <span class="price-symbol">¥</span>
+            <input class="item-price" type="number" value="${item.price || ''}" placeholder="0" inputmode="decimal">
+          </div>
+        </div>
+        <div class="item-freq">
+          <button class="freq-btn ${item.freq === 'daily' ? 'active' : ''}" data-freq="daily">每日</button>
+          <button class="freq-btn ${item.freq === 'workday' ? 'active' : ''}" data-freq="workday">每个工作日</button>
+          <button class="freq-btn ${item.freq === 'weekly' ? 'active' : ''}" data-freq="weekly">每周</button>
+          <button class="freq-btn ${item.freq === 'monthly' ? 'active' : ''}" data-freq="monthly">每月</button>
+          <button class="freq-btn ${item.freq === 'once' ? 'active' : ''}" data-freq="once">一次性</button>
+        </div>
+        <div class="item-equals">= <span class="time-val">—</span></div>
+        <div class="item-savings">
+          <div class="savings-title">如果省下这笔钱</div>
+          <div class="savings-note">存进支付宝 · 按 ${ar}% 年化计算</div>
+          <div class="savings-grid">
+            <div><span class="s-year">10年</span><span class="s-amount s10">—</span></div>
+            <div><span class="s-year">20年</span><span class="s-amount s20">—</span></div>
+            <div><span class="s-year">30年</span><span class="s-amount s30">—</span></div>
+          </div>
+          <div class="savings-ref"></div>
+        </div>`;
+      return card;
+    }
+
+    function renderAllItems() {
+      const c = $('itemsContainer');
+      c.innerHTML = '';
+      state.items.forEach(item => c.appendChild(createItemCard(item)));
+    }
+
+    function updateAllItems() {
+      const rate = state.hourlyRate;
+      const ar = (parseFloat($('annualRate').value) || 1) / 100;
+      const arDisp = (parseFloat($('annualRate').value) || 1).toFixed(1).replace(/\.0$/, '');
+      const dHrs = state.totalDailyHrs;
+
+      document.querySelectorAll('.item-card').forEach(card => {
+        const price = parseFloat(card.querySelector('.item-price').value) || 0;
+        const freq = card.querySelector('.freq-btn.active')?.dataset.freq || 'daily';
+        const wt = rate > 0 ? price / rate : 0;
+
+        card.querySelector('.time-val').textContent = fmtTimeLong(wt, dHrs);
+
+        const labels = { daily: '如果每天省下这笔钱', workday: '如果每个工作日省下这笔钱', weekly: '如果每周省下这笔钱', monthly: '如果每月省下这笔钱', once: '如果把这笔钱存起来' };
+        card.querySelector('.savings-title').textContent = labels[freq];
+        card.querySelector('.savings-note').textContent = '存进支付宝 · 按 ' + arDisp + '% 年化计算';
+
+        const s10 = calcSavings(price, freq, ar, 10);
+        const s20 = calcSavings(price, freq, ar, 20);
+        const s30 = calcSavings(price, freq, ar, 30);
+
+        card.querySelector('.s10').textContent = price > 0 ? '¥' + fmt(s10) : '—';
+        card.querySelector('.s20').textContent = price > 0 ? '¥' + fmt(s20) : '—';
+        card.querySelector('.s30').textContent = price > 0 ? '¥' + fmt(s30) : '—';
+        card.querySelector('.savings-ref').textContent = (price > 0 && s30 >= 2000) ? '30年 ≈ ' + getRef(s30) : '';
+      });
+    }
+
+    function updateTotals() {
+      const ar = (parseFloat($('annualRate').value) || 1) / 100;
+      const arDisp = (parseFloat($('annualRate').value) || 1).toFixed(1).replace(/\.0$/, '');
+      let dailySum = 0, c10 = 0, c20 = 0, c30 = 0, hasValid = false;
+
+      document.querySelectorAll('.item-card').forEach(card => {
+        const price = parseFloat(card.querySelector('.item-price').value) || 0;
+        const freq = card.querySelector('.freq-btn.active')?.dataset.freq || 'daily';
+        if (freq === 'daily') dailySum += price;
+        else if (freq === 'workday') dailySum += price * state.daysPerWeek / 7;
+        else if (freq === 'weekly') dailySum += price / 7;
+        else if (freq === 'monthly') dailySum += price / 30;
+        if (price > 0) { hasValid = true; c10 += calcSavings(price, freq, ar, 10); c20 += calcSavings(price, freq, ar, 20); c30 += calcSavings(price, freq, ar, 30); }
+      });
+
+      /* Daily total */
+      const dtEl = $('dailyTotal');
+      if (dailySum > 0 && state.hourlyRate > 0) {
+        dtEl.classList.remove('hidden');
+        $('dtAmount').textContent = '¥' + fmt(dailySum);
+        $('dtTime').textContent = '= 每天 ' + fmtTime(dailySum / state.hourlyRate) + ' 的生命';
+      } else { dtEl.classList.add('hidden'); }
+
+      /* Combined */
+      const csEl = $('combinedSavings');
+      if (hasValid && state.hourlyRate > 0) {
+        csEl.classList.remove('hidden');
+        $('csNote').textContent = '存进支付宝 · 按 ' + arDisp + '% 年化计算';
+        $('cs10').textContent = '¥' + fmt(c10);
+        $('cs20').textContent = '¥' + fmt(c20);
+        $('cs30').textContent = '¥' + fmt(c30);
+        $('csRef').textContent = c30 >= 2000 ? '30年 ≈ ' + getRef(c30) : '';
+      } else { csEl.classList.add('hidden'); }
+    }
+
+    function addItem() {
+      const id = state.nextId++;
+      const item = { id, emoji: EMOJI_POOL[(id - 1) % EMOJI_POOL.length], name: '', price: 0, freq: 'daily' };
+      state.items.push(item);
+      const card = createItemCard(item);
+      $('itemsContainer').appendChild(card);
+      card.querySelector('.item-name').focus();
+      updateTotals();
+    }
+
+    function removeItem(id) {
+      state.items = state.items.filter(i => i.id !== id);
+      const card = document.querySelector(`.item-card[data-id="${id}"]`);
+      if (card) { card.style.animation = 'slideOut 0.2s ease forwards'; setTimeout(() => { card.remove(); updateTotals(); }, 200); }
+    }
+
+    /* ── Share Card ── */
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function getValidItems() {
+      const items = [];
+      document.querySelectorAll('.item-card').forEach(card => {
+        const price = parseFloat(card.querySelector('.item-price').value) || 0;
+        if (price <= 0) return;
+        items.push({
+          emoji: card.querySelector('.item-emoji').textContent,
+          name: card.querySelector('.item-name').value || '消费',
+          price,
+          freq: card.querySelector('.freq-btn.active')?.dataset.freq || 'daily',
+          time: state.hourlyRate > 0 ? price / state.hourlyRate : 0,
+        });
+      });
+      return items;
+    }
+
+    async function generateShareCard() {
+      const validItems = getValidItems();
+      if (validItems.length === 0) { alert('请至少填写一项消费'); return; }
+
+      const ar = (parseFloat($('annualRate').value) || 1) / 100;
+      const arDisp = (parseFloat($('annualRate').value) || 1).toFixed(1).replace(/\.0$/, '');
+      let c10 = 0, c20 = 0, c30 = 0;
+      validItems.forEach(it => { c10 += calcSavings(it.price, it.freq, ar, 10); c20 += calcSavings(it.price, it.freq, ar, 20); c30 += calcSavings(it.price, it.freq, ar, 30); });
+
+      const W = 750, H = 820 + validItems.length * 50;
+      const canvas = $('shareCanvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      try { await Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 2000))]); } catch(e) {}
+
+      const fCN = '"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif';
+      const fMN = '"DM Mono","Menlo","Courier New",monospace';
+
+      /* Background — 深靛蓝渐变 */
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+      bgGrad.addColorStop(0, '#12122B');
+      bgGrad.addColorStop(0.5, '#1A1A3D');
+      bgGrad.addColorStop(1, '#12122B');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      /* Subtle glow at top */
+      const glowGrad = ctx.createLinearGradient(0, 0, 0, H * 0.4);
+      glowGrad.addColorStop(0, 'rgba(0, 212, 255, 0.06)');
+      glowGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = glowGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      let y = 90;
+
+      /* Title */
+      ctx.fillStyle = '#B0B0D8';
+      ctx.font = `300 28px ${fCN}`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText('我的一小时', 64, y);
+      y += 55;
+
+      /* Big number — 渐变文字 */
+      const numGrad = ctx.createLinearGradient(58, y, 58 + 400, y);
+      numGrad.addColorStop(0, '#00D4FF');
+      numGrad.addColorStop(1, '#7A20FF');
+      ctx.fillStyle = numGrad;
+      ctx.font = `500 100px ${fMN}`;
+      ctx.fillText('¥' + state.hourlyRate.toFixed(2), 58, y);
+      y += 125;
+
+      /* Detail */
+      if (!$('hideSalary').checked) {
+        ctx.fillStyle = '#B0B0D8';
+        ctx.font = `400 20px ${fCN}`;
+        const hrs = state.totalDailyHrs.toFixed(1).replace('.0', '');
+        ctx.fillText(`月薪 ¥${fmt(state.salary)} · 每天 ${hrs}h · 每周 ${state.daysPerWeek}天`, 64, y);
+      }
+      y += 48;
+
+      /* Divider */
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W - 64, y); ctx.stroke();
+      y += 32;
+
+      /* Items header */
+      ctx.fillStyle = '#6B7280';
+      ctx.font = `400 15px ${fCN}`;
+      ctx.fillText('每笔消费的时间成本', 64, y);
+      y += 32;
+
+      /* Each item */
+      const freqLabel = { daily: '每日', workday: '每个工作日', weekly: '每周', monthly: '每月', once: '一次性' };
+      validItems.forEach(it => {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `400 22px ${fCN}`;
+        ctx.textAlign = 'left';
+        ctx.fillText(`${it.emoji}  ${it.name}`, 64, y);
+
+        /* 频次标签 */
+        const fText = freqLabel[it.freq] || '';
+        const fWidth = ctx.measureText(`${it.emoji}  ${it.name}`).width;
+        ctx.fillStyle = 'rgba(0, 212, 255, 0.15)';
+        const tagW = ctx.measureText(fText).width + 16;
+        roundRect(ctx, 64 + fWidth + 12, y + 2, tagW, 24, 6);
+        ctx.fill();
+        ctx.fillStyle = '#00D4FF';
+        ctx.font = `400 14px ${fCN}`;
+        ctx.fillText(fText, 64 + fWidth + 20, y + 5);
+
+        ctx.fillStyle = '#B0B0D8';
+        ctx.font = `400 18px ${fMN}`;
+        ctx.textAlign = 'right';
+        ctx.fillText('¥' + fmt(it.price), 430, y);
+
+        ctx.fillStyle = '#00D4FF';
+        ctx.font = `500 20px ${fMN}`;
+        ctx.fillText(fmtTime(it.time), W - 64, y);
+
+        y += 50;
+      });
+
+      y += 8;
+
+      /* Divider */
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W - 64, y); ctx.stroke();
+      y += 32;
+
+      /* Combined savings */
+      ctx.fillStyle = '#22C55E';
+      ctx.textAlign = 'left';
+      ctx.font = `700 22px ${fCN}`;
+      ctx.fillText('如果全部省下来', 64, y);
+      y += 38;
+
+      /* 每日折算金额 */
+      let dailySumCard = 0;
+      const dpw = state.daysPerWeek || 5;
+      validItems.forEach(it => {
+        if (it.freq === 'daily') dailySumCard += it.price;
+        else if (it.freq === 'workday') dailySumCard += it.price * dpw / 7;
+        else if (it.freq === 'weekly') dailySumCard += it.price / 7;
+        else if (it.freq === 'monthly') dailySumCard += it.price / 30;
+      });
+      if (dailySumCard > 0) {
+        ctx.fillStyle = '#B0B0D8';
+        ctx.font = `400 16px ${fCN}`;
+        ctx.fillText(`折合每日 ¥${fmt(dailySumCard)} · 存进支付宝 · 按 ${arDisp}% 年化计算`, 64, y);
+      } else {
+        ctx.fillStyle = '#6B7280';
+        ctx.font = `400 16px ${fCN}`;
+        ctx.fillText(`存进支付宝 · 按 ${arDisp}% 年化计算`, 64, y);
+      }
+      y += 40;
+
+      /* Three columns */
+      const colW = (W - 128) / 3;
+      ctx.fillStyle = '#B0B0D8';
+      ctx.font = `400 16px ${fCN}`;
+      ctx.textAlign = 'center';
+      ctx.fillText('10 年', 64 + colW * 0.5, y);
+      ctx.fillText('20 年', 64 + colW * 1.5, y);
+      ctx.fillText('30 年', 64 + colW * 2.5, y);
+      y += 32;
+
+      ctx.fillStyle = '#22C55E';
+      ctx.font = `500 32px ${fMN}`;
+      ctx.fillText('¥' + fmt(c10), 64 + colW * 0.5, y);
+      ctx.fillText('¥' + fmt(c20), 64 + colW * 1.5, y);
+      ctx.fillText('¥' + fmt(c30), 64 + colW * 2.5, y);
+      y += 54;
+
+      /* Reference */
+      ctx.fillStyle = '#6B7280';
+      ctx.font = `400 18px ${fCN}`;
+      ctx.textAlign = 'left';
+      ctx.fillText('30年 ≈ ' + getRef(c30), 64, y);
+      y += 50;
+
+      /* Divider */
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W - 64, y); ctx.stroke();
+      y += 30;
+
+      /* Author + footer */
+      ctx.fillStyle = '#B0B0D8';
+      ctx.font = `700 20px ${fCN}`;
+      ctx.textAlign = 'center';
+      ctx.fillText('作者：罗伯特大毛腿', W / 2, y);
+      y += 36;
+      ctx.fillStyle = '#6B7280';
+      ctx.font = `400 22px ${fCN}`;
+      ctx.fillText('你的一小时值多少？', W / 2, y);
+      y += 32;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.font = `400 16px ${fMN}`;
+      ctx.fillText('timevalue.tool', W / 2, y);
+
+      /* Download */
+      const btn = $('shareBtn');
+
+      try {
+        const blob = await new Promise((resolve, reject) => {
+          canvas.toBlob(b => b ? resolve(b) : reject('blob null'), 'image/png');
+        });
+
+        if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
+          try {
+            const file = new File([blob], '我的一小时.png', { type: 'image/png' });
+            await navigator.share({ files: [file], title: '我的一小时' });
+            btn.textContent = '✓ 已分享'; setTimeout(() => btn.textContent = '📸 保存分享卡片', 2200);
+            return;
+          } catch(e) { /* cancelled, fall through */ }
+        }
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url;
+        a.download = '我的一小时.png'; a.style.display = 'none';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        btn.textContent = '✓ 已保存'; setTimeout(() => btn.textContent = '📸 保存分享卡片', 2200);
+        return;
+      } catch(e) { console.warn('toBlob failed', e); }
+
+      try {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png'); a.download = '我的一小时.png';
+        a.style.display = 'none'; document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        btn.textContent = '✓ 已保存'; setTimeout(() => btn.textContent = '📸 保存分享卡片', 2200);
+        return;
+      } catch(e) { console.warn('toDataURL failed', e); }
+
+      /* Fallback: show preview */
+      const existing = document.querySelector('.share-preview-overlay');
+      if (existing) existing.remove();
+      const overlay = document.createElement('div');
+      overlay.className = 'share-preview-overlay';
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL('image/png'); img.alt = '我的一小时';
+      const hint = document.createElement('p');
+      hint.textContent = '长按图片保存到相册';
+      const close = document.createElement('button');
+      close.className = 'close-preview'; close.textContent = '×';
+      close.onclick = () => overlay.remove();
+      overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+      overlay.append(close, img, hint);
+      document.body.appendChild(overlay);
+    }
+
+    /* ── Events ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAllItems();
+      ['salary','startTime','endTime','commute','daysPerWeek','annualRate'].forEach(id => $(id).addEventListener('input', calculate));
+      $('addItemBtn').addEventListener('click', addItem);
+      $('shareBtn').addEventListener('click', generateShareCard);
+
+      $('itemsContainer').addEventListener('click', e => {
+        const fb = e.target.closest('.freq-btn');
+        if (fb) {
+          const card = fb.closest('.item-card');
+          card.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
+          fb.classList.add('active'); calculate(); return;
+        }
+        const db = e.target.closest('.item-delete');
+        if (db) removeItem(parseInt(db.closest('.item-card').dataset.id));
+      });
+
+      calculate();
+    });
+  </script>
+</body>
+</html>

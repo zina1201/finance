@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>离职补偿金计算器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          mono: ['DM Mono', 'monospace'],
+        },
+        colors: {
+          'bg-primary': '#12122B',
+          'bg-secondary': '#1A1A3D',
+          'bg-card': 'rgba(30, 30, 66, 0.85)',
+          'accent-cyan': '#00D4FF',
+          'accent-purple': '#7A20FF',
+          'accent-green': '#00FF88',
+          'text-primary': '#FFFFFF',
+          'text-secondary': '#B0B0D8',
+          'text-muted': '#7A7A9E',
+          'border-subtle': 'rgba(255, 255, 255, 0.08)',
+          'border-glow': 'rgba(0, 212, 255, 0.3)',
+        },
+      }
+    }
+  }
+</script>
+<style>
+  /* ===== GLOBAL RESET & BASE ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #12122B;
+    color: #FFFFFF;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Subtle background grain / radial glow */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(122, 32, 255, 0.05) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 50%, #1A1A3D 0%, #12122B 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .main-container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== NOTIFY BAR ===== */
+  .notify-bar {
+    background: linear-gradient(135deg, #1A1A40 0%, rgba(0, 212, 255, 0.15) 80%, rgba(122, 32, 255, 0.1) 100%);
+    color: #B0B0D8;
+    font-size: 13px;
+    text-align: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+  }
+
+  /* ===== HERO ===== */
+  .tool-hero { text-align: center; margin-bottom: 36px; }
+
+  .tool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    color: #00D4FF;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(6px);
+  }
+
+  .tool-hero h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #C8C8E8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tool-hero p {
+    font-size: 15px;
+    color: #B0B0D8;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ===== STEPS BAR ===== */
+  .steps-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .step-dot .dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #7A7A9E;
+    background: rgba(30, 30, 66, 0.6);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(6px);
+  }
+
+  .step-dot.active .dot {
+    border-color: #00D4FF;
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    color: white;
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+  }
+
+  .step-dot.done .dot {
+    border-color: #00FF88;
+    background: rgba(0, 255, 136, 0.15);
+    color: #00FF88;
+  }
+
+  .step-line {
+    width: 44px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 1px;
+    transition: background 0.3s ease;
+  }
+
+  .step-line.done { background: #00FF88; box-shadow: 0 0 8px rgba(0, 255, 136, 0.3); }
+
+  /* ===== CARD (Glassmorphism) ===== */
+  .card {
+    background: rgba(30, 30, 66, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .card-body { padding: 32px; }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #FFFFFF;
+  }
+
+  .card-desc {
+    font-size: 14px;
+    color: #B0B0D8;
+    margin-bottom: 24px;
+  }
+
+  /* ===== SCENE CARDS ===== */
+  .scene-grid { display: grid; gap: 12px; }
+
+  .scene-card {
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(25, 25, 55, 0.7);
+    backdrop-filter: blur(6px);
+  }
+
+  .scene-card:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    background: rgba(0, 212, 255, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.08);
+  }
+
+  .scene-card.selected {
+    border-color: #00D4FF;
+    background: rgba(0, 212, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .scene-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .scene-card:nth-child(1) .scene-icon { background: rgba(255, 100, 100, 0.15); }
+  .scene-card:nth-child(2) .scene-icon { background: rgba(255, 180, 50, 0.15); }
+  .scene-card:nth-child(3) .scene-icon { background: rgba(0, 212, 255, 0.12); }
+
+  .scene-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: #FFFFFF; }
+  .scene-info p { font-size: 13px; color: #B0B0D8; line-height: 1.5; }
+
+  /* ===== FORM ===== */
+  .form-group { margin-bottom: 20px; }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #C8C8E8;
+  }
+
+  .form-hint {
+    font-size: 12px;
+    color: #7A7A9E;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #FFFFFF;
+    background: rgba(20, 20, 50, 0.7);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+    -webkit-appearance: none;
+    min-height: 48px;
+    backdrop-filter: blur(4px);
+  }
+
+  .form-input::placeholder { color: #6A6A8E; }
+
+  .form-input:focus, .form-select:focus {
+    border-color: #00D4FF;
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1), 0 0 12px rgba(0, 212, 255, 0.08);
+  }
+
+  input[type="date"] {
+    font-size: 15px;
+    padding: 12px 14px;
+    min-height: 48px;
+    cursor: pointer;
+    color-scheme: dark;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .input-with-suffix { position: relative; }
+
+  .input-with-suffix .suffix {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #7A7A9E;
+    pointer-events: none;
+  }
+
+  .input-with-suffix .form-input { padding-right: 40px; }
+
+  /* ===== RADIO GROUP ===== */
+  .radio-group { display: flex; gap: 8px; }
+
+  .radio-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(20, 20, 50, 0.6);
+    color: #B0B0D8;
+    text-align: center;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+  }
+
+  .radio-btn:hover {
+    border-color: rgba(0, 212, 255, 0.35);
+    color: #00D4FF;
+    background: rgba(0, 212, 255, 0.06);
+  }
+
+  .radio-btn.active {
+    border-color: #00D4FF;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(122, 32, 255, 0.1));
+    color: #00D4FF;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    color: white;
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.25);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 24px rgba(0, 212, 255, 0.4), 0 4px 16px rgba(122, 32, 255, 0.3);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-ghost {
+    background: rgba(30, 30, 66, 0.6);
+    color: #B0B0D8;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    background: rgba(40, 40, 80, 0.7);
+  }
+
+  .btn-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-lg { padding: 14px 32px; font-size: 15px; }
+
+  /* ===== STEPS PAGES ===== */
+  .step-page { display: none; }
+  .step-page.active { display: block; animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .year-display {
+    font-size: 13px;
+    color: #00D4FF;
+    font-weight: 500;
+    margin-top: 6px;
+    min-height: 20px;
+  }
+
+  .select-wrapper { position: relative; }
+
+  .select-wrapper::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7A7A9E;
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  .form-select { padding-right: 36px; }
+
+  /* ===== EXCEPTIONS (Resign page) ===== */
+  .exceptions-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .exceptions-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #C8C8E8;
+  }
+
+  .exception-item {
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    background: rgba(25, 25, 55, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .exception-item:hover {
+    border-color: rgba(0, 212, 255, 0.3);
+    background: rgba(0, 212, 255, 0.05);
+  }
+
+  .exception-item.checked {
+    border-color: #00D4FF;
+    background: rgba(0, 212, 255, 0.08);
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.08);
+  }
+
+  .exception-header { display: flex; align-items: flex-start; gap: 12px; }
+
+  .exception-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    font-size: 12px;
+    color: transparent;
+    background: rgba(30, 30, 66, 0.6);
+  }
+
+  .exception-item.checked .exception-check {
+    border-color: #00D4FF;
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    color: white;
+  }
+
+  .exception-label { font-size: 14px; font-weight: 500; flex: 1; color: #D0D0E8; }
+
+  .exception-law {
+    margin-top: 10px;
+    padding: 14px;
+    background: rgba(15, 15, 40, 0.6);
+    border-radius: 10px;
+    font-size: 12px;
+    color: #B0B0D8;
+    line-height: 1.8;
+    display: none;
+    border-left: 3px solid #00D4FF;
+  }
+
+  .exception-item.expanded .exception-law { display: block; }
+
+  .law-quote {
+    color: #00D4FF;
+    font-weight: 500;
+  }
+
+  .expand-hint {
+    font-size: 12px;
+    color: #7A7A9E;
+    margin-top: 2px;
+  }
+
+  .exception-item.expanded .expand-hint { display: none; }
+
+  .resign-n-form {
+    display: none;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .resign-n-form.visible { display: block; animation: fadeUp 0.3s ease; }
+
+  .resign-n-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #00D4FF;
+    margin-bottom: 16px;
+  }
+
+  /* ===== RESULT PAGE ===== */
+  .result-hero { text-align: center; padding: 32px 0 24px; }
+
+  .result-amount-label {
+    font-size: 14px;
+    color: #B0B0D8;
+    margin-bottom: 4px;
+  }
+
+  .result-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 52px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -2px;
+    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
+  }
+
+  .result-amount .currency {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  .result-scene-tag {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
+    backdrop-filter: blur(6px);
+  }
+
+  .tag-n {
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.25);
+    color: #00FF88;
+  }
+
+  .tag-n1 {
+    background: rgba(255, 180, 50, 0.1);
+    border: 1px solid rgba(255, 180, 50, 0.25);
+    color: #F0B040;
+  }
+
+  .tag-2n {
+    background: rgba(255, 80, 80, 0.1);
+    border: 1px solid rgba(255, 80, 80, 0.25);
+    color: #FF6060;
+  }
+
+  .tag-zero {
+    background: rgba(120, 120, 150, 0.1);
+    border: 1px solid rgba(120, 120, 150, 0.2);
+    color: #7A7A9E;
+  }
+
+  /* ===== COMPARE GRID ===== */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+  }
+
+  .compare-card {
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    background: rgba(25, 25, 55, 0.6);
+    backdrop-filter: blur(6px);
+    animation: fadeUp 0.4s ease backwards;
+    transition: all 0.25s ease;
+  }
+
+  .compare-card:nth-child(1) { animation-delay: 0.1s; }
+  .compare-card:nth-child(2) { animation-delay: 0.2s; }
+  .compare-card:nth-child(3) { animation-delay: 0.3s; }
+
+  .compare-card.highlight {
+    border-color: #00D4FF;
+    background: rgba(0, 212, 255, 0.08);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.12);
+  }
+
+  .compare-label {
+    font-size: 12px;
+    color: #7A7A9E;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .compare-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFFFFF;
+  }
+
+  .compare-card.highlight .compare-value {
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .compare-note { font-size: 11px; color: #7A7A9E; margin-top: 2px; }
+
+  /* ===== BREAKDOWN ===== */
+  .breakdown {
+    background: rgba(15, 15, 40, 0.6);
+    border-radius: 14px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .breakdown-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7A7A9E;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+
+  .formula-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    font-size: 14px;
+  }
+
+  .formula-row:not(:last-child) { border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+
+  .formula-label { color: #B0B0D8; }
+
+  .formula-value {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: #D0D0E8;
+  }
+
+  .formula-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00D4FF;
+  }
+
+  .formula-total .formula-value {
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ===== TIP BOX ===== */
+  .tip-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 12px 0;
+    backdrop-filter: blur(6px);
+  }
+
+  .tip-box.info {
+    background: rgba(0, 212, 255, 0.06);
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    color: #A0D8F0;
+  }
+
+  .tip-box.warn {
+    background: rgba(255, 180, 50, 0.06);
+    border: 1px solid rgba(255, 180, 50, 0.15);
+    color: #E0C080;
+  }
+
+  .tip-box .tip-icon { flex-shrink: 0; font-size: 16px; }
+
+  .tip-box.info strong { color: #00D4FF; }
+  .tip-box.warn strong { color: #F0B040; }
+
+  /* ===== RESULT CARD ANIMATION ===== */
+  .result-card { animation: resultReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+  @keyframes resultReveal {
+    from { opacity: 0; transform: scale(0.96) translateY(16px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ===== DISCLAIMER ===== */
+  .disclaimer {
+    font-size: 12px;
+    color: #7A7A9E;
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    line-height: 1.7;
+  }
+
+  .recalc-section { text-align: center; margin-top: 20px; }
+
+  /* ===== RESIGN ZERO ===== */
+  .resign-zero-box { text-align: center; padding: 40px 20px; }
+
+  .resign-zero-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 48px;
+    font-weight: 700;
+    color: #5A5A7E;
+    letter-spacing: -2px;
+  }
+
+  .resign-zero-amount .currency { font-size: 24px; font-weight: 500; letter-spacing: 0; }
+
+  /* ===== FOOTER ===== */
+  .site-footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    color: #5A5A7E;
+    position: relative;
+    z-index: 1;
+  }
+
+  .site-footer .author { font-weight: 500; color: #7A7A9E; }
+
+  /* ===== SCROLL TOP ===== */
+  .scroll-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00D4FF, #7A20FF);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 16px rgba(0, 212, 255, 0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 50;
+    transition: all 0.25s ease;
+  }
+
+  .scroll-top:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 212, 255, 0.5);
+  }
+
+  /* ===== CUSTOM SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #12122B; }
+  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .main-container { padding: 20px 16px 60px; }
+    .card-body { padding: 24px 20px; }
+    .tool-hero h1 { font-size: 22px; }
+    .form-row { grid-template-columns: 1fr; }
+    .result-amount { font-size: 36px; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .steps-bar { gap: 4px; }
+    .step-line { width: 28px; }
+    .resign-zero-amount { font-size: 36px; }
+    .radio-group { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="notify-bar">本工具计算结果仅供参考，具体以劳动仲裁或法院认定为准</div>
+
+<main class="main-container">
+
+  <div class="tool-hero">
+    <div class="tool-badge">实用工具</div>
+    <h1>离职补偿金计算器</h1>
+    <p>根据您的工作年限和薪资，快速计算被辞退、协商离职、被迫离职等场景下应得的经济补偿</p>
+  </div>
+
+  <!-- Steps bar -->
+  <div class="steps-bar" id="stepsBar">
+    <div class="step-dot active" id="stepDot1"><div class="dot">1</div></div>
+    <div class="step-line" id="stepLine1"></div>
+    <div class="step-dot" id="stepDot2"><div class="dot">2</div></div>
+    <div class="step-line" id="stepLine2"></div>
+    <div class="step-dot" id="stepDot3"><div class="dot">3</div></div>
+  </div>
+
+  <!-- ====== Step 1: Scene ====== -->
+  <div class="step-page active" id="step1">
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">请选择您的离职场景</div>
+        <div class="card-desc">不同场景下，补偿标准不同</div>
+        <div class="scene-grid">
+          <div class="scene-card" data-scene="fire" onclick="selectScene(this, 'fire')">
+            <div class="scene-icon">📋</div>
+            <div class="scene-info">
+              <h3>被公司辞退 / 裁员</h3>
+              <p>公司单方面解除劳动合同，包括裁员、不能胜任工作、合同到期不续签等</p>
+            </div>
+          </div>
+          <div class="scene-card" data-scene="negotiate" onclick="selectScene(this, 'negotiate')">
+            <div class="scene-icon">🤝</div>
+            <div class="scene-info">
+              <h3>协商解除劳动关系</h3>
+              <p>公司与您协商一致后解除合同，补偿金额通常以 N 为基准协商</p>
+            </div>
+          </div>
+          <div class="scene-card" data-scene="resign" onclick="selectScene(this, 'resign')">
+            <div class="scene-icon">🚪</div>
+            <div class="scene-info">
+              <h3>主动离职</h3>
+              <p>个人原因提出辞职，通常无经济补偿，但存在几种例外情形</p>
+            </div>
+          </div>
+        </div>
+        <div class="btn-group">
+          <div></div>
+          <button class="btn btn-primary btn-lg" onclick="nextFromScene()">下一步 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Step 2: Work Info ====== -->
+  <div class="step-page" id="step2">
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">填写工作信息</div>
+        <div class="card-desc">请填写您的在职时间与薪资情况</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">入职日期</label>
+            <input type="date" class="form-input" id="startDate" onchange="calcTenure()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">离职日期</label>
+            <input type="date" class="form-input" id="endDate" onchange="calcTenure()">
+          </div>
+        </div>
+        <div class="year-display" id="tenureDisplay"></div>
+
+        <div class="form-group">
+          <label class="form-label">月平均工资（税前应发）</label>
+          <div class="input-with-suffix">
+            <input type="number" class="form-input" id="salary" placeholder="请输入金额" min="0" step="100">
+            <span class="suffix">元</span>
+          </div>
+          <div class="form-hint">应发工资 = 税前工资，包含基本工资、绩效、奖金、津贴、补贴等</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">所在城市</label>
+          <div class="select-wrapper">
+            <select class="form-select" id="city" onchange="updateCityInfo()">
+              <option value="">请选择城市</option>
+              <option value="beijing">北京</option>
+              <option value="shanghai">上海</option>
+              <option value="guangzhou">广州</option>
+              <option value="shenzhen">深圳</option>
+              <option value="hangzhou">杭州</option>
+              <option value="chengdu">成都</option>
+              <option value="nanjing">南京</option>
+              <option value="wuhan">武汉</option>
+              <option value="suzhou">苏州</option>
+              <option value="tianjin">天津</option>
+              <option value="chongqing">重庆</option>
+              <option value="xiamen">厦门</option>
+              <option value="changsha">长沙</option>
+              <option value="zhengzhou">郑州</option>
+              <option value="xian">西安</option>
+              <option value="qingdao">青岛</option>
+              <option value="dalian">大连</option>
+              <option value="dongguan">东莞</option>
+              <option value="ningbo">宁波</option>
+              <option value="hefei">合肥</option>
+              <option value="other">其他城市</option>
+            </select>
+          </div>
+          <div class="form-hint" id="cityHint">用于判断是否触发社平工资3倍封顶规则</div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-ghost" onclick="goToStep(1)">← 上一步</button>
+          <button class="btn btn-primary btn-lg" onclick="nextFromWorkInfo()">下一步 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Step 3: Supplement (fire only) ====== -->
+  <div class="step-page" id="step3">
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">补充细节</div>
+        <div class="card-desc">这些信息会影响计算结果</div>
+
+        <div class="form-group">
+          <label class="form-label">公司是否提前30天书面通知？</label>
+          <div class="radio-group">
+            <button class="radio-btn" data-val="yes" onclick="selectRadio(this, 'notified')">已提前通知</button>
+            <button class="radio-btn" data-val="no" onclick="selectRadio(this, 'notified')">未提前通知</button>
+            <button class="radio-btn" data-val="unknown" onclick="selectRadio(this, 'notified')">不确定</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">公司解除是否合法？</label>
+          <div class="radio-group">
+            <button class="radio-btn" data-val="legal" onclick="selectRadio(this, 'legality')">合法解除</button>
+            <button class="radio-btn" data-val="illegal" onclick="selectRadio(this, 'legality')">违法解除</button>
+            <button class="radio-btn" data-val="unknown" onclick="selectRadio(this, 'legality')">不确定</button>
+          </div>
+          <div class="form-hint">如无合法理由（如孕期、工伤期间、合同未到期等）被辞退，可能属于违法解除，应获 2N 赔偿</div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-ghost" onclick="goToStep(2)">← 上一步</button>
+          <button class="btn btn-primary btn-lg" onclick="calculateFire()">计算结果 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Resign Page ====== -->
+  <div class="step-page" id="stepResign">
+    <div class="card">
+      <div class="card-body">
+        <div class="result-hero">
+          <div class="result-amount-label">主动离职的经济补偿金</div>
+          <div class="resign-zero-amount"><span class="currency">¥</span> 0</div>
+          <span class="result-scene-tag tag-zero">主动离职 — 通常无经济补偿</span>
+          <div style="margin-top:12px;font-size:14px;color:#B0B0D8;">
+            根据《劳动合同法》相关规定，劳动者主动辞职的，用人单位无需支付经济补偿。<br>
+            但存在以下<strong style="color:#00D4FF;">例外情形</strong>，如符合可依法主张 N 个月工资的经济补偿：
+          </div>
+        </div>
+
+        <div class="exceptions-section">
+          <div class="exceptions-title">被迫解除劳动合同的法定情形（点击展开法条）</div>
+
+          <div class="exception-item" onclick="toggleException(this)">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">① 未依法缴纳社会保险</div>
+            </div>
+            <div class="expand-hint">点击展开法条</div>
+            <div class="exception-law">
+              <div><span class="law-quote">《劳动合同法》第三十八条第一款第（三）项：</span></div>
+              <div>用人单位有下列情形之一的，劳动者可以解除劳动合同：……（三）未依法为劳动者缴纳社会保险费的。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第四十六条第（一）项：</span></div>
+              <div>有下列情形之一的，用人单位应当向劳动者支付经济补偿：（一）劳动者依照本法第三十八条规定解除劳动合同的。</div>
+            </div>
+          </div>
+
+          <div class="exception-item" onclick="toggleException(this)">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">② 未及时足额支付劳动报酬（拖欠/克扣工资）</div>
+            </div>
+            <div class="expand-hint">点击展开法条</div>
+            <div class="exception-law">
+              <div><span class="law-quote">《劳动合同法》第三十八条第一款第（二）项：</span></div>
+              <div>用人单位有下列情形之一的，劳动者可以解除劳动合同：……（二）未及时足额支付劳动报酬的。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第四十六条第（一）项：</span></div>
+              <div>劳动者依照本法第三十八条规定解除劳动合同的，用人单位应当向劳动者支付经济补偿。</div>
+            </div>
+          </div>
+
+          <div class="exception-item" onclick="toggleException(this)">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">③ 未按约定提供劳动保护或劳动条件</div>
+            </div>
+            <div class="expand-hint">点击展开法条</div>
+            <div class="exception-law">
+              <div><span class="law-quote">《劳动合同法》第三十八条第一款第（一）项：</span></div>
+              <div>用人单位有下列情形之一的，劳动者可以解除劳动合同：（一）未按照劳动合同约定提供劳动保护或者劳动条件的。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第四十六条第（一）项：</span></div>
+              <div>劳动者依照本法第三十八条规定解除劳动合同的，用人单位应当向劳动者支付经济补偿。</div>
+            </div>
+          </div>
+
+          <div class="exception-item" onclick="toggleException(this)">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">④ 规章制度违法，损害劳动者权益</div>
+            </div>
+            <div class="expand-hint">点击展开法条</div>
+            <div class="exception-law">
+              <div><span class="law-quote">《劳动合同法》第三十八条第一款第（四）项：</span></div>
+              <div>用人单位有下列情形之一的，劳动者可以解除劳动合同：……（四）用人单位的规章制度违反法律、法规的规定，损害劳动者权益的。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第四十六条第（一）项：</span></div>
+              <div>劳动者依照本法第三十八条规定解除劳动合同的，用人单位应当向劳动者支付经济补偿。</div>
+            </div>
+          </div>
+
+          <div class="exception-item" onclick="toggleException(this)">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">⑤ 以欺诈、胁迫手段或乘人之危订立劳动合同</div>
+            </div>
+            <div class="expand-hint">点击展开法条</div>
+            <div class="exception-law">
+              <div><span class="law-quote">《劳动合同法》第三十八条第一款第（五）项：</span></div>
+              <div>用人单位有下列情形之一的，劳动者可以解除劳动合同：……（五）因本法第二十六条第一款规定的情形致使劳动合同无效的。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第二十六条第一款：</span></div>
+              <div>下列劳动合同无效或者部分无效：（一）以欺诈、胁迫的手段或者乘人之危，使对方在违背真实意思的情况下订立或者变更劳动合同的。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第四十六条第（一）项：</span></div>
+              <div>劳动者依照本法第三十八条规定解除劳动合同的，用人单位应当向劳动者支付经济补偿。</div>
+            </div>
+          </div>
+
+          <div class="exception-item" onclick="toggleException(this)">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">⑥ 以暴力、威胁或非法限制人身自由强迫劳动</div>
+            </div>
+            <div class="expand-hint">点击展开法条</div>
+            <div class="exception-law">
+              <div><span class="law-quote">《劳动合同法》第三十八条第二款：</span></div>
+              <div>用人单位以暴力、威胁或者非法限制人身自由的手段强迫劳动者劳动的，或者用人单位违章指挥、强令冒险作业危及劳动者人身安全的，劳动者可以立即解除劳动合同，不需事先告知用人单位。</div>
+              <div style="margin-top:8px;"><span class="law-quote">《劳动合同法》第四十六条第（一）项：</span></div>
+              <div>劳动者依照本法第三十八条规定解除劳动合同的，用人单位应当向劳动者支付经济补偿。</div>
+            </div>
+          </div>
+
+          <!-- Confirm -->
+          <div style="margin-top:20px;">
+            <div class="form-label">您是否存在以上情形？</div>
+            <div class="radio-group">
+              <button class="radio-btn" id="resignNoBtn" onclick="resignHasException(false)">没有以上情况</button>
+              <button class="radio-btn" id="resignYesBtn" onclick="resignHasException(true)">有，符合以上情形</button>
+            </div>
+          </div>
+
+          <!-- N form -->
+          <div class="resign-n-form" id="resignNForm">
+            <div class="resign-n-title">请填写工作信息，按 N 计算经济补偿</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">入职日期</label>
+                <input type="date" class="form-input" id="resStartDate" onchange="calcResignTenure()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">离职日期</label>
+                <input type="date" class="form-input" id="resEndDate" onchange="calcResignTenure()">
+              </div>
+            </div>
+            <div class="year-display" id="resignTenureDisplay"></div>
+            <div class="form-group">
+              <label class="form-label">月平均工资（税前应发）</label>
+              <div class="input-with-suffix">
+                <input type="number" class="form-input" id="resSalary" placeholder="请输入金额" min="0" step="100">
+                <span class="suffix">元</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">所在城市</label>
+              <div class="select-wrapper">
+                <select class="form-select" id="resCity" onchange="updateResignCityInfo()">
+                  <option value="">请选择城市</option>
+                  <option value="beijing">北京</option>
+                  <option value="shanghai">上海</option>
+                  <option value="guangzhou">广州</option>
+                  <option value="shenzhen">深圳</option>
+                  <option value="hangzhou">杭州</option>
+                  <option value="chengdu">成都</option>
+                  <option value="nanjing">南京</option>
+                  <option value="wuhan">武汉</option>
+                  <option value="suzhou">苏州</option>
+                  <option value="tianjin">天津</option>
+                  <option value="chongqing">重庆</option>
+                  <option value="xiamen">厦门</option>
+                  <option value="changsha">长沙</option>
+                  <option value="zhengzhou">郑州</option>
+                  <option value="xian">西安</option>
+                  <option value="qingdao">青岛</option>
+                  <option value="dalian">大连</option>
+                  <option value="dongguan">东莞</option>
+                  <option value="ningbo">宁波</option>
+                  <option value="hefei">合肥</option>
+                  <option value="other">其他城市</option>
+                </select>
+              </div>
+              <div class="form-hint" id="resignCityHint">用于判断是否触发社平工资3倍封顶规则</div>
+            </div>
+            <div style="text-align:right; margin-top:20px;">
+              <button class="btn btn-primary btn-lg" onclick="calculateResign()">计算经济补偿 →</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="resignResultArea"></div>
+
+        <div class="disclaimer">本工具根据《劳动合同法》相关规定计算，结果仅供参考。<br>实际金额以劳动仲裁委员会或法院最终认定为准。</div>
+        <div class="recalc-section"><button class="btn btn-ghost" onclick="resetAll()">重新计算</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== Result Page ====== -->
+  <div class="step-page" id="stepResult">
+    <div class="card result-card">
+      <div class="card-body">
+        <div class="result-hero">
+          <div class="result-amount-label">您预计可获得的经济补偿金</div>
+          <div class="result-amount"><span class="currency">¥</span> <span id="amountNum">0</span></div>
+          <div id="resultTag"></div>
+        </div>
+        <div id="compareSection"></div>
+        <div class="breakdown"><div class="breakdown-title">计算明细</div><div id="breakdownContent"></div></div>
+        <div id="taxTip"></div>
+        <div id="generalTips"></div>
+        <div class="disclaimer">本工具根据《劳动合同法》第47条及相关规定计算，结果仅供参考。<br>实际金额以劳动仲裁委员会或法院最终认定为准。<br>如遇劳动争议，建议咨询专业律师。</div>
+        <div class="recalc-section"><button class="btn btn-ghost" onclick="resetAll()">重新计算</button></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">作者：<span class="author">罗伯特大毛腿</span></footer>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const state = { scene: null, startDate: null, endDate: null, salary: 0, city: '', notified: null, legality: null };
+
+const cityData = {
+  beijing: { name:'北京', avg:15701, triple:47103 }, shanghai: { name:'上海', avg:15803, triple:47409 },
+  guangzhou: { name:'广州', avg:13193, triple:39579 }, shenzhen: { name:'深圳', avg:14553, triple:43659 },
+  hangzhou: { name:'杭州', avg:13385, triple:40155 }, chengdu: { name:'成都', avg:10741, triple:32223 },
+  nanjing: { name:'南京', avg:12617, triple:37851 }, wuhan: { name:'武汉', avg:10518, triple:31554 },
+  suzhou: { name:'苏州', avg:12076, triple:36228 }, tianjin: { name:'天津', avg:10566, triple:31698 },
+  chongqing: { name:'重庆', avg:10036, triple:30108 }, xiamen: { name:'厦门', avg:10980, triple:32940 },
+  changsha: { name:'长沙', avg:9974, triple:29922 }, zhengzhou: { name:'郑州', avg:8843, triple:26529 },
+  xian: { name:'西安', avg:9776, triple:29328 }, qingdao: { name:'青岛', avg:9873, triple:29619 },
+  dalian: { name:'大连', avg:9645, triple:28935 }, dongguan: { name:'东莞', avg:9342, triple:28026 },
+  ningbo: { name:'宁波', avg:11206, triple:33618 }, hefei: { name:'合肥', avg:9853, triple:29559 }
+};
+
+function goToStep(n) {
+  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  updateStepDots(n);
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function showPage(id) {
+  document.querySelectorAll('.step-page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+
+function updateStepDots(current) {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('stepDot' + i);
+    const line = document.getElementById('stepLine' + i);
+    dot.classList.remove('active', 'done');
+    if (line) line.classList.remove('done');
+    if (i < current) { dot.classList.add('done'); if (line) line.classList.add('done'); }
+    else if (i === current) dot.classList.add('active');
+  }
+}
+
+function selectScene(el, scene) {
+  document.querySelectorAll('.scene-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.scene = scene;
+}
+
+function nextFromScene() {
+  if (!state.scene) { alert('请先选择离职场景'); return; }
+  if (state.scene === 'resign') {
+    document.getElementById('stepsBar').style.display = 'none';
+    showPage('stepResign');
+  } else {
+    document.getElementById('stepsBar').style.display = 'flex';
+    updateStepDots(1);
+    goToStep(2);
+  }
+}
+
+function nextFromWorkInfo() {
+  const sd = document.getElementById('startDate').value;
+  const ed = document.getElementById('endDate').value;
+  const sal = parseFloat(document.getElementById('salary').value);
+  if (!sd || !ed || !sal || sal <= 0) { alert('请完整填写工作年限和月工资信息'); return; }
+  state.startDate = sd; state.endDate = ed; state.salary = sal;
+  state.city = document.getElementById('city').value;
+  if (state.scene === 'negotiate') {
+    calculateAndShowResult('N', '协商解除补偿金（N）');
+  } else {
+    updateStepDots(2);
+    goToStep(3);
+  }
+}
+
+function calcTenure() {
+  const sd = document.getElementById('startDate').value;
+  const ed = document.getElementById('endDate').value;
+  const display = document.getElementById('tenureDisplay');
+  if (!sd || !ed) { display.textContent = ''; return; }
+  const start = new Date(sd), end = new Date(ed);
+  if (end <= start) { display.textContent = '离职日期需晚于入职日期'; display.style.color = '#FF6060'; return; }
+  const tm = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+  displayTenure(tm, display);
+}
+
+function displayTenure(totalMonths, el) {
+  const years = Math.floor(totalMonths / 12), months = totalMonths % 12;
+  let n;
+  if (totalMonths < 6) n = 0.5;
+  else if (totalMonths < 12) n = 1;
+  else n = years + (months >= 6 ? 1 : 0);
+  let text = `工龄 ${years} 年 ${months} 个月`;
+  if (totalMonths >= 12) text += months >= 6 ? `（满6个月，按 ${years+1} 年计 → N = ${n}）` : `（不满6个月舍去 → N = ${n}）`;
+  else if (totalMonths >= 6) text += `（不满1年满6个月 → N = 1）`;
+  else text += `（不满6个月 → N = 0.5）`;
+  el.textContent = text; el.style.color = '#00D4FF';
+}
+
+function updateCityInfo() {
+  const city = document.getElementById('city').value;
+  const hint = document.getElementById('cityHint');
+  if (city && cityData[city]) {
+    const d = cityData[city];
+    hint.textContent = `${d.name} 2024年月均工资约 ¥${d.avg.toLocaleString()}，3倍封顶线 ¥${d.triple.toLocaleString()}`;
+    hint.style.color = '#00D4FF';
+  } else if (city === 'other') {
+    hint.textContent = '请手动查询当地上年度职工月平均工资'; hint.style.color = '#7A7A9E';
+  } else {
+    hint.textContent = '用于判断是否触发社平工资3倍封顶规则'; hint.style.color = '#7A7A9E';
+  }
+}
+
+function selectRadio(el, group) {
+  el.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state[group] = el.dataset.val;
+}
+
+function calculateFire() {
+  if (!state.notified) { alert('请告知公司是否已提前30天通知'); return; }
+  if (!state.legality) { alert('请判断公司解除是否合法'); return; }
+  let compType, compLabel;
+  if (state.legality === 'illegal') { compType = '2N'; compLabel = '违法解除赔偿金（2N）'; }
+  else if (state.notified === 'no') { compType = 'N+1'; compLabel = '经济补偿金 + 代通知金（N+1）'; }
+  else { compType = 'N'; compLabel = '经济补偿金（N）'; }
+  calculateAndShowResult(compType, compLabel);
+}
+
+function calculateAndShowResult(compType, compLabel) {
+  const sd = new Date(state.startDate), ed = new Date(state.endDate);
+  const totalMonths = (ed.getFullYear() - sd.getFullYear()) * 12 + (ed.getMonth() - sd.getMonth());
+  const salary = state.salary, city = state.city;
+  let n;
+  if (totalMonths < 6) n = 0.5;
+  else if (totalMonths < 12) n = 1;
+  else n = Math.floor(totalMonths / 12) + (totalMonths % 12 >= 6 ? 1 : 0);
+  let avgSalary = salary, isCapped = false, capLine = 0;
+  if (city && cityData[city]) {
+    capLine = cityData[city].triple;
+    if (salary > capLine) { avgSalary = capLine; isCapped = true; }
+  }
+  const effectiveN = isCapped ? Math.min(n, 12) : n;
+  const nAmount = effectiveN * avgSalary;
+  const n1Amount = effectiveN * avgSalary + salary;
+  const twoNAmount = effectiveN * 2 * avgSalary;
+  let total = 0;
+  if (compType === 'N') total = nAmount;
+  else if (compType === 'N+1') total = n1Amount;
+  else if (compType === '2N') total = twoNAmount;
+  let taxExempt = false, taxExemptLimit = 0;
+  if (city && cityData[city]) { taxExemptLimit = cityData[city].avg * 3 * effectiveN; if (total <= taxExemptLimit) taxExempt = true; }
+
+  document.getElementById('amountNum').textContent = total.toLocaleString('zh-CN', {maximumFractionDigits: 0});
+  const tagMap = { 'N': 'tag-n', 'N+1': 'tag-n1', '2N': 'tag-2n' };
+  document.getElementById('resultTag').innerHTML = `<span class="result-scene-tag ${tagMap[compType]}">${compLabel}</span>`;
+
+  let ch = '<div class="compare-grid">';
+  [{ l:'合法辞退（N）', a:nAmount, n:`N=${effectiveN}`, hl:compType==='N' },
+   { l:'未提前通知（N+1）', a:n1Amount, n:`N+1=${effectiveN+1}个月`, hl:compType==='N+1' },
+   { l:'违法解除（2N）', a:twoNAmount, n:`N×2=${effectiveN*2}`, hl:compType==='2N' }
+  ].forEach(s => { ch += `<div class="compare-card ${s.hl?'highlight':''}"><div class="compare-label">${s.l}</div><div class="compare-value">¥${s.a.toLocaleString('zh-CN',{maximumFractionDigits:0})}</div><div class="compare-note">${s.n}</div></div>`; });
+  ch += '</div>';
+  document.getElementById('compareSection').innerHTML = ch;
+
+  const years = Math.floor(totalMonths / 12), months = totalMonths % 12;
+  let bd = '';
+  bd += mkRow('工作年限', `${years}年${months}个月`);
+  bd += mkRow('月平均工资', `¥${salary.toLocaleString()}`);
+  if (isCapped) bd += mkRow('封顶月工资', `¥${avgSalary.toLocaleString()}`, `超过社平3倍线`);
+  if (isCapped && effectiveN < n) bd += mkRow('封顶年限', `12个月`, `超过12年上限`);
+  bd += mkRow('补偿系数 N', `${effectiveN}`);
+  if (compType === 'N+1') {
+    bd += mkRow('经济补偿 N', `¥${nAmount.toLocaleString()}`);
+    bd += mkRow('代通知金 +1', `¥${salary.toLocaleString()}`, '按上月工资');
+    bd += mkRow('合计', `¥${total.toLocaleString()}`, '', true);
+  } else if (compType === '2N') {
+    bd += mkRow('计算公式', `${effectiveN} × 2 × ${avgSalary.toLocaleString()}`);
+    bd += mkRow('合计', `¥${total.toLocaleString()}`, '', true);
+  } else {
+    bd += mkRow('计算公式', `${effectiveN} × ${avgSalary.toLocaleString()}`);
+    bd += mkRow('合计', `¥${total.toLocaleString()}`, '', true);
+  }
+  document.getElementById('breakdownContent').innerHTML = bd;
+
+  let taxHTML = '';
+  if (taxExempt) taxHTML = `<div class="tip-box info"><span class="tip-icon">✅</span><div>该补偿金未超过免税上限（¥${taxExemptLimit.toLocaleString()}），<strong>无需缴纳个人所得税</strong>。</div></div>`;
+  else if (taxExemptLimit > 0) taxHTML = `<div class="tip-box warn"><span class="tip-icon">💡</span><div>该补偿金可能超过免税上限（¥${taxExemptLimit.toLocaleString()}），超出部分需缴纳个人所得税。建议咨询税务专业人士。</div></div>`;
+  document.getElementById('taxTip').innerHTML = taxHTML;
+  document.getElementById('generalTips').innerHTML = `<div class="tip-box info"><span class="tip-icon">💡</span><div><strong>温馨提示：</strong>请保留劳动合同、工资条、社保记录、离职证明等材料。如对补偿金额有争议，可在离职后一年内向当地劳动仲裁委员会申请仲裁（免费）。</div></div>`;
+
+  document.getElementById('stepsBar').style.display = 'none';
+  showPage('stepResult');
+}
+
+// Resign
+function toggleException(el) { el.classList.toggle('expanded'); }
+
+function resignHasException(has) {
+  document.getElementById('resignNoBtn').classList.remove('active');
+  document.getElementById('resignYesBtn').classList.remove('active');
+  if (has) {
+    document.getElementById('resignYesBtn').classList.add('active');
+    document.getElementById('resignNForm').classList.add('visible');
+    document.getElementById('resignResultArea').innerHTML = '';
+  } else {
+    document.getElementById('resignNoBtn').classList.add('active');
+    document.getElementById('resignNForm').classList.remove('visible');
+    document.getElementById('resignResultArea').innerHTML = `
+      <div style="text-align:center;padding:24px 0 0;">
+        <div style="font-family:'DM Mono',monospace;font-size:36px;font-weight:700;color:#5A5A7E;letter-spacing:-1px;"><span style="font-size:20px;font-weight:500;">¥</span> 0</div>
+        <div style="font-size:13px;color:#7A7A9E;margin-top:4px;">主动离职，不符合例外情形，无经济补偿</div>
+      </div>`;
+  }
+}
+
+function calcResignTenure() {
+  const sd = document.getElementById('resStartDate').value;
+  const ed = document.getElementById('resEndDate').value;
+  const display = document.getElementById('resignTenureDisplay');
+  if (!sd || !ed) { display.textContent = ''; return; }
+  const start = new Date(sd), end = new Date(ed);
+  if (end <= start) { display.textContent = '离职日期需晚于入职日期'; display.style.color = '#FF6060'; return; }
+  const tm = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+  displayTenure(tm, display);
+}
+
+function updateResignCityInfo() {
+  const city = document.getElementById('resCity').value;
+  const hint = document.getElementById('resignCityHint');
+  if (city && cityData[city]) {
+    const d = cityData[city];
+    hint.textContent = `${d.name} 2024年月均工资约 ¥${d.avg.toLocaleString()}，3倍封顶线 ¥${d.triple.toLocaleString()}`;
+    hint.style.color = '#00D4FF';
+  } else if (city === 'other') {
+    hint.textContent = '请手动查询当地上年度职工月平均工资'; hint.style.color = '#7A7A9E';
+  } else {
+    hint.textContent = '用于判断是否触发社平工资3倍封顶规则'; hint.style.color = '#7A7A9E';
+  }
+}
+
+function calculateResign() {
+  const sd = document.getElementById('resStartDate').value;
+  const ed = document.getElementById('resEndDate').value;
+  const sal = parseFloat(document.getElementById('resSalary').value);
+  const city = document.getElementById('resCity').value;
+  if (!sd || !ed || !sal || sal <= 0) { alert('请完整填写工作信息'); return; }
+  const start = new Date(sd), end = new Date(ed);
+  const totalMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+  let n;
+  if (totalMonths < 6) n = 0.5;
+  else if (totalMonths < 12) n = 1;
+  else n = Math.floor(totalMonths / 12) + (totalMonths % 12 >= 6 ? 1 : 0);
+  let avgSalary = sal, isCapped = false, capLine = 0;
+  if (city && cityData[city]) { capLine = cityData[city].triple; if (sal > capLine) { avgSalary = capLine; isCapped = true; } }
+  const effectiveN = isCapped ? Math.min(n, 12) : n;
+  const total = effectiveN * avgSalary;
+  let taxExempt = false, taxExemptLimit = 0;
+  if (city && cityData[city]) { taxExemptLimit = cityData[city].avg * 3 * effectiveN; if (total <= taxExemptLimit) taxExempt = true; }
+
+  const years = Math.floor(totalMonths / 12), months = totalMonths % 12;
+  let bd = '';
+  bd += mkRow('工作年限', `${years}年${months}个月`);
+  bd += mkRow('月平均工资', `¥${sal.toLocaleString()}`);
+  if (isCapped) bd += mkRow('封顶月工资', `¥${avgSalary.toLocaleString()}`, `超过社平3倍线`);
+  if (isCapped && effectiveN < n) bd += mkRow('封顶年限', `12个月`, `超过12年上限`);
+  bd += mkRow('补偿系数 N', `${effectiveN}`);
+  bd += mkRow('计算公式', `${effectiveN} × ${avgSalary.toLocaleString()}`);
+  bd += mkRow('合计', `¥${total.toLocaleString()}`, '', true);
+
+  let taxHTML = '';
+  if (taxExempt) taxHTML = `<div class="tip-box info"><span class="tip-icon">✅</span><div>该补偿金未超过免税上限（¥${taxExemptLimit.toLocaleString()}），<strong>无需缴纳个人所得税</strong>。</div></div>`;
+  else if (taxExemptLimit > 0) taxHTML = `<div class="tip-box warn"><span class="tip-icon">💡</span><div>该补偿金可能超过免税上限（¥${taxExemptLimit.toLocaleString()}），超出部分需缴纳个人所得税。</div></div>`;
+
+  document.getElementById('resignResultArea').innerHTML = `
+    <div style="margin-top:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:14px;color:#B0B0D8;">被迫解除劳动合同的经济补偿</div>
+        <div style="font-family:'DM Mono',monospace;font-size:40px;font-weight:700;letter-spacing:-2px;margin:4px 0;background:linear-gradient(135deg,#00D4FF,#7A20FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 16px rgba(0,212,255,0.3));"><span style="font-size:20px;font-weight:500;">¥</span> ${total.toLocaleString()}</div>
+        <span class="result-scene-tag tag-n">N = ${effectiveN} × 月工资</span>
+      </div>
+      <div class="breakdown"><div class="breakdown-title">计算明细</div>${bd}</div>
+      ${taxHTML}
+      <div class="tip-box info"><span class="tip-icon">💡</span><div><strong>温馨提示：</strong>被迫解除劳动合同需提前告知用人单位（暴力强迫劳动除外）。请保留公司违法的相关证据，并建议通过EMS邮寄书面解除通知。</div></div>
+    </div>`;
+
+  setTimeout(() => {
+    window.scrollTo({ top: document.getElementById('resignResultArea').offsetTop - 40, behavior: 'auto' });
+  }, 50);
+}
+
+function mkRow(label, value, note, isTotal) {
+  const cls = isTotal ? 'formula-total' : '';
+  const noteHTML = note ? `<span style="font-size:12px;color:#7A7A9E;margin-left:4px;">${note}</span>` : '';
+  return `<div class="formula-row ${cls}"><span class="formula-label">${label}</span><span class="formula-value ${cls}">${value}${noteHTML}</span></div>`;
+}
+
+function resetAll() {
+  state.scene = null; state.startDate = null; state.endDate = null;
+  state.salary = 0; state.city = ''; state.notified = null; state.legality = null;
+  document.querySelectorAll('.scene-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+  ['startDate','endDate','salary','resStartDate','resEndDate','resSalary'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['city','resCity'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('tenureDisplay').textContent = '';
+  document.getElementById('resignTenureDisplay').textContent = '';
+  document.getElementById('resignNForm').classList.remove('visible');
+  document.getElementById('resignResultArea').innerHTML = '';
+  document.querySelectorAll('.exception-item').forEach(e => e.classList.remove('expanded'));
+  document.getElementById('stepsBar').style.display = 'flex';
+  updateStepDots(1);
+  showPage('step1');
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('scrollTop').style.display = window.scrollY > 300 ? 'flex' : 'none';
+});
+</script>
+</body>
+</html>
