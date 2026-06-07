@@ -549,9 +549,45 @@
     </section>
 
     <footer>
-      <p>复利按存进支付宝年化 <span id="footerRate">1</span>% 估算，仅供参考</p>
-      <p>作者：<span class="author">罗伯特大毛腿</span></p>
+      <p style="margin-top:8px;font-size:11px;letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱</p>
     </footer>
+  </div>
+
+  <!-- 工具说明区域 -->
+  <div class="tool-info-section" style="position:relative;z-index:1;max-width:520px;margin:0 auto;padding:0 24px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+    <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+      <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">工具介绍</h2>
+      <p>本工具帮助用户计算真实时薪（含通勤时间成本），并将消费金额换算为需要工作的时间，直观展示每笔消费的时间代价。同时提供长期储蓄的复利估算，培养理性消费习惯。</p>
+    </div>
+    <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+      <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
+      <p><strong style="color:#00D4FF;">步骤1：</strong>输入月薪（税后到手）</p>
+      <p><strong style="color:#00D4FF;">步骤2：</strong>设置上下班时间和通勤单程时间</p>
+      <p><strong style="color:#00D4FF;">步骤3：</strong>选择每周上班天数</p>
+      <p>查看真实时薪和每日投入的工作时间</p>
+      <p><strong style="color:#00D4FF;">步骤4（可选）：</strong>添加消费项目（如奶茶、打车、手机等），选择消费频率，查看每笔消费等于多少工作时间</p>
+      <p><strong style="color:#00D4FF;">步骤5（可选）：</strong>调整年化收益率，查看省下每笔消费后10年/20年/30年的复利积累</p>
+    </div>
+    <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+      <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">计算原理</h2>
+      <p>• 每日工作投入时间 = 下班时间 - 上班时间 + 通勤时间×2</p>
+      <p>• 每月工作天数 = 每周工作天数 × 52周 ÷ 12个月</p>
+      <p>• 真实时薪 = 月薪 ÷ (每日工作投入时间 × 每月工作天数)</p>
+      <p>• 消费时间成本 = 消费金额 ÷ 真实时薪</p>
+      <p>• 复利储蓄：按年金终值公式 FV = P × [(1+r)^n - 1] ÷ r 计算定期储蓄的未来价值</p>
+    </div>
+    <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+      <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">示例</h2>
+      <p>月薪20000元，朝九晚六，通勤单程45分钟，每周5天：</p>
+      <p>• 每日投入时间 = 9小时 + 1.5小时 = 10.5小时</p>
+      <p>• 真实时薪 ≈ 91元/小时</p>
+      <p>• 一杯15元的奶茶 = 约10分钟的工作时间</p>
+      <p>• 每天省下一杯奶茶，按3%年化，30年可积累约28万元</p>
+    </div>
+    <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:24px;border:1px solid rgba(255,255,255,0.06);">
+      <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
+      <p>本工具计算结果仅供参考，复利按设定的年化收益率估算，实际收益以具体理财产品为准。时间成本计算仅为一种消费决策参考视角。</p>
+    </div>
   </div>
 
   <script>
@@ -989,7 +1025,7 @@
       ctx.fillStyle = '#B0B0D8';
       ctx.font = `700 20px ${fCN}`;
       ctx.textAlign = 'center';
-      ctx.fillText('作者：罗伯特大毛腿', W / 2, y);
+      ctx.fillText('', W / 2, y);
       y += 36;
       ctx.fillStyle = '#6B7280';
       ctx.font = `400 22px ${fCN}`;
@@ -1072,5 +1108,48 @@
       calculate();
     });
   </script>
+
+<!-- 法律导航栏 -->
+<div id="legal-footer-nav" style="text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);">
+  <div style="margin-bottom:20px;">
+    <a href="about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+    <a href="contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+    <a href="privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+    <a href="disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+</div>
+
+<!-- Cookie 同意弹窗 -->
+<script>
+(function(){
+  var COOKIE_KEY='cookie_consent_accepted';
+  function hasConsented(){try{return localStorage.getItem(COOKIE_KEY)==='true'}catch(e){return false}}
+  function setConsented(){try{localStorage.setItem(COOKIE_KEY,'true')}catch(e){}}
+  if(hasConsented())return;
+  var s=document.createElement('style');
+  s.textContent='@keyframes cookieFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes cookieFadeDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}';
+  document.head.appendChild(s);
+  var b=document.createElement('div');b.id='cookie-consent-banner';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(15,15,24,0.95);border-top:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);padding:20px 24px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;font-family:Inter,sans-serif;animation:cookieFadeUp 0.5s ease-out;';
+  var t=document.createElement('span');t.style.cssText='font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:600px;text-align:center;';
+  t.textContent='本网站使用 Cookie（包括 Google AdSense 的广告 Cookie）以提升您的浏览体验。继续使用本网站即表示您同意我们的 Cookie 政策。';
+  b.appendChild(t);
+  var g=document.createElement('div');g.style.cssText='display:flex;gap:12px;flex-shrink:0;';
+  var lm=document.createElement('a');lm.href='privacy.html';
+  lm.style.cssText='font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;padding:8px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;transition:all 0.2s;cursor:pointer;';
+  lm.textContent='了解更多';
+  lm.addEventListener('mouseover',function(){this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.25)'});
+  lm.addEventListener('mouseout',function(){this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.12)'});
+  g.appendChild(lm);
+  var ab=document.createElement('button');
+  ab.style.cssText='font-size:13px;color:#fff;background:rgba(99,102,241,0.7);border:none;border-radius:8px;padding:8px 24px;cursor:pointer;transition:all 0.2s;font-family:Inter,sans-serif;';
+  ab.textContent='接受';
+  ab.addEventListener('mouseover',function(){this.style.background='rgba(99,102,241,0.9)'});
+  ab.addEventListener('mouseout',function(){this.style.background='rgba(99,102,241,0.7)'});
+  ab.addEventListener('click',function(){setConsented();b.style.animation='cookieFadeDown 0.3s ease-in forwards';setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},300)});
+  g.appendChild(ab);b.appendChild(g);document.body.appendChild(b);
+})();
+</script>
 </body>
 </html>

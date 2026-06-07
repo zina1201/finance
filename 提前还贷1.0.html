@@ -23,7 +23,7 @@
     .container{max-width:960px;margin:0 auto;padding:0 20px}
 
     .header{text-align:center;padding:40px 0 8px}
-    .header h1{font-family:'Inter','Noto Sans SC',sans-serif;font-size:2.4rem;font-weight:600;letter-spacing:.08em;background:linear-gradient(90deg,#00D4FF,#7A20FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header h1{font-family:'Inter','Noto Sans SC',sans-serif;font-size:2.4rem;font-weight:600;letter-spacing:.08em;background:linear-gradient(135deg,#00D4FF,#7A20FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .header p{color:var(--text-muted);font-size:.88rem;letter-spacing:.12em}
 
     .input-bar{background:rgba(18,18,43,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 0}
@@ -253,10 +253,7 @@
 
 </div></main>
 
-<footer class="footer">
-  <p>本计算器仅供参考，实际还款金额以银行合同为准。利率为LPR浮动时，结果会随利率调整变化。组合贷款中商贷与公积金分别计算。</p>
-  <p>作者：<span class="author">罗伯特大毛腿</span></p>
-</footer>
+
 
 <script>
 (function(){
@@ -729,5 +726,79 @@
 })();
 </script>
 
+<!-- 工具说明区域 -->
+<div class="tool-info-section" style="position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">工具介绍</h2>
+    <p>本工具支持商业贷款、公积金贷款和组合贷款的还款方式对比、提前还款方案分析和还贷vs理财收益对比。帮助购房者选择等额本息或等额本金，并决策是否提前还贷。</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
+    <p><strong style="color:#00D4FF;">步骤1：</strong>选择贷款类型（商业贷款/公积金贷款/组合贷款），填写贷款金额、年利率和贷款年限</p>
+    <p><strong style="color:#00D4FF;">步骤2（还款对比）：</strong>点击"开始对比"，查看等额本息与等额本金的月供、总利息对比</p>
+    <p><strong style="color:#00D4FF;">步骤2（提前还款）：</strong>选择还款方式、已还期数、提前还款金额，点击"分析提前还款"，查看"缩短年限"和"减少月供"两种方案的节省利息</p>
+    <p><strong style="color:#00D4FF;">步骤2（还贷vs理财）：</strong>额外输入理财年化收益率，对比提前还贷节省的利息与理财收益</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">计算原理</h2>
+    <p>• 等额本息月供 = 贷款本金 × 月利率 × (1+月利率)^还款月数 ÷ [(1+月利率)^还款月数 - 1]</p>
+    <p>• 等额本金月供 = 贷款本金÷还款月数 + (本金-已还本金累计) × 月利率</p>
+    <p>• 提前还款后：重新计算剩余本金在新期限下的还款计划，对比原计划的利息差额</p>
+    <p>• 盈亏平衡收益率 = (提前还款节省利息)^(1/剩余年数) - 1，理财收益高于此值则理财更优</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">示例</h2>
+    <p>贷款100万元，年利率3.5%，期限30年，等额本息。已还3年后提前还款10万元：</p>
+    <p>• 方案A（缩短年限）：月供不变，可缩短约3年还款期，节省利息约8万元</p>
+    <p>• 方案B（减少月供）：期限不变，月供减少约500元，节省利息约5万元</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
+    <p>本工具计算结果仅供参考，实际还款金额以银行合同为准。利率为LPR浮动时，结果会随利率调整变化。组合贷款中商贷与公积金分别计算。</p>
+  </div>
+</div>
+
+<!-- 法律导航栏 -->
+<div id="legal-footer-nav" style="position:relative;z-index:1;text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);">
+  <div style="margin-bottom:20px;">
+    <a href="about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+    <a href="contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+    <a href="privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+    <a href="disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+</div>
+
+<!-- Cookie 同意弹窗 -->
+<script>
+(function(){
+  var COOKIE_KEY='cookie_consent_accepted';
+  function hasConsented(){try{return localStorage.getItem(COOKIE_KEY)==='true'}catch(e){return false}}
+  function setConsented(){try{localStorage.setItem(COOKIE_KEY,'true')}catch(e){}}
+  if(hasConsented())return;
+  var s=document.createElement('style');
+  s.textContent='@keyframes cookieFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes cookieFadeDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}';
+  document.head.appendChild(s);
+  var b=document.createElement('div');b.id='cookie-consent-banner';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(15,15,24,0.95);border-top:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);padding:20px 24px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;font-family:Inter,sans-serif;animation:cookieFadeUp 0.5s ease-out;';
+  var t=document.createElement('span');t.style.cssText='font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:600px;text-align:center;';
+  t.textContent='本网站使用 Cookie（包括 Google AdSense 的广告 Cookie）以提升您的浏览体验。继续使用本网站即表示您同意我们的 Cookie 政策。';
+  b.appendChild(t);
+  var g=document.createElement('div');g.style.cssText='display:flex;gap:12px;flex-shrink:0;';
+  var lm=document.createElement('a');lm.href='privacy.html';
+  lm.style.cssText='font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;padding:8px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;transition:all 0.2s;cursor:pointer;';
+  lm.textContent='了解更多';
+  lm.addEventListener('mouseover',function(){this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.25)'});
+  lm.addEventListener('mouseout',function(){this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.12)'});
+  g.appendChild(lm);
+  var ab=document.createElement('button');
+  ab.style.cssText='font-size:13px;color:#fff;background:rgba(99,102,241,0.7);border:none;border-radius:8px;padding:8px 24px;cursor:pointer;transition:all 0.2s;font-family:Inter,sans-serif;';
+  ab.textContent='接受';
+  ab.addEventListener('mouseover',function(){this.style.background='rgba(99,102,241,0.9)'});
+  ab.addEventListener('mouseout',function(){this.style.background='rgba(99,102,241,0.7)'});
+  ab.addEventListener('click',function(){setConsented();b.style.animation='cookieFadeDown 0.3s ease-in forwards';setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},300)});
+  g.appendChild(ab);b.appendChild(g);document.body.appendChild(b);
+})();
+</script>
 </body>
 </html>

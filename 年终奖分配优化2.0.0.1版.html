@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>年终奖最优分配计算器 - 罗伯特大毛腿</title>
+    <title>年终奖最优分配计算器</title>
     <style>
         :root {
             --bg-primary: #0a0e1a;
@@ -98,7 +98,7 @@
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 100%);
+            background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -821,10 +821,6 @@
 
     <div class="divider"></div>
 
-    <div class="footer">
-        <div>计算基于现行个人所得税法及全年一次性奖金优惠政策（截至2027年底） · 仅供参考</div>
-        <div class="author">作者：罗伯特大毛腿</div>
-    </div>
 </div>
 
 <script>
@@ -1522,6 +1518,80 @@
         document.getElementById('uncertain-result').innerHTML = html;
         document.getElementById('uncertain-result').classList.add('visible');
     }
+</script>
+
+<!-- 工具说明区域 -->
+<div class="tool-info-section" style="position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">工具介绍</h2>
+    <p>本工具根据现行个人所得税法及全年一次性奖金税收优惠政策，帮助个人和HR计算年终奖在"并入综合所得"与"单独计税"之间的最优分配方案，实现税负最小化。支持单人精确计算、批量导入计算和年中发放稳妥方案三种模式。</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
+    <p><strong style="color:#00D4FF;">步骤1：</strong>选择计算模式（单人计算 / 批量计算 / 非年底发放）</p>
+    <p><strong style="color:#00D4FF;">步骤2（单人）：</strong>输入全年累计应纳税所得额、年底奖金总数，勾选是否已使用一次性奖金优惠、是否允许拆分</p>
+    <p><strong style="color:#00D4FF;">步骤2（批量）：</strong>按格式粘贴或导入员工数据（姓名、身份证、应纳税所得额、奖金、是否已使用优惠）</p>
+    <p><strong style="color:#00D4FF;">步骤2（非年底发放）：</strong>输入已知综合所得基数、奖金总额、预估额外收入上下限</p>
+    <p>点击计算，查看最优拆分方案、方案对比和计算明细</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">计算原理</h2>
+    <p>• 综合所得税：按年度累计应纳税所得额适用7级超额累进税率（3%-45%）</p>
+    <p>• 一次性奖金税：将奖金除以12后按月税率表确定税率，再全额计税</p>
+    <p>• 最优拆分：在允许拆分的情况下，枚举关键税率临界点（36000、144000、300000等），计算所有候选方案的总税负，选择最低者</p>
+    <p>• 非年底发放：采用最小最大后悔值（Minimax Regret）策略，在收入不确定时给出最稳妥方案</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">示例</h2>
+    <p>小李全年应纳税所得额为150000元，年终奖100000元。工具推荐将36000元按一次性奖金计税（税率3%），剩余64000元并入综合所得。相比全部并入可节省数千元个税。</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
+    <p>本工具计算结果仅供参考，实际纳税金额以税务机关核定为准。税收政策可能调整，请以最新法规为准。</p>
+  </div>
+</div>
+
+<!-- 法律导航栏 -->
+<div id="legal-footer-nav" style="position:relative;z-index:1;text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);">
+  <div style="margin-bottom:20px;">
+    <a href="about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+    <a href="contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+    <a href="privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+    <a href="disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+</div>
+
+<!-- Cookie 同意弹窗 -->
+<script>
+(function(){
+  var COOKIE_KEY='cookie_consent_accepted';
+  function hasConsented(){try{return localStorage.getItem(COOKIE_KEY)==='true'}catch(e){return false}}
+  function setConsented(){try{localStorage.setItem(COOKIE_KEY,'true')}catch(e){}}
+  if(hasConsented())return;
+  var s=document.createElement('style');
+  s.textContent='@keyframes cookieFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes cookieFadeDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}';
+  document.head.appendChild(s);
+  var b=document.createElement('div');b.id='cookie-consent-banner';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(15,15,24,0.95);border-top:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);padding:20px 24px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;font-family:Inter,sans-serif;animation:cookieFadeUp 0.5s ease-out;';
+  var t=document.createElement('span');t.style.cssText='font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:600px;text-align:center;';
+  t.textContent='本网站使用 Cookie（包括 Google AdSense 的广告 Cookie）以提升您的浏览体验。继续使用本网站即表示您同意我们的 Cookie 政策。';
+  b.appendChild(t);
+  var g=document.createElement('div');g.style.cssText='display:flex;gap:12px;flex-shrink:0;';
+  var lm=document.createElement('a');lm.href='privacy.html';
+  lm.style.cssText='font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;padding:8px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;transition:all 0.2s;cursor:pointer;';
+  lm.textContent='了解更多';
+  lm.addEventListener('mouseover',function(){this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.25)'});
+  lm.addEventListener('mouseout',function(){this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.12)'});
+  g.appendChild(lm);
+  var ab=document.createElement('button');
+  ab.style.cssText='font-size:13px;color:#fff;background:rgba(99,102,241,0.7);border:none;border-radius:8px;padding:8px 24px;cursor:pointer;transition:all 0.2s;font-family:Inter,sans-serif;';
+  ab.textContent='接受';
+  ab.addEventListener('mouseover',function(){this.style.background='rgba(99,102,241,0.9)'});
+  ab.addEventListener('mouseout',function(){this.style.background='rgba(99,102,241,0.7)'});
+  ab.addEventListener('click',function(){setConsented();b.style.animation='cookieFadeDown 0.3s ease-in forwards';setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},300)});
+  g.appendChild(ab);b.appendChild(g);document.body.appendChild(b);
+})();
 </script>
 </body>
 </html>

@@ -614,10 +614,7 @@
         </div>
     </div>
 
-    <div class="footer">
-        © 2025 FIRE 提前退休计算器 · 基于4%法则 · 测算结果仅供参考
-        <div class="author">作者：罗伯特大毛腿</div>
-    </div>
+
 </div>
 
 <script>
@@ -811,7 +808,7 @@
             }
         }
 
-        html += '<div class="report-footer">—— 作者：罗伯特大毛腿</div>';
+        html += '<div class="report-footer"></div>';
         document.getElementById('reportContent').innerHTML = html;
     }
 
@@ -1058,7 +1055,7 @@
         ctx.fillStyle = '#6B6B9B';
         ctx.font = '10px "Noto Sans SC", "PingFang SC", sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('—— 作者：罗伯特大毛腿', width/2, y+14);
+        ctx.fillText('', width/2, y+14);
 
         const link = document.createElement('a');
         link.download = '打工人退休体检报告.png';
@@ -1066,6 +1063,81 @@
         link.click();
         setTimeout(function(){ alert('✅ 报告图片已保存！'); }, 200);
     }
+</script>
+
+<!-- 工具说明区域 -->
+<div class="tool-info-section" style="position:relative;z-index:1;max-width:800px;margin:0 auto;padding:0 20px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">工具介绍</h2>
+    <p>本工具基于FIRE（财务独立，提前退休）运动的4%法则，帮助用户估算实现财务自由所需的时间和目标金额。支持考虑通胀的实际收益率计算，并提供收益率敏感性分析和储蓄习惯改进建议。</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
+    <p><strong style="color:#00D4FF;">步骤1：</strong>填写性别、当前年龄、当前净资产（万元）、每月储蓄金额、每月支出金额</p>
+    <p><strong style="color:#00D4FF;">步骤2：</strong>填写预期年化收益率和安全提款率（默认4%）</p>
+    <p><strong style="color:#00D4FF;">步骤3：</strong>可选择是否考虑通胀，如勾选则输入预期通胀率</p>
+    <p>点击"计算我的退休倒计时"，查看预计达成时间、资产增长曲线和敏感性分析</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">计算原理</h2>
+    <p>• FI目标金额 = 年支出 ÷ 安全提款率（默认4%意味着需要存够年支出的25倍）</p>
+    <p>• 资产增长：使用复利公式按月计算，每月资产 = (上月资产 + 月储蓄) × (1 + 月收益率)</p>
+    <p>• 考虑通胀时：实际收益率 = (1+名义收益率)÷(1+通胀率) - 1，所有计算按实际购买力进行</p>
+    <p>• 达成时间：求解资产达到FI目标的月数</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">示例</h2>
+    <p>30岁，当前净资产30万元，每月储蓄1万元，每月支出8000元，预期年化收益6%，安全提款率4%：</p>
+    <p>• FI目标金额 = 8000×12÷4% = 240万元</p>
+    <p>• 按当前速度约需11.5年达成，预计41.5岁退休</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
+    <p>本工具计算结果仅供参考，不构成投资建议。实际投资收益率存在波动，市场有风险，投资需谨慎。退休规划请结合个人实际情况和专业理财顾问建议。</p>
+  </div>
+</div>
+
+<!-- 法律导航栏 -->
+<div id="legal-footer-nav" style="position:relative;z-index:1;text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);">
+  <div style="margin-bottom:20px;">
+    <a href="about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+    <a href="contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+    <a href="privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+    <a href="disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+</div>
+
+<!-- Cookie 同意弹窗 -->
+<script>
+(function(){
+  var COOKIE_KEY='cookie_consent_accepted';
+  function hasConsented(){try{return localStorage.getItem(COOKIE_KEY)==='true'}catch(e){return false}}
+  function setConsented(){try{localStorage.setItem(COOKIE_KEY,'true')}catch(e){}}
+  if(hasConsented())return;
+  var s=document.createElement('style');
+  s.textContent='@keyframes cookieFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes cookieFadeDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}';
+  document.head.appendChild(s);
+  var b=document.createElement('div');b.id='cookie-consent-banner';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(15,15,24,0.95);border-top:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);padding:20px 24px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;font-family:Inter,sans-serif;animation:cookieFadeUp 0.5s ease-out;';
+  var t=document.createElement('span');t.style.cssText='font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:600px;text-align:center;';
+  t.textContent='本网站使用 Cookie（包括 Google AdSense 的广告 Cookie）以提升您的浏览体验。继续使用本网站即表示您同意我们的 Cookie 政策。';
+  b.appendChild(t);
+  var g=document.createElement('div');g.style.cssText='display:flex;gap:12px;flex-shrink:0;';
+  var lm=document.createElement('a');lm.href='privacy.html';
+  lm.style.cssText='font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;padding:8px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;transition:all 0.2s;cursor:pointer;';
+  lm.textContent='了解更多';
+  lm.addEventListener('mouseover',function(){this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.25)'});
+  lm.addEventListener('mouseout',function(){this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.12)'});
+  g.appendChild(lm);
+  var ab=document.createElement('button');
+  ab.style.cssText='font-size:13px;color:#fff;background:rgba(99,102,241,0.7);border:none;border-radius:8px;padding:8px 24px;cursor:pointer;transition:all 0.2s;font-family:Inter,sans-serif;';
+  ab.textContent='接受';
+  ab.addEventListener('mouseover',function(){this.style.background='rgba(99,102,241,0.9)'});
+  ab.addEventListener('mouseout',function(){this.style.background='rgba(99,102,241,0.7)'});
+  ab.addEventListener('click',function(){setConsented();b.style.animation='cookieFadeDown 0.3s ease-in forwards';setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},300)});
+  g.appendChild(ab);b.appendChild(g);document.body.appendChild(b);
+})();
 </script>
 </body>
 </html>

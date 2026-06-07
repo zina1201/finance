@@ -103,7 +103,7 @@
     font-weight: 700;
     letter-spacing: -0.5px;
     margin-bottom: 8px;
-    background: linear-gradient(135deg, #FFFFFF 0%, #C8C8E8 100%);
+    background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -823,8 +823,6 @@
 </head>
 <body>
 
-<div class="notify-bar">本工具计算结果仅供参考，具体以劳动仲裁或法院认定为准</div>
-
 <main class="main-container">
 
   <div class="tool-hero">
@@ -1178,7 +1176,7 @@
 
 </main>
 
-<footer class="site-footer">作者：<span class="author">罗伯特大毛腿</span></footer>
+<footer class="site-footer"></footer>
 
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
@@ -1497,6 +1495,81 @@ function resetAll() {
 window.addEventListener('scroll', () => {
   document.getElementById('scrollTop').style.display = window.scrollY > 300 ? 'flex' : 'none';
 });
+</script>
+
+<!-- 工具说明区域 -->
+<div class="tool-info-section" style="position:relative;z-index:1;max-width:720px;margin:0 auto;padding:0 20px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">工具介绍</h2>
+    <p>本工具根据《中华人民共和国劳动合同法》相关规定，帮助劳动者快速估算不同离职场景下应得的经济补偿金或赔偿金。支持被辞退/裁员、协商解除、被迫离职（含主动离职例外情形）三种场景，并自动计算 N、N+1、2N 三种补偿标准。</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
+    <p><strong style="color:#00D4FF;">步骤1：</strong>选择您的离职场景（被公司辞退/裁员、协商解除劳动关系、主动离职）</p>
+    <p><strong style="color:#00D4FF;">步骤2：</strong>填写入职日期、离职日期、月平均工资（税前应发）和所在城市</p>
+    <p><strong style="color:#00D4FF;">步骤3（被辞退场景）：</strong>选择公司是否提前30天通知、解除是否合法</p>
+    <p><strong style="color:#00D4FF;">步骤3（主动离职场景）：</strong>确认是否存在被迫解除的法定例外情形，如符合则填写工作信息</p>
+    <p>点击计算，查看补偿金额、计算明细和三种方案对比</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">计算原理</h2>
+    <p>• 工作年限 N：每满1年支付1个月工资；6个月以上不满1年按1年计；不满6个月支付0.5个月</p>
+    <p>• 月工资上限：如超过当地上年度职工月平均工资3倍，按3倍封顶，且补偿年限最高不超过12年</p>
+    <p>• N：合法解除的经济补偿 = N × 月平均工资</p>
+    <p>• N+1：未提前30天通知的代通知金 = N × 月平均工资 + 1个月工资</p>
+    <p>• 2N：违法解除的赔偿金 = 2 × N × 月平均工资</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">示例</h2>
+    <p>小王在上海工作3年7个月，月平均工资15000元（未超过上海社平工资3倍）。被公司合法辞退且已提前30天通知，经济补偿金 = 4 × 15000 = 60000元。如未提前通知则为 N+1 = 5 × 15000 = 75000元。如属违法解除则为 2N = 8 × 15000 = 120000元。</p>
+  </div>
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
+    <p>本工具计算结果仅供参考，不构成法律建议。实际补偿金额以劳动仲裁委员会或法院最终认定为准。如遇劳动争议，建议咨询专业律师。</p>
+  </div>
+</div>
+
+<!-- 法律导航栏 -->
+<div id="legal-footer-nav" style="position:relative;z-index:1;text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);">
+  <div style="margin-bottom:20px;">
+    <a href="about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+    <a href="contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+    <a href="privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+    <a href="disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+  </div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+</div>
+
+<!-- Cookie 同意弹窗 -->
+<script>
+(function(){
+  var COOKIE_KEY='cookie_consent_accepted';
+  function hasConsented(){try{return localStorage.getItem(COOKIE_KEY)==='true'}catch(e){return false}}
+  function setConsented(){try{localStorage.setItem(COOKIE_KEY,'true')}catch(e){}}
+  if(hasConsented())return;
+  var s=document.createElement('style');
+  s.textContent='@keyframes cookieFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes cookieFadeDown{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(20px)}}';
+  document.head.appendChild(s);
+  var b=document.createElement('div');b.id='cookie-consent-banner';
+  b.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(15,15,24,0.95);border-top:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px);padding:20px 24px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:16px;font-family:Inter,sans-serif;animation:cookieFadeUp 0.5s ease-out;';
+  var t=document.createElement('span');t.style.cssText='font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:600px;text-align:center;';
+  t.textContent='本网站使用 Cookie（包括 Google AdSense 的广告 Cookie）以提升您的浏览体验。继续使用本网站即表示您同意我们的 Cookie 政策。';
+  b.appendChild(t);
+  var g=document.createElement('div');g.style.cssText='display:flex;gap:12px;flex-shrink:0;';
+  var lm=document.createElement('a');lm.href='privacy.html';
+  lm.style.cssText='font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;padding:8px 20px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;transition:all 0.2s;cursor:pointer;';
+  lm.textContent='了解更多';
+  lm.addEventListener('mouseover',function(){this.style.color='rgba(255,255,255,0.7)';this.style.borderColor='rgba(255,255,255,0.25)'});
+  lm.addEventListener('mouseout',function(){this.style.color='rgba(255,255,255,0.4)';this.style.borderColor='rgba(255,255,255,0.12)'});
+  g.appendChild(lm);
+  var ab=document.createElement('button');
+  ab.style.cssText='font-size:13px;color:#fff;background:rgba(99,102,241,0.7);border:none;border-radius:8px;padding:8px 24px;cursor:pointer;transition:all 0.2s;font-family:Inter,sans-serif;';
+  ab.textContent='接受';
+  ab.addEventListener('mouseover',function(){this.style.background='rgba(99,102,241,0.9)'});
+  ab.addEventListener('mouseout',function(){this.style.background='rgba(99,102,241,0.7)'});
+  ab.addEventListener('click',function(){setConsented();b.style.animation='cookieFadeDown 0.3s ease-in forwards';setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},300)});
+  g.appendChild(ab);b.appendChild(g);document.body.appendChild(b);
+})();
 </script>
 </body>
 </html>
