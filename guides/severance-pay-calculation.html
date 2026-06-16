@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026离职经济补偿金计算标准：N/N+1/2N区别、计算方法及个税规则</title>
+    <meta name="keywords" content="离职补偿金计算标准,N和N+1的区别,2N赔偿条件,辞退员工补偿标准,离职补偿金个税">
+    <meta name="description" content="详解2026年离职经济补偿金法定标准，厘清N、N+1、2N的适用场景与区别，说明补偿基数、工作年限计算规则及封顶政策，附离职补偿金个税基础规则。">
+        <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #222838;
+            --accent-cyan: #00d4ff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0f172a 50%, #1a103c 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(26, 31, 46, 0.8) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin: 36px 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        }
+
+        h3 {
+            font-size: 17px;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-align: justify;
+            color: var(--text-secondary);
+        }
+
+        .safe-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid #10b981;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .warn-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        table th, table td {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        table th {
+            background: rgba(59, 130, 246, 0.12);
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        strong {
+            color: var(--accent-cyan);
+        }
+
+        .summary {
+            background: rgba(139, 92, 246, 0.08);
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--accent-purple);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .container {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            table th, table td {
+                padding: 8px 4px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2026离职经济补偿金计算标准：N/N+1/2N区别、计算方法及个税规则</h1>
+
+        <p>职场离职时，经济补偿是劳资双方都关注的核心问题。很多人分不清N、N+1、2N的适用场景，也容易在计算基数、年限封顶上出错。本文结合《中华人民共和国劳动合同法》及人社部官方口径，用清晰的规则和对比，讲清离职补偿的计算标准与个税常识。</p>
+
+        <h2>一、先搞懂：N、N+1、2N的本质区别</h2>
+        <p>三者法律性质不同，适用场景完全分开，不存在「想选哪个选哪个」的情况。</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>补偿形式</th>
+                    <th>法律性质</th>
+                    <th>适用前提</th>
+                    <th>核心规则</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>N</strong></td>
+                    <td>经济补偿金</td>
+                    <td>单位<strong>合法</strong>解除/终止劳动合同</td>
+                    <td>按工作年限计算，是最常见的补偿形式</td>
+                </tr>
+                <tr>
+                    <td><strong>N+1</strong></td>
+                    <td>经济补偿金+代通知金</td>
+                    <td>单位合法解除，但<strong>未提前30天书面通知</strong>，且仅限三类法定情形</td>
+                    <td>+1是1个月工资的代通知金，不是所有解除都有</td>
+                </tr>
+                <tr>
+                    <td><strong>2N</strong></td>
+                    <td>违法解除赔偿金</td>
+                    <td>单位<strong>违法</strong>解除/终止劳动合同</td>
+                    <td>惩罚性赔偿，标准是经济补偿金的2倍</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>1. N（经济补偿金）：最常见的法定补偿</h3>
+        <p>只要是单位合法解除或终止劳动合同，且符合法定补偿情形，就支付N。</p>
+        <p><strong>主要适用情形</strong>：</p>
+        <ul>
+            <li>单位提出，双方协商一致解除；</li>
+            <li>员工因单位欠薪、未缴社保等过错被迫离职；</li>
+            <li>经济性裁员；</li>
+            <li>劳动合同到期，单位不续签；</li>
+            <li>单位破产、解散、吊销执照等。</li>
+        </ul>
+
+        <h3>2. N+1：仅限三种情况，且未提前通知才有</h3>
+        <p>「+1」叫代通知金，用来替代30天的提前通知期。<strong>不是所有辞退都有N+1，只适用于《劳动合同法》第40条规定的三类情形</strong>：</p>
+        <ol>
+            <li>员工患病/非因工负伤，医疗期满后不能从事原工作，也不能从事单位另行安排的工作；</li>
+            <li>员工不能胜任工作，经培训或调岗后仍不能胜任；</li>
+            <li>劳动合同订立时的客观情况发生重大变化，合同无法履行，双方协商不成。</li>
+        </ol>
+        <div class="safe-box">
+            <p><strong>关键提醒</strong>：如果单位已经提前30天书面通知了，就只付N，不用付+1。</p>
+        </div>
+
+        <h3>3. 2N（违法解除赔偿金）：惩罚性赔偿</h3>
+        <p>单位没有合法理由、不走法定程序就辞退员工，属于违法解除，要付2N。</p>
+        <ul>
+            <li>比如：无理由随意辞退、孕期/产期/医疗期内违规辞退、辞退程序违法等。</li>
+            <li>注意：2N和N不能同时主张；法律上也不存在「2N+1」的说法。</li>
+        </ul>
+
+        <h2>二、经济补偿金（N）怎么算</h2>
+        <p><strong>核心公式</strong>：经济补偿金 = 补偿基数 × 工作年限</p>
+
+        <h3>（一）工作年限怎么算</h3>
+        <p>按员工在本单位的连续工作年限计算：</p>
+        <ul>
+            <li>每满1年，算1个月工资；</li>
+            <li>6个月以上不满1年，按1年算；</li>
+            <li>不满6个月，按0.5个月算。</li>
+        </ul>
+
+        <h3>（二）补偿基数怎么算</h3>
+        <p>按员工<strong>离职前12个月的平均应发工资（税前）</strong>计算，不是实发到手的工资。</p>
+        <ul>
+            <li><strong>计入基数</strong>：基本工资、绩效、奖金、年终奖、提成、津贴、补贴等所有货币性收入；</li>
+            <li><strong>不计入基数</strong>：凭票报销的差旅费、工伤/生育待遇等。</li>
+        </ul>
+        <p>补充：加班费是否计入基数，各地口径略有差异，多数地区纳入，部分地区（如上海）不纳入，以当地裁判规则为准。</p>
+
+        <h3>（三）封顶规则：仅针对高薪员工，双封顶绑定生效</h3>
+        <p>根据《劳动合同法》第四十七条及人社部官方答复，<strong>只有当员工月均工资 > 当地上年度职工月平均工资的3倍时，才同时触发两项封顶</strong>：</p>
+        <ol>
+            <li><strong>基数封顶</strong>：补偿基数按社平工资的3倍计算，不再按实际工资算；</li>
+            <li><strong>年限封顶</strong>：工作年限最高算12年，哪怕实际工作15年也只按12个月算。</li>
+        </ol>
+        <p>如果员工工资没超过社平工资3倍，<strong>基数和年限都不封顶</strong>，按实际工作年限和实际工资全额计算，没有12个月的上限限制。</p>
+
+        <div class="safe-box">
+            <p><strong>示例</strong>（当地上年月社平工资10000元，3倍即30000元）：</p>
+            <p>员工A：月均20000元，工作15年 → 补偿金 = 20000 × 15 = 300000元（不封顶，按实际年限计算）</p>
+            <p>员工B：月均40000元，工作15年 → 补偿金 = 30000 × 12 = 360000元（触发双封顶）</p>
+        </div>
+
+        <h2>三、离职补偿金个税常识</h2>
+        <p>离职补偿金不是全额交税，国家有专门的免税优惠：</p>
+        <ol>
+            <li><strong>3倍社平工资以内免税</strong>：一次性补偿收入在当地上年职工平均工资3倍数额以内的部分，免征个人所得税；</li>
+            <li><strong>超出部分单独计税</strong>：超过3倍的部分，不并入当年综合所得，单独按综合所得税率表计税。</li>
+        </ol>
+        <p>普通员工的常规补偿基本都在免税额度内，不用缴税；只有高额补偿才会涉及个税。</p>
+        <p>详细计算方法、案例和申报流程，详见<a href="article2.html">《离职赔偿金要交个税吗？最新免税额度及计算方法》</a>。</p>
+
+        <div class="summary">
+            <h2>四、总结</h2>
+            <ol>
+                <li>先看解除性质：合法解除给N，符合三类情形且没提前通知给N+1，违法解除给2N；</li>
+                <li>再算补偿金额：工资没超社平3倍按实际全额算，超3倍的基数和年限双封顶；</li>
+                <li>个税有优惠：3倍社平工资以内免税，超出部分单独计税。</li>
+            </ol>
+            <p>如需快速核算补偿金额和对应个税，可使用离职补偿金计算器，输入工作年限、月均工资和当地社平工资，一键得出法定补偿标准和预估税额。</p>
+        </div>
+    </div>
+
+    <!-- 相关工具 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:8px;">相关工具</h2>
+        <p style="color:#94a3b8;margin-bottom:12px;">使用离职补偿计算器快速测算经济补偿金、N、N+1及税前税后金额。</p>
+        <a href="../severance-calculator.html" target="_blank" rel="noopener noreferrer" style="color:#00d4ff;text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">离职补偿计算器 →</a>
+    </div>
+    <!-- 相关文章 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:12px;">相关文章</h2>
+        <ul style="list-style:none;padding:0;margin:0;">
+            <li style="margin-bottom:10px;"><a href="severance-pay-guide.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">离职补偿金发放避坑指南</a></li>
+            <li><a href="severance-pay-tax.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">离职补偿金需要交个税吗？</a></li>
+        </ul>
+    </div>
+    <!-- 统一页脚 -->
+    <div id="legal-footer-nav" style="text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);margin-top:20px;">
+        <div style="margin-bottom:20px;">
+            <a href="../about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+            <a href="../contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+            <a href="../privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+            <a href="../disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+    </div>
+</body>
+</html>
