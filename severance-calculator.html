@@ -806,6 +806,60 @@
   ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
+  /* ===== ARTICLE 40 SECTION ===== */
+  .article40-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .article40-card {
+    border: 1.5px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+    background: rgba(25, 25, 55, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .article40-card:hover {
+    border-color: rgba(255, 180, 50, 0.3);
+    background: rgba(255, 180, 50, 0.04);
+  }
+
+  .article40-card.selected {
+    border-color: #F0B040;
+    background: rgba(255, 180, 50, 0.08);
+    box-shadow: 0 0 16px rgba(255, 180, 50, 0.1);
+  }
+
+  .article40-card .exception-header { display: flex; align-items: flex-start; gap: 12px; }
+
+  .article40-card .exception-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    font-size: 10px;
+    color: transparent;
+    background: rgba(30, 30, 66, 0.6);
+  }
+
+  .article40-card.selected .exception-check {
+    border-color: #F0B040;
+    background: linear-gradient(135deg, #F0B040, #FF6060);
+    color: white;
+  }
+
   /* ===== RESPONSIVE ===== */
   @media (max-width: 600px) {
     .main-container { padding: 20px 16px 60px; }
@@ -968,6 +1022,55 @@
             <button class="radio-btn" data-val="unknown" onclick="selectRadio(this, 'legality')">不确定</button>
           </div>
           <div class="form-hint">如无合法理由（如孕期、工伤期间、合同未到期等）被辞退，可能属于违法解除，应获 2N 赔偿</div>
+        </div>
+
+        <!-- 第40条情形判断（仅合法解除时显示） -->
+        <div class="form-group article40-section" id="article40Group" style="display:none;">
+          <label class="form-label">如属合法解除，请选择辞退依据的法律条款：</label>
+          <div class="form-hint" style="margin-bottom:14px;">代通知金（+1）仅适用于《劳动合同法》第40条的三种情形，选择后可查看法条详情</div>
+
+          <div class="article40-card" data-article="40-a" onclick="selectArticle40(this, '40-a')">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">第40条第（一）项：劳动者患病或非因工负伤，医疗期满后不能从事原工作，也不能从事另行安排的工作</div>
+            </div>
+            <div class="expand-hint" style="font-size:12px;color:#7A7A9E;margin-top:6px;">点击展开法条</div>
+            <div class="exception-law" style="margin-top:10px;padding:14px;background:rgba(15,15,40,0.6);border-radius:10px;font-size:12px;color:#B0B0D8;line-height:1.8;display:none;border-left:3px solid #F0B040;">
+              <div><span class="law-quote" style="color:#F0B040;font-weight:500;">《劳动合同法》第四十条第（一）项：</span></div>
+              <div>有下列情形之一的，用人单位提前三十日以书面形式通知劳动者本人或者额外支付劳动者一个月工资后，可以解除劳动合同：（一）劳动者患病或者非因工负伤，在规定的医疗期满后不能从事原工作，也不能从事由用人单位另行安排的工作的。</div>
+            </div>
+          </div>
+
+          <div class="article40-card" data-article="40-b" onclick="selectArticle40(this, '40-b')">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">第40条第（二）项：劳动者不能胜任工作，经过培训或者调整工作岗位，仍不能胜任工作</div>
+            </div>
+            <div class="expand-hint" style="font-size:12px;color:#7A7A9E;margin-top:6px;">点击展开法条</div>
+            <div class="exception-law" style="margin-top:10px;padding:14px;background:rgba(15,15,40,0.6);border-radius:10px;font-size:12px;color:#B0B0D8;line-height:1.8;display:none;border-left:3px solid #F0B040;">
+              <div><span class="law-quote" style="color:#F0B040;font-weight:500;">《劳动合同法》第四十条第（二）项：</span></div>
+              <div>有下列情形之一的，用人单位提前三十日以书面形式通知劳动者本人或者额外支付劳动者一个月工资后，可以解除劳动合同：（二）劳动者不能胜任工作，经过培训或者调整工作岗位，仍不能胜任工作的。</div>
+            </div>
+          </div>
+
+          <div class="article40-card" data-article="40-c" onclick="selectArticle40(this, '40-c')">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">第40条第（三）项：劳动合同订立时所依据的客观情况发生重大变化，致使合同无法履行，经协商未能就变更合同内容达成协议</div>
+            </div>
+            <div class="expand-hint" style="font-size:12px;color:#7A7A9E;margin-top:6px;">点击展开法条</div>
+            <div class="exception-law" style="margin-top:10px;padding:14px;background:rgba(15,15,40,0.6);border-radius:10px;font-size:12px;color:#B0B0D8;line-height:1.8;display:none;border-left:3px solid #F0B040;">
+              <div><span class="law-quote" style="color:#F0B040;font-weight:500;">《劳动合同法》第四十条第（三）项：</span></div>
+              <div>有下列情形之一的，用人单位提前三十日以书面形式通知劳动者本人或者额外支付劳动者一个月工资后，可以解除劳动合同：（三）劳动合同订立时所依据的客观情况发生重大变化，致使劳动合同无法履行，经用人单位与劳动者协商，未能就变更劳动合同内容达成协议的。</div>
+            </div>
+          </div>
+
+          <div class="article40-card" data-article="other" onclick="selectArticle40(this, 'other')">
+            <div class="exception-header">
+              <div class="exception-check">✓</div>
+              <div class="exception-label">不属于以上三种情形（如裁员、合同到期不续签等）</div>
+            </div>
+          </div>
         </div>
 
         <div class="btn-group">
@@ -1181,7 +1284,7 @@
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script>
-const state = { scene: null, startDate: null, endDate: null, salary: 0, city: '', notified: null, legality: null };
+const state = { scene: null, startDate: null, endDate: null, salary: 0, city: '', notified: null, legality: null, isArticle40: null };
 
 const cityData = {
   beijing: { name:'北京', avg:15701, triple:47103 }, shanghai: { name:'上海', avg:15803, triple:47409 },
@@ -1295,15 +1398,74 @@ function selectRadio(el, group) {
   el.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   state[group] = el.dataset.val;
+
+  // 当选择合法性时，联动显示/隐藏第40条判断区域
+  if (group === 'legality') {
+    const a40Group = document.getElementById('article40Group');
+    if (state.legality === 'legal') {
+      a40Group.style.display = 'block';
+      a40Group.style.animation = 'fadeUp 0.3s ease';
+    } else {
+      a40Group.style.display = 'none';
+      state.isArticle40 = null;
+      a40Group.querySelectorAll('.article40-card').forEach(c => c.classList.remove('selected'));
+    }
+  }
+}
+
+// 第40条情形选择（单选）
+function selectArticle40(el, val) {
+  document.querySelectorAll('.article40-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.isArticle40 = val;
+
+  // 切换法条展开
+  const lawDiv = el.querySelector('.exception-law');
+  if (lawDiv) {
+    const isVisible = lawDiv.style.display === 'block';
+    // 关闭所有法条
+    document.querySelectorAll('.article40-card .exception-law').forEach(d => d.style.display = 'none');
+    document.querySelectorAll('.article40-card .expand-hint').forEach(h => h.style.display = 'block');
+    if (!isVisible && el.dataset.article !== 'other') {
+      lawDiv.style.display = 'block';
+      const hint = el.querySelector('.expand-hint');
+      if (hint) hint.style.display = 'none';
+    }
+  }
 }
 
 function calculateFire() {
   if (!state.notified) { alert('请告知公司是否已提前30天通知'); return; }
   if (!state.legality) { alert('请判断公司解除是否合法'); return; }
+
   let compType, compLabel;
-  if (state.legality === 'illegal') { compType = '2N'; compLabel = '违法解除赔偿金（2N）'; }
-  else if (state.notified === 'no') { compType = 'N+1'; compLabel = '经济补偿金 + 代通知金（N+1）'; }
-  else { compType = 'N'; compLabel = '经济补偿金（N）'; }
+
+  if (state.legality === 'illegal') {
+    // 违法解除 → 2N
+    compType = '2N';
+    compLabel = '违法解除赔偿金（2N）';
+  } else if (state.legality === 'legal') {
+    // 合法解除，需要选择第40条情形
+    if (!state.isArticle40) {
+      alert('请选择辞退所依据的法律条款');
+      return;
+    }
+
+    if (state.isArticle40 !== 'other' && state.notified === 'no') {
+      // 属于第40条三种情形 + 未提前30天通知 → N+1
+      compType = 'N+1';
+      compLabel = '经济补偿金 + 代通知金（N+1）';
+    } else {
+      // 其他合法情形（已通知、或不属于第40条）→ N
+      compType = 'N';
+      compLabel = '经济补偿金（N）';
+    }
+  } else {
+    // 不确定合法性 → 默认按 N 计算
+    compType = 'N';
+    compLabel = '经济补偿金（N）';
+  }
+
   calculateAndShowResult(compType, compLabel);
 }
 
@@ -1352,7 +1514,7 @@ function calculateAndShowResult(compType, compLabel) {
   bd += mkRow('补偿系数 N', `${effectiveN}`);
   if (compType === 'N+1') {
     bd += mkRow('经济补偿 N', `¥${nAmount.toLocaleString()}`);
-    bd += mkRow('代通知金 +1', `¥${salary.toLocaleString()}`, '按上月工资');
+    bd += mkRow('代通知金 +1', `¥${salary.toLocaleString()}`, '《劳动合同法》第40条 + 未提前30天通知');
     bd += mkRow('合计', `¥${total.toLocaleString()}`, '', true);
   } else if (compType === '2N') {
     bd += mkRow('计算公式', `${effectiveN} × 2 × ${avgSalary.toLocaleString()}`);
@@ -1367,7 +1529,13 @@ function calculateAndShowResult(compType, compLabel) {
   if (taxExempt) taxHTML = `<div class="tip-box info"><span class="tip-icon">✅</span><div>该补偿金未超过免税上限（¥${taxExemptLimit.toLocaleString()}），<strong>无需缴纳个人所得税</strong>。</div></div>`;
   else if (taxExemptLimit > 0) taxHTML = `<div class="tip-box warn"><span class="tip-icon">💡</span><div>该补偿金可能超过免税上限（¥${taxExemptLimit.toLocaleString()}），超出部分需缴纳个人所得税。建议咨询税务专业人士。</div></div>`;
   document.getElementById('taxTip').innerHTML = taxHTML;
-  document.getElementById('generalTips').innerHTML = `<div class="tip-box info"><span class="tip-icon">💡</span><div><strong>温馨提示：</strong>请保留劳动合同、工资条、社保记录、离职证明等材料。如对补偿金额有争议，可在离职后一年内向当地劳动仲裁委员会申请仲裁（免费）。</div></div>`;
+
+  // 代通知金说明
+  let n1Tip = '';
+  if (compType === 'N+1') {
+    n1Tip = `<div class="tip-box warn"><span class="tip-icon">⚠️</span><div><strong>关于代通知金（+1）：</strong>代通知金仅适用于《劳动合同法》第40条规定的三种情形：① 医疗期满不能工作；② 不能胜任工作经培训/调岗仍不行；③ 客观情况重大变化无法协商。如公司未提前30天书面通知，则需额外支付1个月工资作为代通知金。若不属于第40条情形，即使未提前通知，也仅按 N 计算。</div></div>`;
+  }
+  document.getElementById('generalTips').innerHTML = n1Tip + `<div class="tip-box info"><span class="tip-icon">💡</span><div><strong>温馨提示：</strong>请保留劳动合同、工资条、社保记录、离职证明等材料。如对补偿金额有争议，可在离职后一年内向当地劳动仲裁委员会申请仲裁（免费）。</div></div>`;
 
   document.getElementById('stepsBar').style.display = 'none';
   showPage('stepResult');
@@ -1477,9 +1645,12 @@ function mkRow(label, value, note, isTotal) {
 
 function resetAll() {
   state.scene = null; state.startDate = null; state.endDate = null;
-  state.salary = 0; state.city = ''; state.notified = null; state.legality = null;
+  state.salary = 0; state.city = ''; state.notified = null; state.legality = null; state.isArticle40 = null;
   document.querySelectorAll('.scene-card').forEach(c => c.classList.remove('selected'));
   document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.article40-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.article40-card .exception-law').forEach(d => d.style.display = 'none');
+  document.querySelectorAll('.article40-card .expand-hint').forEach(h => h.style.display = 'block');
   ['startDate','endDate','salary','resStartDate','resEndDate','resSalary'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   ['city','resCity'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.getElementById('tenureDisplay').textContent = '';
@@ -1487,6 +1658,7 @@ function resetAll() {
   document.getElementById('resignNForm').classList.remove('visible');
   document.getElementById('resignResultArea').innerHTML = '';
   document.querySelectorAll('.exception-item').forEach(e => e.classList.remove('expanded'));
+  document.getElementById('article40Group').style.display = 'none';
   document.getElementById('stepsBar').style.display = 'flex';
   updateStepDots(1);
   showPage('step1');
@@ -1507,7 +1679,7 @@ window.addEventListener('scroll', () => {
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
     <p><strong style="color:#00D4FF;">步骤1：</strong>选择您的离职场景（被公司辞退/裁员、协商解除劳动关系、主动离职）</p>
     <p><strong style="color:#00D4FF;">步骤2：</strong>填写入职日期、离职日期、月平均工资（税前应发）和所在城市</p>
-    <p><strong style="color:#00D4FF;">步骤3（被辞退场景）：</strong>选择公司是否提前30天通知、解除是否合法</p>
+    <p><strong style="color:#00D4FF;">步骤3（被辞退场景）：</strong>选择公司是否提前30天通知、解除是否合法，以及合法解除时所依据的法律条款</p>
     <p><strong style="color:#00D4FF;">步骤3（主动离职场景）：</strong>确认是否存在被迫解除的法定例外情形，如符合则填写工作信息</p>
     <p>点击计算，查看补偿金额、计算明细和三种方案对比</p>
   </div>
@@ -1516,16 +1688,38 @@ window.addEventListener('scroll', () => {
     <p>• 工作年限 N：每满1年支付1个月工资；6个月以上不满1年按1年计；不满6个月支付0.5个月</p>
     <p>• 月工资上限：如超过当地上年度职工月平均工资3倍，按3倍封顶，且补偿年限最高不超过12年</p>
     <p>• N：合法解除的经济补偿 = N × 月平均工资</p>
-    <p>• N+1：未提前30天通知的代通知金 = N × 月平均工资 + 1个月工资</p>
+    <p>• N+1：仅适用于《劳动合同法》第40条规定的三种法定情形（医疗期满不能工作、不能胜任工作经培训/调岗仍不行、客观情况重大变化无法协商），且公司未提前30天书面通知时，代通知金 = N × 月平均工资 + 1个月工资</p>
     <p>• 2N：违法解除的赔偿金 = 2 × N × 月平均工资</p>
   </div>
   <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">示例</h2>
-    <p>小王在上海工作3年7个月，月平均工资15000元（未超过上海社平工资3倍）。被公司合法辞退且已提前30天通知，经济补偿金 = 4 × 15000 = 60000元。如未提前通知则为 N+1 = 5 × 15000 = 75000元。如属违法解除则为 2N = 8 × 15000 = 120000元。</p>
+    <p>小王在上海工作3年7个月，月平均工资15000元（未超过上海社平工资3倍）。</p>
+    <p>情形一：因不能胜任工作被辞退，公司未提前30天通知 → N+1 = 4 × 15000 + 15000 = 75000元</p>
+    <p>情形二：因经济性裁员被辞退（不属于第40条），公司未提前30天通知 → N = 4 × 15000 = 60000元（无代通知金）</p>
+    <p>情形三：属违法解除 → 2N = 8 × 15000 = 120000元</p>
   </div>
   <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
     <p>本工具计算结果仅供参考，不构成法律建议。实际补偿金额以劳动仲裁委员会或法院最终认定为准。如遇劳动争议，建议咨询专业律师。</p>
+  </div>
+</div>
+
+<!-- 相关文章 -->
+<div class="related-articles" style="position:relative;z-index:1;max-width:720px;margin:0 auto;padding:0 20px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:8px;">相关文章</h2>
+    <p style="color:#94a3b8;margin-bottom:16px;">了解离职赔偿政策、个税计算规则及避坑指南。</p>
+    <ul style="list-style:none;padding:0;margin:0;">
+      <li style="margin-bottom:10px;">
+        <a href="guides/severance-pay-calculation.html" style="color:#00D4FF;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00D4FF'">2026离职经济补偿金计算标准：N/N+1/2N区别、计算方法及个税规则</a>
+      </li>
+      <li style="margin-bottom:10px;">
+        <a href="guides/severance-pay-tax.html" style="color:#00D4FF;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00D4FF'">离职赔偿金要交个税吗？最新免税额度及计算方法</a>
+      </li>
+      <li style="margin-bottom:0;">
+        <a href="guides/severance-pay-guide.html" style="color:#00D4FF;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00D4FF'">离职补偿金发放避坑指南：计算、个税、申报全流程合规要点</a>
+      </li>
+    </ul>
   </div>
 </div>
 
