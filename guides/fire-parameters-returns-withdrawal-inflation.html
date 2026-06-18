@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>想提前退休别盲目估算：收益率、提款率与通胀的真实影响</title>
+    <meta name="keywords" content="FIRE参数设置,安全提款率怎么选,提前退休通胀计算,提前退休计算器,社保养老金FIRE">
+    <meta name="description" content="逐个拆解提前退休测算的核心参数，讲解收益率、提款率、通胀率的合理取值与真实影响，说明社保养老金的折算方法，帮你校准FIRE退休规划。">
+        <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #222838;
+            --accent-cyan: #00d4ff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0f172a 50%, #1a103c 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(26, 31, 46, 0.8) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin: 36px 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        }
+
+        h3 {
+            font-size: 17px;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-align: justify;
+            color: var(--text-secondary);
+        }
+
+        .warn-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .safe-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid #10b981;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--accent-blue);
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .tip-box {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid #f59e0b;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        table th, table td {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        table th {
+            background: rgba(59, 130, 246, 0.12);
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        strong {
+            color: var(--accent-cyan);
+        }
+
+        .summary {
+            background: rgba(139, 92, 246, 0.08);
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--accent-purple);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .container {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            table th, table td {
+                padding: 8px 4px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>想提前退休别盲目估算：收益率、提款率与通胀的真实影响</h1>
+
+        <p>很多人了解了FIRE的基础逻辑与4%法则后，会自己估算退休时间，但结果常常偏差巨大：要么过于乐观，真到退休后才发现钱不够花；要么过于保守，迟迟不敢启动规划。</p>
+        <p>问题往往不出在计算逻辑本身，而在于参数取值不合理——收益率估高、支出估低、通胀忽略，哪怕只偏差1个百分点，最终的退休时间都可能相差3-5年。本文逐个拆解提前退休测算的核心参数，讲清合理取值范围、对结果的真实影响与常见误区，帮你校准自己的退休规划。</p>
+
+        <h2>一、基础参数：别让初始输入就偏离现实</h2>
+        <p>基础参数是测算的起点，口径错了，后面的计算再精准也没有意义。这五类参数最容易出现取值偏差。</p>
+
+        <h3>1. 当前净资产：只算可生息资产</h3>
+        <p>测算用的净资产，特指<strong>扣除所有负债后、能持续产生收益的可投资资产</strong>，包括存款、理财、基金、股票、债券等。</p>
+        <ul>
+            <li><strong>常见误区</strong>：把自住房产、自用车辆、首饰家电等计入资产总额，高估本金基数。这类资产无法持续变现支付日常开支，不算生息资产，计入后会让算出的退休时间明显偏早，实际达标时会出现大额缺口。</li>
+            <li><strong>影响幅度</strong>：净资产每多算10万元，按年化4%收益估算，退休时间可能提前半年到一年，看似差别不大，实则是从起点就埋下了缺口。</li>
+        </ul>
+
+        <h3>2. 每月储蓄：用可持续的稳态值，别按峰值算</h3>
+        <p>每月储蓄额，应当是扣除社保、个税、所有开支后，能长期稳定存入投资账户的税后可支配金额，要考虑收入波动、意外支出、阶段性大额开销。</p>
+        <ul>
+            <li><strong>常见误区</strong>：按当前收入峰值下的储蓄额计算，忽略未来可能的降薪、失业、家人开支、装修购车等大额支出，把“最高储蓄额”当成“常态储蓄额”。</li>
+            <li><strong>影响幅度</strong>：每月储蓄高估1000元，按20年周期、年化4%收益测算，最终资产偏差可达40万元以上，对应退休时间偏差1-2年。</li>
+        </ul>
+
+        <h3>3. 每月支出：按“退休后的真实开支”算，不是现在的开支</h3>
+        <p>支出是决定目标资产的核心变量，不能直接套用当前的月支出，要结合退休后的开支结构调整：</p>
+        <ul>
+            <li>可剔除的支出：房贷、子女教育费、通勤费、职场社交开支等阶段性支出；</li>
+            <li>需新增的支出：医疗保健、护理费用、休闲旅游、长辈赡养等退休后大概率增加的开支。</li>
+        </ul>
+        <ul>
+            <li><strong>常见误区</strong>：直接用当前月支出倒推年支出，要么漏算了退休后的新增开支，要么没剔除阶段性支出，导致目标估算失真。</li>
+            <li><strong>影响幅度</strong>：年支出每多1万元，按3.5%的安全提款率计算，目标净资产就要多增约28.6万元，直接对应多工作数年。</li>
+        </ul>
+
+        <h3>4. 年龄与性别：决定提款周期的长度</h3>
+        <p>退休年龄和性别，本质影响的是<strong>资产需要支撑的提款时长</strong>。</p>
+        <ul>
+            <li>退休越早，提款周期越长：30岁退休可能需要支撑50年以上的开支，和55岁退休仅需支撑25-30年，风险完全不同；</li>
+            <li>女性平均预期寿命更长，同等退休年龄下，提款周期通常比男性长3-5年，对资产安全性要求更高，建议安全提款率相应下调0.2-0.3个百分点。</li>
+        </ul>
+        <p><strong>常见误区</strong>：不分年龄、不分性别，全部按4%提款率一刀切，早退休人群的资产枯竭风险会显著上升。</p>
+
+        <h3>5. 社保与补充养老金：别直接抵扣目标资产</h3>
+        <p>很多人有职工社保养老保险，部分人还有企业年金、职业年金等补充养老保障，这些都会影响最终的资产消耗节奏，但不能直接抵扣当前的目标资产，处理逻辑和生息资产完全不同。</p>
+
+        <h4>（1）基本养老保险：核心是区分空档期与领取期</h4>
+        <p>社保养老金的核心特点是：<strong>必须达到法定退休年龄才能领取，提前退休期间无法支取</strong>。因此它对FIRE规划的影响，要分两个阶段看：</p>
+        <ul>
+            <li><strong>空档期（提前退休日 → 法定退休年龄）</strong>：没有任何养老金到账，日常开支完全依靠自有生息资产覆盖，这也是提前退休的核心压力期，社保对这个阶段没有帮助。</li>
+            <li><strong>领取期（法定退休年龄之后）</strong>：每月发放的养老金属于稳定被动收入，可以直接抵扣当月生活支出，降低自有资产的消耗速度，相当于增厚了老年阶段的安全垫。</li>
+        </ul>
+        <div class="safe-box">
+            <p><strong>折算方法（两种口径按需选择）：</strong></p>
+            <ul>
+                <li><strong>保守口径（推荐普通人选）</strong>：测算核心目标时完全不纳入社保养老金，只把它当作退休后的额外兜底收入。这样算出的目标更稳妥，即便未来社保政策调整，也不会影响核心规划。</li>
+                <li><strong>精细口径</strong>：先通过社保官方测算工具（掌上12333、各地社保平台）查出自己退休后的预估月领金额，从法定退休年龄后的月支出中直接扣除这笔钱，再重新测算该阶段的资产消耗。</li>
+            </ul>
+            <p>注意：提前退休越早，空档期越长，社保对整体目标的稀释作用越小；如果计划40岁前退休，社保对核心目标的影响非常有限。</p>
+        </div>
+
+        <h4>（2）企业年金/职业年金：远期补充，不计入当前资产</h4>
+        <p>企业年金、职业年金的性质与社保类似，同样需达到法定退休年龄才能领取（部分特殊情况可提前支取），属于远期才到账的补充收入。</p>
+        <ul>
+            <li><strong>不能计入当前可生息净资产</strong>：因为无法提前支取、无法自主支配增值，流动性为零，不能当作现有本金参与复利测算；</li>
+            <li><strong>折算方式</strong>：退休后可选择按月领取或一次性领取，按月领取则同社保一样抵扣日常支出；一次性领取则可计入当期生息资产，进一步降低资产消耗。</li>
+            <li><strong>估算原则</strong>：因领取方式、计税规则、未来政策均有不确定性，建议按保守值估算，不将其纳入核心目标测算，仅作为额外安全垫。</li>
+        </ul>
+
+        <h2>二、三大核心敏感参数：微小差异，结果天差地别</h2>
+        <p>预期年化收益率、安全提款率、通胀率，是对测算结果影响最大的三个参数，也是普通人最容易估错的部分。</p>
+
+        <h3>1. 预期年化收益率：长期收益远没你想的那么高</h3>
+        <p>收益率决定了资产增值的速度，取值必须基于长期历史均值，且为扣除手续费、管理费后的净年化收益，不能用短期牛市收益推算。</p>
+        <div class="param-card">
+            <p><strong>合理参考区间（长期净年化）：</strong></p>
+            <ul>
+                <li>保守配置（存款、国债、稳健理财为主）：年化2.5%-3.5%</li>
+                <li>均衡配置（股债均衡、指数基金组合，权益占比30%-50%）：年化4%-6%</li>
+                <li>进取配置（权益资产占比70%以上）：年化6%-8%，需承受20%以上的最大回撤风险</li>
+            </ul>
+        </div>
+        <ul>
+            <li><strong>真实影响幅度</strong>：同样目标250万元、每月存5000元，年化3%需要约27年达标，年化5%仅需约22年，两者相差整整5年。</li>
+            <li><strong>常见误区</strong>：用某一年10%+的高收益倒推长期收益，忽略熊市波动和均值回归；只看名义业绩基准，不扣除手续费、税费等实际损耗。</li>
+            <li><strong>核心原则</strong>：收益率宁低勿高，用过去10-20年大类资产的长期年化均值做基准，预留收益波动的容错空间。</li>
+        </ul>
+
+        <h3>2. 安全提款率：不是所有人都适用4%</h3>
+        <p>4%是美国市场30年提款周期下的经典回测参考值，并非通用标准；结合国内市场环境与普通投资者的配置能力，3.0%-3.5%是更稳妥的基准参考。退休越早、周期越长，安全提款率就要越保守。</p>
+        <div class="param-card">
+            <p><strong>合理参考区间：</strong></p>
+            <ul>
+                <li>提款周期30年左右（55岁前后退休）：3.5%-4%</li>
+                <li>提款周期40年以上（40岁前退休）：3%-3.5%</li>
+                <li>极致保守、追求零风险：2.5%-3%</li>
+            </ul>
+        </div>
+        <ul>
+            <li><strong>真实影响幅度</strong>：同样年支出10万元，4%提款率需要250万目标资产，3%提款率则需要333万，目标差额达83万元，对应工作年限相差3-5年。</li>
+            <li><strong>常见误区</strong>：无论退休年龄、资产配置，全部按4%计算；忽略通胀调整后提款金额逐年增长的压力。</li>
+            <li><strong>核心原则</strong>：退休时间越早、预期寿命越长，提款率就要越保守，同时搭配更稳健的资产配置。</li>
+        </ul>
+
+        <h3>3. 通胀率：被忽略的“隐形支出放大器”</h3>
+        <p>通胀会持续推高生活成本，是长期规划中最不能忽略的变量，忽略通胀的测算结果毫无参考价值。</p>
+        <ul>
+            <li><strong>合理参考区间</strong>：日常消费长期温和通胀参考年化2%-3%；医疗、护理类支出通胀更高，通常在4%-5%，规划老年支出时需单独预留空间。</li>
+            <li><strong>真实影响幅度</strong>：按3%的年通胀计算，20年后的10万元开支，仅相当于现在约5.5万元的购买力；如果完全忽略通胀，按当前支出算目标，20年后实际购买力会缩水近一半，根本不够用。</li>
+            <li><strong>常见误区</strong>：完全不考虑通胀；通胀率设得过低（1%以内）；只算资产的名义增值，不算支出的同步上涨。</li>
+            <li><strong>核心原则</strong>：真正决定攒钱速度的是<strong>实际收益率</strong>（名义收益率 - 通胀率），而不是名义收益率。比如名义收益5%、通胀3%，实际增值只有2%。</li>
+        </ul>
+
+        <h2>三、最容易踩的四个估算误区</h2>
+        <h3>误区1：只算名义收益，不算实际购买力</h3>
+        <p>很多人算攒钱速度时，直接用名义收益率复利计算，觉得资产涨得很快；但同时支出也在随通胀上涨，真实的增值速度远没有名义数字好看。</p>
+        <p>正确的做法是：用“名义收益率-通胀率”的实际收益率，来估算资产的真实增值能力，这样得出的退休时间才具备购买力参考意义。</p>
+
+        <h3>误区2：按极限值算，不留安全垫</h3>
+        <p>不少人刚好卡着最低目标资产计算，一分冗余都不留。但现实中可能遇到熊市、失业、大额医疗支出、通胀超预期等意外情况，没有安全垫很容易让规划破产。</p>
+        <p>合理的做法是：在目标资产基础上预留15%-20%的安全垫，或者适当降低提款率，提升容错空间。</p>
+
+        <h3>误区3：静态看待收支，忽略动态变化</h3>
+        <p>假设收入一直上涨、支出一直不变，是典型的静态思维。实际上收入可能有波动，支出会随通胀、家庭结构、年龄增长而变化；退休前和退休后的开支结构也完全不同。</p>
+        <p>靠谱的规划要动态调整：每年复盘一次收支、收益率、通胀情况，校准参数，更新退休时间。</p>
+
+        <h3>误区4：高估社保作用，忽略提前退休的空档期</h3>
+        <p>很多人觉得“自己有社保，不用攒那么多钱”，却忽略了提前退休和法定退休年龄之间的十几年空档期。空档期内没有养老金到账，全靠自有资产支撑，社保只能解决老年阶段的开支，无法降低提前退休核心期的资金压力。</p>
+        <p>尤其是计划40岁前FIRE的人群，空档期长达20年以上，社保对整体目标的影响非常有限，不能作为降低目标的核心依据。</p>
+
+        <h2>四、参数敏感度：想早退休，优先优化哪项最划算</h2>
+        <p>不同参数对退休时间的影响力度不同，按影响程度从高到低排序为：</p>
+        <div class="safe-box">
+            <p><strong>月支出 > 安全提款率 > 预期年化收益率 > 通胀率 > 每月储蓄 > 初始净资产</strong></p>
+        </div>
+        <p>简单来说：</p>
+        <ul>
+            <li>想最快缩短退休时间，<strong>优先降低月支出</strong>性价比最高，比如把年支出从10万降到8万，目标资产直接减少50万以上；</li>
+            <li>其次是优化资产配置、提升长期净收益率，但要注意匹配自身风险承受能力；</li>
+            <li>单纯靠增加初始净资产，对长期规划的边际影响最小，因为本金的复利效应需要时间释放。</li>
+        </ul>
+
+        <h2>五、三套参考参数配置，可直接对标</h2>
+        <p>根据不同的风险偏好和生活要求，整理了三套通用参数组合，可作为初步规划的参考：</p>
+
+        <div class="param-card">
+            <p><strong>1. 保守稳妥型</strong>（适合风险承受力低、求稳优先的人群）</p>
+            <ul>
+                <li>预期年化收益率：3%</li>
+                <li>安全提款率：3%</li>
+                <li>通胀率：2.5%</li>
+            </ul>
+            <p>特点：目标更高、退休时间更长，但资产安全性极强，极端行情下也不易击穿。</p>
+        </div>
+
+        <div class="param-card">
+            <p><strong>2. 均衡通用型</strong>（适合大多数普通上班族）</p>
+            <ul>
+                <li>预期年化收益率：4.5%</li>
+                <li>安全提款率：3.5%</li>
+                <li>通胀率：2.5%</li>
+            </ul>
+            <p>特点：收益与安全平衡，符合多数人股债均衡的配置水平，是适用性最广的一套参数。</p>
+        </div>
+
+        <div class="param-card">
+            <p><strong>3. 进取加速型</strong>（适合收入较高、投资能力强、风险承受力强的人群）</p>
+            <ul>
+                <li>预期年化收益率：6.5%</li>
+                <li>安全提款率：3.5%</li>
+                <li>通胀率：3%</li>
+            </ul>
+            <p>特点：资产增值速度快，能显著缩短退休时间，但需承受更高的市场波动，适合有一定投资经验的人。</p>
+        </div>
+
+        <div class="summary">
+            <h2>总结</h2>
+            <p>提前退休规划的精准度，核心在于参数取值。差之毫厘谬以千里，收益率、提款率、通胀率这三个核心参数，哪怕只偏差1个百分点，最终退休时间都可能相差数年。</p>
+            <p>校准好参数，才能算出真正可落地的退休目标。如果不想手动逐一测算、反复调参，也可以借助工具快速完成多组参数的对比，找到最适合自己的方案。</p>
+        </div>
+    </div>
+
+    <!-- 相关工具 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:8px;">相关工具</h2>
+        <p style="color:#94a3b8;margin-bottom:12px;">从 FIRE 核心原理、关键参数校准到提前退休计算器实操，帮助用户精准测算退休年限。</p>
+        <a href="../fire-calculator.html" target="_blank" rel="noopener noreferrer" style="color:#00d4ff;text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">FIRE 提前退休计算器 →</a>
+    </div>
+    <!-- 相关文章 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:12px;">相关文章</h2>
+        <ul style="list-style:none;padding:0;margin:0;">
+            <li style="margin-bottom:10px;"><a href="fire-basics-how-much-to-retire-early.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">想提前退休需要攒多少钱？FIRE 核心逻辑与计算方法详解</a></li>
+            <li><a href="fire-calculator-user-guide.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">提前退休计算器使用教程：一键算出你还要工作多少年才能 FIRE</a></li>
+        </ul>
+    </div>
+    <!-- 统一页脚 -->
+    <div id="legal-footer-nav" style="text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);margin-top:20px;">
+        <div style="margin-bottom:20px;">
+            <a href="../about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+            <a href="../contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+            <a href="../privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+            <a href="../disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+    </div>
+</body>
+</html>
