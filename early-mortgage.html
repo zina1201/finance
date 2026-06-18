@@ -263,7 +263,7 @@
       <div class="future-rates-section" id="pp-future-section" style="display:none">
         <div class="future-rates-label">未来利率预估（剩余还款期间）</div>
         <div class="rate-seg-grid" id="pp-future-grid"></div>
-        <div class="future-rates-hint" id="pp-future-hint">以上为剩余还款期间的利率预估，默认取自上方设置，可单独调整。</div>
+        <div class="future-rates-hint" id="pp-future-hint"></div>
       </div>
       <button class="calc-btn" id="btn1" style="margin-top:14px">分析提前还款</button>
     </div>
@@ -295,7 +295,7 @@
       <div class="future-rates-section" id="inv-future-section" style="display:none">
         <div class="future-rates-label">未来利率预估（剩余还款期间）</div>
         <div class="rate-seg-grid" id="inv-future-grid"></div>
-        <div class="future-rates-hint" id="inv-future-hint">以上为剩余还款期间的利率预估，默认取自上方设置，可单独调整。</div>
+        <div class="future-rates-hint" id="inv-future-hint"></div>
       </div>
       <button class="calc-btn" id="btn2" style="margin-top:14px">开始对比</button>
     </div>
@@ -325,6 +325,24 @@
   function show(el){el.style.display='block'}
   function hide(el){el.style.display='none'}
 
+  // === 新增：根据当前标签页和已还期数控制主利率区间显隐 ===
+  function updateMainSegVisibility(){
+    if(rateType !== 'lpr') return;
+    var lt=$('inp-type').value;
+    if(lt === 'fund') return;
+    var segSetup=$('lprSegmentSetup');
+    var comboNote=$('lprCombinedNote');
+    if(curTab === 1 || curTab === 2){
+      var paidPrefix = curTab === 1 ? 'pp' : 'inv';
+      var paid = num(paidPrefix + '-paid');
+      if(paid > 0){
+        hide(segSetup);hide(comboNote);return;
+      }
+    }
+    show(segSetup);
+    comboNote.style.display=(lt==='combined')?'block':'none';
+  }
+
   function updateLprVisibility(){
     var lt=$('inp-type').value,rt=rateType;
     var lprSec=$('lprSection'),fundNotice=$('fundLprNotice'),segSetup=$('lprSegmentSetup'),comboNote=$('lprCombinedNote');
@@ -343,6 +361,7 @@
       generateFullSegInputs();
     }
     updateFutureRates('pp');updateFutureRates('inv');
+    updateMainSegVisibility();
   }
 
   function generateFullSegInputs(){
@@ -413,9 +432,9 @@
     var hint=$(prefix+'-future-hint');
     if(type==='combined'){
       var fr=num('inp-fund-rate')||2.85;
-      hint.textContent='以上为商贷部分的未来利率预估，公积金将按固定利率（'+fr+'%）计算。如认为利率保持不变，无需修改。';
+      hint.textContent='请预估剩余还款期间的商贷利率走势，可直接调整。公积金将按固定利率（'+fr+'%）计算。如认为利率保持不变，无需修改。';
     }else{
-      hint.textContent='以上为剩余还款期间的利率预估，默认取自上方设置，可单独调整。如认为利率保持不变，无需修改。';
+      hint.textContent='请预估剩余还款期间的利率走势，可直接调整。如认为利率保持不变，无需修改。';
     }
   }
 
@@ -793,18 +812,28 @@
   }
 
   var tabBtns=document.querySelectorAll('.tab-btn'),panels=document.querySelectorAll('.tab-panel'),indicator=$('tabIndicator'),curTab=0;
-  function switchTab(i){curTab=i;for(var idx=0;idx<tabBtns.length;idx++){tabBtns[idx].classList.toggle('active',idx===i);panels[idx].classList.toggle('active',idx===i)}moveI(i)}
+  function switchTab(i){
+    curTab=i;
+    for(var idx=0;idx<tabBtns.length;idx++){tabBtns[idx].classList.toggle('active',idx===i);panels[idx].classList.toggle('active',idx===i)}
+    moveI(i);
+    updateMainSegVisibility();
+  }
   function moveI(i){var btn=tabBtns[i],tr=btn.parentElement.getBoundingClientRect(),br=btn.getBoundingClientRect();indicator.style.left=(br.left-tr.left+btn.parentElement.scrollLeft)+'px';indicator.style.width=br.width+'px'}
   for(var ti=0;ti<tabBtns.length;ti++)(function(btn,idx){btn.addEventListener('click',function(){switchTab(idx)})})(tabBtns[ti],ti);
   requestAnimationFrame(function(){moveI(0)});window.addEventListener('resize',function(){moveI(curTab)});
 
   $('inp-rate-type').addEventListener('change',function(){rateType=this.value;updateLprVisibility()});
-  $('inp-seg-period').addEventListener('change',function(){if(rateType==='lpr')generateFullSegInputs()});
+  $('inp-seg-period').addEventListener('change',function(){
+    if(rateType==='lpr'){
+      generateFullSegInputs();
+      updateFutureRates('pp');updateFutureRates('inv');
+    }
+  });
   $('inp-years').addEventListener('change',function(){if(rateType==='lpr')generateFullSegInputs()});
   $('inp-rate').addEventListener('input',function(){if(rateType==='lpr')generateFullSegInputs()});
   $('inp-com-rate').addEventListener('input',function(){if(rateType==='lpr')generateFullSegInputs()});
-  $('pp-paid').addEventListener('input',function(){updateFutureRates('pp')});
-  $('inv-paid').addEventListener('input',function(){updateFutureRates('inv')});
+  $('pp-paid').addEventListener('input',function(){updateFutureRates('pp');updateMainSegVisibility()});
+  $('inv-paid').addEventListener('input',function(){updateFutureRates('inv');updateMainSegVisibility()});
 
   function switchLoanType(){
     var type=$('inp-type').value;
@@ -852,7 +881,7 @@
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
     <p><strong style="color:#00D4FF;">1.</strong> 选择贷款类型和利率类型。LPR模式下请预估各时段年利率（默认取您输入的利率，可调高或调低）。</p>
     <p><strong style="color:#00D4FF;">2. 还款对比：</strong> 点击"开始对比"查看两种还款方式差异。LPR模式会显示各区间月供变化。</p>
-    <p><strong style="color:#00D4FF;">3. 提前还款：</strong> 填写已还期数和提前还款金额。<strong>已开始还款时，请填写银行账单上的当前剩余本金（必填）</strong>。组合贷款需分别填写商贷和公积金的剩余本金。</p>
+    <p><strong style="color:#00D4FF;">3. 提前还款：</strong> 填写已还期数和提前还款金额。<strong>已开始还款时，请填写银行账单上的当前剩余本金（必填）</strong>，并预估剩余期间利率走势。组合贷款需分别填写商贷和公积金的剩余本金。</p>
     <p><strong style="color:#00D4FF;">4. 还贷vs理财：</strong> 额外输入理财收益率，对比提前还贷节省的利息与理财收益。</p>
   </div>
   <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
