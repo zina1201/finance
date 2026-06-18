@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提前退休计算器使用教程：一键算出你还要工作多少年才能FIRE</title>
+    <meta name="keywords" content="提前退休计算器,FIRE计算器,多久能退休测算,财务自由测算工具,提前退休测算">
+    <meta name="description" content="详解提前退休计算器操作步骤与结果解读，教你通过实时调参对比不同退休方案，快速算出距离FIRE的精确工作年限。">
+        <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #222838;
+            --accent-cyan: #00d4ff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0f172a 50%, #1a103c 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(26, 31, 46, 0.8) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin: 36px 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        }
+
+        h3 {
+            font-size: 17px;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-align: justify;
+            color: var(--text-secondary);
+        }
+
+        .warn-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .safe-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid #10b981;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--accent-blue);
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .tip-box {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid #f59e0b;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        table th, table td {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        table th {
+            background: rgba(59, 130, 246, 0.12);
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        strong {
+            color: var(--accent-cyan);
+        }
+
+        .summary {
+            background: rgba(139, 92, 246, 0.08);
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--accent-purple);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .container {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            table th, table td {
+                padding: 8px 4px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>提前退休计算器使用教程：一键算出你还要工作多少年才能FIRE</h1>
+
+        <div class="quote-box">
+            手动算得出大概，算不准退休的精确时间表。
+        </div>
+
+        <p>如果你已经了解FIRE的基础逻辑，也清楚各项参数的取值规范，手动测算依然会遇到两个问题：一是只能算出粗略总年限，看不到逐年的资产变化；二是想微调一个参数对比效果，就要全部重算，效率极低。</p>
+        <p>提前退休计算器就是为解决这个问题设计的，把复杂的复利、通胀、提款周期计算标准化，支持参数实时联动，帮你快速得出精准结果，对比不同规划方案的差异。</p>
+
+        <h2>一、工具的3个核心价值：手动测算做不到</h2>
+        <p>这是工具区别于手工计算的独有能力，也是纯原理文章覆盖不到的实操价值：</p>
+
+        <div class="highlight-card">
+            <h3>1. 实时敏感度测算：调一个参数，立刻看到退休时间差</h3>
+            <p>手动算一次完整方案需要十几分钟，想知道「每月多存1000元能早退休多久」「收益率变动1%能缩短几年」，往往要反复计算好几遍。工具支持参数实时联动，改动任意一个数值，结果同步更新，10秒就能看到单一变量的精确影响，帮你快速找到性价比最高的优化方向。</p>
+        </div>
+
+        <div class="highlight-card">
+            <h3>2. 全周期动态推演：看清每年的资产增长节奏</h3>
+            <p>手动测算只能得到「达标总年限」这个单一数字，工具会输出完整的年度资产明细：每一年的资产总额、累计储蓄、投资收益、距离目标的缺口都清晰可见。你能精准知道哪一年进入加速增长期、不同时间点退体能拿到多少钱，规划不再是模糊的终点数字。</p>
+        </div>
+
+        <div class="highlight-card">
+            <h3>3. 多方案一键对比：快速选出最适配的方案</h3>
+            <p>想对比保守、均衡、进取三种配置下的退休时间差，手动要算三组完整数据；工具只需调整参数就能快速切换，直观对比不同风险偏好下的退休年限、目标资产、支取金额，不用反复录入、重复计算，效率提升数十倍。</p>
+        </div>
+
+        <h2>二、分步操作：按口径填写即可</h2>
+        <p>所有参数的取值逻辑、合理区间与避坑要点，均在参数详解文章中有完整说明，这里只说明填写口径。</p>
+
+        <div class="step-card">
+            <h3>步骤1：填写个人基础信息</h3>
+            <ul>
+                <li><strong>性别、当前年龄</strong>：系统结合平均预期寿命匹配提款周期，女性默认周期更长、安全边际更高。</li>
+                <li><strong>当前净资产</strong>：仅填写可生息的投资资产，扣除所有负债；自住房产、自用物品不计入。</li>
+            </ul>
+            <div class="tip-box">
+                资产口径与统计范围说明，详见FIRE核心逻辑科普文章。
+            </div>
+        </div>
+
+        <div class="step-card">
+            <h3>步骤2：填写收支规划参数</h3>
+            <ul>
+                <li><strong>每月储蓄</strong>：填写税后可稳定用于投资的常态金额，勿按短期收入峰值计算。</li>
+                <li><strong>每月支出</strong>：填写退休后的预计月均生活开支，剔除阶段性支出，预留养老、医疗新增开支。</li>
+            </ul>
+            <div class="tip-box">
+                有社保、企业年金的用户，可按保守口径折算净支出后填写，折算方法见参数详解文章。
+            </div>
+        </div>
+
+        <div class="step-card">
+            <h3>步骤3：设置收益与风险参数</h3>
+            <ul>
+                <li><strong>预期年化收益率</strong>：填写扣除费用后的长期净年化收益，匹配自身资产配置水平。</li>
+                <li><strong>安全提款率</strong>：按计划退休年龄对应的提款周期选择，退休越早取值越保守。</li>
+                <li><strong>通胀率</strong>：默认参考日常消费长期通胀水平，可根据自身消费结构微调。</li>
+            </ul>
+            <div class="tip-box">
+                三项参数的合理区间、影响幅度与设置逻辑，详见参数详解文章。
+            </div>
+            <p>填写完成后系统自动测算，无需额外点击。</p>
+        </div>
+
+        <h2>三、结果页4个核心指标，重点看这些</h2>
+        <p>不用纠结计算过程，抓住4个核心指标，就能快速看懂你的退休规划全貌：</p>
+
+        <h3>1. 预计还需工作年限</h3>
+        <p>工具核心输出结果，即按当前参数攒够目标资产所需的时间，同步对应退休年龄。该数值已综合存量资产复利、每月储蓄投入、通胀支出上涨三重因素。</p>
+
+        <h3>2. 目标净资产</h3>
+        <p>达到FIRE状态所需的生息资产总额，是支撑退休后长期生活的本金底线。</p>
+
+        <h3>3. 退休后年可支取金额</h3>
+        <p>按目标资产与安全提款率计算的年度可支配生活费，已折算到退休时的名义金额，对应你设定的生活支出水平。</p>
+
+        <h3>4. 年度资产明细</h3>
+        <p>按年展示资产累计走势，可查看任意年份的资产总额、累计投入、收益贡献，直观掌握资产增长节奏。</p>
+
+        <h2>四、3个高频场景的调参玩法</h2>
+        <p>用好工具的实时联动能力，几分钟就能测试完多种方案，找到最优解：</p>
+
+        <h3>场景1：想提前2年退休，优先调什么</h3>
+        <ol>
+            <li>先调每月储蓄：小幅增加储蓄额，直观看到多存多少钱能实现目标，这是确定性最高的方式；</li>
+            <li>再调预期收益率：在风险承受范围内优化配置，观察收益提升的缩短效果；</li>
+            <li>最后看月支出：适度压缩非必要开支，降低目标资产要求。</li>
+        </ol>
+
+        <h3>场景2：想更稳妥，降低资产枯竭风险</h3>
+        <ol>
+            <li>下调安全提款率，显著提升资产长期安全性；</li>
+            <li>降低预期收益率：用更保守的收益假设，预留市场波动缓冲；</li>
+            <li>对应会小幅延长工作年限，换来更高的退休容错率。</li>
+        </ol>
+
+        <h3>场景3：测试极端情况，做压力测试</h3>
+        <p>把收益率下调1-2个百分点、通胀率上调1个百分点，重新测算退休时间。如果极端情况下的退休时间你也能接受，说明当前规划的安全垫足够，抗风险能力更强。</p>
+
+        <div class="summary">
+            <h2>总结</h2>
+            <p>提前退休规划，从不是算一次就定终身的事。</p>
+            <p>工具的意义，就是把复杂的计算简化成可随时调整的参数，让你能低成本地测试不同选择、不同风险下的退休节奏，平衡好当下的生活质量和未来的退休目标，最终找到属于自己的精准时间表。</p>
+        </div>
+    </div>
+
+    <!-- 相关工具 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:8px;">相关工具</h2>
+        <p style="color:#94a3b8;margin-bottom:12px;">从 FIRE 核心原理、关键参数校准到提前退休计算器实操，帮助用户精准测算退休年限。</p>
+        <a href="../fire-calculator.html" target="_blank" rel="noopener noreferrer" style="color:#00d4ff;text-decoration:none;font-weight:500;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">FIRE 提前退休计算器 →</a>
+    </div>
+    <!-- 相关文章 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:12px;">相关文章</h2>
+        <ul style="list-style:none;padding:0;margin:0;">
+            <li style="margin-bottom:10px;"><a href="FIRE Basics: How Much to Retire Early.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">想提前退休需要攒多少钱？FIRE 核心逻辑与计算方法详解</a></li>
+            <li><a href="FIRE Parameters: Returns, Withdrawal & Inflation.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00d4ff'">想提前退休别盲目估算：收益率、提款率与通胀的真实影响</a></li>
+        </ul>
+    </div>
+    <!-- 统一页脚 -->
+    <div id="legal-footer-nav" style="text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);margin-top:20px;">
+        <div style="margin-bottom:20px;">
+            <a href="../about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">关于我们</a>
+            <a href="../contact.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">联系我们</a>
+            <a href="../privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">隐私政策</a>
+            <a href="../disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;" onmouseover="this.style.color='rgba(255,255,255,0.9)'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">免责声明</a>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+    </div>
+</body>
+</html>
