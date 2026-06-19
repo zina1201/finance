@@ -193,9 +193,11 @@
     <div class="fg loan-single" id="fg-single-rate"><label id="lbl-rate">年利率</label><div class="iw"><input type="number" id="inp-rate" value="3.5" min="0.01" step="0.01"><span class="is">%</span></div></div>
     <div class="fg loan-combined" style="display:none"><label>商贷金额</label><div class="iw"><input type="number" id="inp-com-amount" value="70" min="0" step="1"><span class="is">万元</span></div></div>
     <div class="fg loan-combined" style="display:none"><label>商贷利率</label><div class="iw"><input type="number" id="inp-com-rate" value="3.5" min="0.01" step="0.01"><span class="is">%</span></div></div>
+    <div class="fg loan-combined" style="display:none"><label>商贷年限</label><div class="iw"><input type="number" id="inp-com-years" value="30" min="1" max="30" step="1"><span class="is">年</span></div></div>
     <div class="fg loan-combined" style="display:none"><label>公积金金额</label><div class="iw"><input type="number" id="inp-fund-amount" value="30" min="0" step="1"><span class="is">万元</span></div></div>
     <div class="fg loan-combined" style="display:none"><label>公积金利率</label><div class="iw"><input type="number" id="inp-fund-rate" value="2.85" min="0.01" step="0.01"><span class="is">%</span></div></div>
-    <div class="fg" style="flex:.5;min-width:100px"><label>贷款年限</label><div class="iw"><input type="number" id="inp-years" value="30" min="1" max="30" step="1"><span class="is">年</span></div></div>
+    <div class="fg loan-combined" style="display:none"><label>公积金年限</label><div class="iw"><input type="number" id="inp-fund-years" value="30" min="1" max="30" step="1"><span class="is">年</span></div></div>
+    <div class="fg loan-single"><label>贷款年限</label><div class="iw"><input type="number" id="inp-years" value="30" min="1" max="30" step="1"><span class="is">年</span></div></div>
   </div>
 
   <div class="container lpr-section" id="lprSection" style="display:none">
@@ -325,7 +327,12 @@
   function show(el){el.style.display='block'}
   function hide(el){el.style.display='none'}
 
-  // === 新增：根据当前标签页和已还期数控制主利率区间显隐 ===
+  function getMaxCombinedYears(){
+    var lt=$('inp-type').value;
+    if(lt!=='combined')return num('inp-years');
+    return Math.max(num('inp-com-years'),num('inp-fund-years'));
+  }
+
   function updateMainSegVisibility(){
     if(rateType !== 'lpr') return;
     var lt=$('inp-type').value;
@@ -365,9 +372,10 @@
   }
 
   function generateFullSegInputs(){
-    var years=num('inp-years'),period=getSegPeriod(),count=Math.ceil(years/period);
-    if(count<1)count=1;
     var lt=$('inp-type').value;
+    var years = lt==='combined' ? getMaxCombinedYears() : num('inp-years');
+    var period=getSegPeriod(),count=Math.ceil(years/period);
+    if(count<1)count=1;
     var baseRate=lt==='combined'?num('inp-com-rate'):num('inp-rate');
     if(!baseRate)baseRate=3.5;
     var grid=$('rateSegGrid'),h='';
@@ -415,14 +423,14 @@
     if(!isLpr||paid<=0){hide(section);return}
     show(section);
     var fullRates=readFullSegRates(),segPeriod=getSegPeriod(),segM=segPeriod*12;
-    var totalM=num('inp-years')*12;
+    var totalM = type==='combined' ? getMaxCombinedYears()*12 : num('inp-years')*12;
     var startSeg=Math.floor(paid/segM);
     var grid=$(prefix+'-future-grid');
     var count=Math.ceil((totalM-paid)/segM);
     if(count<1)count=1;
     var h='';
     for(var i=0;i<count;i++){
-      var segIdx=startSeg+i,sy=segIdx*segPeriod,ey=Math.min(sy+segPeriod,num('inp-years'));
+      var segIdx=startSeg+i,sy=segIdx*segPeriod,ey=Math.min(sy+segPeriod,type==='combined'?getMaxCombinedYears():num('inp-years'));
       var defRate=segIdx<fullRates.length?fullRates[segIdx]:fullRates[fullRates.length-1];
       h+='<div class="rate-seg-card"><span class="seg-label">第'+(sy+1)+'~'+ey+'年</span>';
       h+='<input type="number" class="future-rate-input" data-idx="'+i+'" value="'+defRate+'" min="0.01" max="30" step="0.01">';
@@ -485,17 +493,19 @@
   }
 
   function getInp(){
-    var type=$('inp-type').value,Y=num('inp-years');if(!Y)return null;
-    var rt=rateType,segR=(rt==='lpr'&&type!=='fund')?readFullSegRates():null,segP=getSegPeriod();
+    var type=$('inp-type').value;
+    var rt=rateType,segP=getSegPeriod();
     if(type==='combined'){
-      var cA=num('inp-com-amount'),cR=num('inp-com-rate'),fA=num('inp-fund-amount'),fR=num('inp-fund-rate');
-      if((!cA||!cR)&&(!fA||!fR))return null;
-      return{type:'combined',Y:Y,
-        com:cA>0&&cR>0?{A:cA,rate:cR,P:cA*W,r:cR/100/12,n:Y*12}:null,
-        fund:fA>0&&fR>0?{A:fA,rate:fR,P:fA*W,r:fR/100/12,n:Y*12}:null,
+      var cA=num('inp-com-amount'),cR=num('inp-com-rate'),cY=num('inp-com-years');
+      var fA=num('inp-fund-amount'),fR=num('inp-fund-rate'),fY=num('inp-fund-years');
+      if((!cA||!cR||!cY)&&(!fA||!fR||!fY))return null;
+      var segR=(rt==='lpr')?readFullSegRates():null;
+      return{type:'combined',
+        com:cA>0&&cR>0&&cY>0?{A:cA,rate:cR,Y:cY,P:cA*W,r:cR/100/12,n:cY*12}:null,
+        fund:fA>0&&fR>0&&fY>0?{A:fA,rate:fR,Y:fY,P:fA*W,r:fR/100/12,n:fY*12}:null,
         rateType:rt,segRates:segR,segPeriod:segP};
     }
-    var A=num('inp-amount'),rate=num('inp-rate');if(!A||!rate)return null;
+    var A=num('inp-amount'),rate=num('inp-rate'),Y=num('inp-years');if(!A||!rate||!Y)return null;
     return{type:type,A:A,rate:rate,Y:Y,P:A*W,r:rate/100/12,n:Y*12,rateType:rt,segRates:segR,segPeriod:segP}
   }
   function getActivePortion(prefix){var bar=$(prefix+'-portion-bar'),a=bar.querySelector('.pbtn.active');return a?a.dataset.portion:'com'}
@@ -513,7 +523,7 @@
       var sP=calcSegmented(P,inp.segRates,inp.segPeriod,n,'ep');
       if(!sE||!sP)return;
       var tiE=sE.totalInterest,tiP=sP.totalInterest,M=sE.epiMonthly[0].payment,fm=sP.monthlyPay[0].payment,lm=sP.monthlyPay[n-1].payment,diff=tiE-tiP;
-      var h=mtr(M,fm,lm,tiE,tiP);h+=lprDetail(inp.segRates,inp.segPeriod,n,sE,sP);
+      var h=mtr(M,fm,lm,tiE,tiP);h+=lprDetail(inp.segRates,inp.segPeriod,inp.Y,n,sE,sP);
       h+=cmpTbl(M,fm,lm,tiE,tiP,P+tiE,P+tiP,diff);h+=ratioBars(P,P+tiE,P+tiP,tiE,tiP);
       h+=segPayTbl(sE);
       h+=rbox((diff>0?'<div class="ri"><span class="ra">▸</span>等额本金总共少付利息 <em>'+fw(diff)+'万</em></div>':'')
@@ -540,21 +550,21 @@
       if(isLpr){
         comSegE=calcSegmented(com.P,inp.segRates,inp.segPeriod,com.n,'epi');
         comSegP=calcSegmented(com.P,inp.segRates,inp.segPeriod,com.n,'ep');
-        cD={P:com.P,rate:com.rate,M:comSegE.epiMonthly[0].payment,fm:comSegP.monthlyPay[0].payment,lm:comSegP.monthlyPay[com.n-1].payment,tiEpi:comSegE.totalInterest,tiEp:comSegP.totalInterest};
+        cD={P:com.P,rate:com.rate,Y:com.Y,M:comSegE.epiMonthly[0].payment,fm:comSegP.monthlyPay[0].payment,lm:comSegP.monthlyPay[com.n-1].payment,tiEpi:comSegE.totalInterest,tiEp:comSegP.totalInterest};
       }else{
         var cM=epiM(com.P,com.r,com.n),cF=epFirst(com.P,com.r,com.n),cL=com.P/com.n+com.P/com.n*com.r;
-        cD={P:com.P,rate:com.rate,M:cM,fm:cF,lm:cL,tiEpi:cM*com.n-com.P,tiEp:com.r*com.P*(com.n+1)/2};
+        cD={P:com.P,rate:com.rate,Y:com.Y,M:cM,fm:cF,lm:cL,tiEpi:cM*com.n-com.P,tiEp:com.r*com.P*(com.n+1)/2};
       }
     }
     if(fund){
       var fM=epiM(fund.P,fund.r,fund.n),fF=epFirst(fund.P,fund.r,fund.n),fL=fund.P/fund.n+fund.P/fund.n*fund.r;
-      fD={P:fund.P,rate:fund.rate,M:fM,fm:fF,lm:fL,tiEpi:fM*fund.n-fund.P,tiEp:fund.r*fund.P*(fund.n+1)/2};
+      fD={P:fund.P,rate:fund.rate,Y:fund.Y,M:fM,fm:fF,lm:fL,tiEpi:fM*fund.n-fund.P,tiEp:fund.r*fund.P*(fund.n+1)/2};
     }
     var tM=(cD?cD.M:0)+(fD?fD.M:0),tF=(cD?cD.fm:0)+(fD?fD.fm:0),tL=(cD?cD.lm:0)+(fD?fD.lm:0);
     var tTiE=(cD?cD.tiEpi:0)+(fD?fD.tiEpi:0),tTiP=(cD?cD.tiEp:0)+(fD?fD.tiEp:0);
     var tP=(com?com.P:0)+(fund?fund.P:0),diff=tTiE-tTiP;
     var h=mtr(tM,tF,tL,tTiE,tTiP);
-    if(isLpr&&cD)h+=lprDetail(inp.segRates,inp.segPeriod,com.n,comSegE,comSegP);
+    if(isLpr&&cD)h+=lprDetail(inp.segRates,inp.segPeriod,com.Y,com.n,comSegE,comSegP);
     h+=cmpTbl(tM,tF,tL,tTiE,tTiP,tP+tTiE,tP+tTiP,diff);h+=ratioBars(tP,tP+tTiE,tP+tTiP,tTiE,tTiP);
     h+='<div class="chart-wrap" id="cmpChart"></div>';
     h+='<div class="sep"></div><div class="sl">各贷款明细</div>';
@@ -563,18 +573,43 @@
     h+=rbox((diff>0?'<div class="ri"><span class="ra">▸</span>等额本金总共少付利息 <em>'+fw(diff)+'万</em></div>':'')
       +'<div class="ri"><span class="ra">▸</span>等额本息每月固定¥'+fmt(tM)+'，便于规划</div>'
       +(isLpr?'<div class="ri"><span class="ra">▸</span>商贷按LPR分段计算，公积金按固定利率计算</div>':'')
-      +(com&&fund?'<div class="ri"><span class="ra">▸</span>商贷 '+fw(com.P)+'万（'+(com.P/tP*100).toFixed(0)+'%），公积金 '+fw(fund.P)+'万（'+(fund.P/tP*100).toFixed(0)+'%）</div>':''));
+      +(com&&fund?'<div class="ri"><span class="ra">▸</span>商贷 '+fw(com.P)+'万（'+com.Y+'年，'+(com.P/tP*100).toFixed(0)+'%），公积金 '+fw(fund.P)+'万（'+fund.Y+'年，'+(fund.P/tP*100).toFixed(0)+'%）</div>':''));
     el.innerHTML=h;
-    var dE=[],dP=[],n=com?com.n:fund.n,step=Math.max(1,Math.ceil(n/80));
-    for(var k=1;k<=n;k+=step){
-      var ki=Math.min(k-1,n-1);
-      var ce=comSegE?comSegE.monthlyPay[ki].payment:(com?epiM(com.P,com.r,com.n):0);
-      var cp=comSegP?comSegP.monthlyPay[ki].payment:(com?(com.P/com.n+com.P*(1-(k-1)/com.n)*com.r):0);
-      var fe=fD?fD.M:0;
-      var fp2=fund?(fund.P/fund.n+fund.P*(1-(k-1)/fund.n)*fund.r):0;
-      dE.push(ce+fe);dP.push(cp+fp2);
+    var dE=[],dP=[];
+    var maxN=Math.max(com?com.n:0,fund?fund.n:0);
+    var step=Math.max(1,Math.ceil(maxN/80));
+    for(var k=1;k<=maxN;k+=step){
+      var ce=0,cp=0;
+      if(com){
+        if(k<=com.n){
+          ce=comSegE?comSegE.monthlyPay[k-1].payment:epiM(com.P,com.r,com.n);
+          cp=comSegP?comSegP.monthlyPay[k-1].payment:(com.P/com.n+com.P*(1-(k-1)/com.n)*com.r);
+        }
+      }
+      if(fund){
+        if(k<=fund.n){
+          cp+=(fund.P/fund.n+fund.P*(1-(k-1)/fund.n)*fund.r);
+          ce+=fD?fD.M:0;
+        }
+      }
+      dE.push(ce);dP.push(cp);
     }
-    if(dE.length>=2)$('cmpChart').innerHTML=buildSVG(dE,dP);
+    if(dE.length>=2){
+      var markerFrac=null;
+      if(com&&fund&&com.n!==fund.n){
+        var transitionMonth=Math.min(com.n,fund.n);
+        markerFrac=(transitionMonth-1)/(maxN-1);
+      }
+      $('cmpChart').innerHTML=buildSVG(dE,dP,markerFrac);
+      if(com&&fund&&com.n!==fund.n){
+        var transM=Math.min(com.n,fund.n);
+        var shortLabel=com.n<fund.n?'商贷':'公积金';
+        var noteDiv=document.createElement('div');
+        noteDiv.style.cssText='font-size:.74rem;color:#FFB740;margin-top:8px;text-align:center;line-height:1.6';
+        noteDiv.textContent='图表在第'+transM+'个月处下降，因'+shortLabel+'部分已还清，合计月供减少。这是正常现象。';
+        $('cmpChart').appendChild(noteDiv);
+      }
+    }
   }
 
   function renderPrepay(){
@@ -582,14 +617,16 @@
     if(!inp){el.innerHTML='<div class="placeholder">请先填写上方贷款信息</div>';return}
     var P,n,method=$('pp-method').value,paid=num('pp-paid'),prepayA=num('pp-amount');
     if(!prepayA){el.innerHTML='<div class="placeholder">请输入提前还款金额</div>';return}
-    var userBal=0,isLpr=false,futureRates=null,por='';
+    var userBal=0,isLpr=false,futureRates=null,por='',loanYears=0;
     if(inp.type==='combined'){
       por=getActivePortion('pp');var loan=por==='com'?inp.com:inp.fund;
       if(!loan){el.innerHTML='<div class="placeholder">请填写所选贷款类型信息</div>';return}
-      P=loan.P;n=loan.n;userBal=por==='com'?num('pp-com-balance'):num('pp-fund-balance');
+      P=loan.P;n=loan.n;loanYears=loan.Y;
+      userBal=por==='com'?num('pp-com-balance'):num('pp-fund-balance');
       isLpr=(por==='com')&&inp.rateType==='lpr'&&inp.segRates&&inp.segRates.length>0;
     }else{
-      P=inp.P;n=inp.n;userBal=num('pp-balance');
+      P=inp.P;n=inp.n;loanYears=inp.Y;
+      userBal=num('pp-balance');
       isLpr=inp.rateType==='lpr'&&inp.segRates&&inp.segRates.length>0;
     }
     if(paid>=n){el.innerHTML='<div style="color:var(--text-muted);padding:20px 0;text-align:center">已还期数不能超过总期数</div>';return}
@@ -635,7 +672,7 @@
     }else{
       rNewM=Bp<=0?0:Bp/rem+Bp*r;rSaved=B>0?epRemI(Bp,r,rem):0;rDelta=M-rNewM;
     }
-    var lbl=inp.type==='combined'?(por==='com'?'商贷':'公积金')+' ':'';
+    var lbl=inp.type==='combined'?(por==='com'?'商贷（'+loanYears+'年）':'公积金（'+loanYears+'年）')+' ':'';
     var h='<div class="sl">'+lbl+'当前状态</div>';
     h+='<div class="mg" style="margin-bottom:12px">';
     h+='<div class="mc"><span class="ml">剩余本金</span><span class="mv">'+fw(B)+'<span class="u">万</span></span>'+(paid>0?'<span class="ms">用户输入</span>':'<span class="ms">自动计算</span>')+'</div>';
@@ -670,14 +707,16 @@
     if(!inp){el.innerHTML='<div class="placeholder">请先填写上方贷款信息</div>';return}
     var P,n,method=$('inv-method').value,paid=num('inv-paid'),prepayA=num('inv-amount'),retRate=num('inv-return');
     if(!prepayA||!retRate){el.innerHTML='<div class="placeholder">请输入提前还款金额和理财收益率</div>';return}
-    var userBal=0,isLpr=false,futureRates=null,por='';
+    var userBal=0,isLpr=false,futureRates=null,por='',loanYears=0;
     if(inp.type==='combined'){
       por=getActivePortion('inv');var loan=por==='com'?inp.com:inp.fund;
       if(!loan){el.innerHTML='<div class="placeholder">请填写所选贷款类型信息</div>';return}
-      P=loan.P;n=loan.n;userBal=por==='com'?num('inv-com-balance'):num('inv-fund-balance');
+      P=loan.P;n=loan.n;loanYears=loan.Y;
+      userBal=por==='com'?num('inv-com-balance'):num('inv-fund-balance');
       isLpr=(por==='com')&&inp.rateType==='lpr'&&inp.segRates&&inp.segRates.length>0;
     }else{
-      P=inp.P;n=inp.n;userBal=num('inv-balance');
+      P=inp.P;n=inp.n;loanYears=inp.Y;
+      userBal=num('inv-balance');
       isLpr=inp.rateType==='lpr'&&inp.segRates&&inp.segRates.length>0;
     }
     if(paid>=n){el.innerHTML='<div style="color:var(--text-muted);padding:20px 0;text-align:center">已还期数不能超过总期数</div>';return}
@@ -745,14 +784,14 @@
     h+='<div class="mc"><span class="ml">等额本息 总利息</span><span class="mv">'+fw(tiE)+'<span class="u">万</span></span></div>';
     h+='<div class="mc"><span class="ml">等额本金 总利息</span><span class="mv">'+fw(tiP)+'<span class="u">万</span></span></div></div>';return h;
   }
-  function lprDetail(rates,segP,n,sE,sP){
+  function lprDetail(rates,segP,years,n,sE,sP){
     var h='<div class="sep"></div><div class="sl">LPR 分段利率明细</div>';
     h+='<div class="sub-card" style="opacity:0;animation:ci .4s ease forwards">';
     h+='<table class="cmp-tbl" style="box-shadow:none;animation:none;opacity:1;margin:0"><thead><tr><th>区间</th><th>年利率</th><th>等额本息月供</th><th>区间利息</th></tr></thead><tbody>';
     for(var i=0;i<rates.length;i++){
       var sm=i*segP*12,em=Math.min((i+1)*segP*12,n),segI=0;
       for(var m=sm;m<em&&m<sE.monthlyPay.length;m++)segI+=sE.monthlyPay[m].interest;
-      h+='<tr><td>第'+(i*segP+1)+'~'+Math.min((i+1)*segP,Math.ceil(n/12))+'年</td><td>'+rates[i].toFixed(2)+'%</td><td>¥'+fmt(sE.epiMonthly[i]?sE.epiMonthly[i].payment:0)+'</td><td>'+fw(segI)+'万</td></tr>';
+      h+='<tr><td>第'+(i*segP+1)+'~'+Math.min((i+1)*segP,years)+'年</td><td>'+rates[i].toFixed(2)+'%</td><td>¥'+fmt(sE.epiMonthly[i]?sE.epiMonthly[i].payment:0)+'</td><td>'+fw(segI)+'万</td></tr>';
     }h+='</tbody></table></div>';return h;
   }
   function segPayTbl(sE){
@@ -780,7 +819,7 @@
   function rbox(inner){return '<div class="rbox" style="margin-top:14px"><div class="rbox-title">决策建议</div>'+inner+'</div>'}
   function loanDetailCard(label,color,d){
     var h='<div class="sub-card" style="margin-bottom:14px;opacity:0;animation:ci .4s ease forwards">';
-    h+='<div class="cph"><span class="pt" style="background:'+color+'">'+label+'</span><span class="pn">'+fw(d.P)+'万 · '+d.rate+'%</span></div>';
+    h+='<div class="cph"><span class="pt" style="background:'+color+'">'+label+'</span><span class="pn">'+fw(d.P)+'万 · '+d.Y+'年 · '+d.rate+'%</span></div>';
     h+='<div class="mg" style="margin-top:10px">';
     h+='<div class="cm"><div class="cml">等额本息月供</div><div class="cmv">¥'+fmt(d.M)+'</div></div>';
     h+='<div class="cm"><div class="cml">等额本金首月</div><div class="cmv">¥'+fmt(d.fm)+'</div></div>';
@@ -798,7 +837,7 @@
     for(var i=0;i<sE.monthlyPay.length;i+=step){dE.push(sE.monthlyPay[i].payment);dP.push(sP.monthlyPay[i].payment)}
     if(dE.length<2)return;$(id).innerHTML=buildSVG(dE,dP);
   }
-  function buildSVG(dE,dP){
+  function buildSVG(dE,dP,markerFrac){
     var mx=Math.max.apply(null,dP)*1.05,mn=Math.min(dE[0],Math.min.apply(null,dP))*0.92;
     var WW=560,HH=240,pad={t:15,r:15,b:35,l:55},cW=WW-pad.l-pad.r,cH=HH-pad.t-pad.b,len=dE.length;
     function xS(i){return pad.l+(i/(len-1))*cW}
@@ -808,6 +847,12 @@
     var area='M '+xS(0)+' '+yS(dE[0]);for(var i=1;i<len;i++)area+=' L '+xS(i)+' '+yS(dE[i]);for(var i=len-1;i>=0;i--)area+=' L '+xS(i)+' '+yS(dP[i]);area+=' Z';s+='<path d="'+area+'" fill="rgba(0,212,255,0.08)"/>';
     var p1='M '+xS(0)+' '+yS(dE[0]);for(var i=1;i<len;i++)p1+=' L '+xS(i)+' '+yS(dE[i]);s+='<path d="'+p1+'" fill="none" stroke="#00D4FF" stroke-width="2"/>';
     var p2='M '+xS(0)+' '+yS(dP[0]);for(var i=1;i<len;i++)p2+=' L '+xS(i)+' '+yS(dP[i]);s+='<path d="'+p2+'" fill="none" stroke="#7A20FF" stroke-width="2"/>';
+    if(typeof markerFrac==='number'&&markerFrac>0&&markerFrac<1){
+      var mkX=pad.l+markerFrac*cW;
+      s+='<line x1="'+mkX+'" y1="'+pad.t+'" x2="'+mkX+'" y2="'+(HH-pad.b)+'" stroke="rgba(255,183,64,0.5)" stroke-width="1.2" stroke-dasharray="5,3"/>';
+      s+='<rect x="'+(mkX+3)+'" y="'+(pad.t+2)+'" width="62" height="16" rx="3" fill="rgba(255,183,64,0.15)"/>';
+      s+='<text x="'+(mkX+6)+'" y="'+(pad.t+13)+'" fill="#FFB740" font-size="9.5" font-family="Inter,Noto Sans SC,sans-serif">部分还清</text>';
+    }
     s+='</svg><div class="chart-leg"><div class="chart-leg-item"><span class="chart-leg-dot" style="background:#00D4FF"></span>等额本息</div><div class="chart-leg-item"><span class="chart-leg-dot" style="background:#7A20FF"></span>等额本金</div></div>';return s;
   }
 
@@ -829,9 +874,11 @@
       updateFutureRates('pp');updateFutureRates('inv');
     }
   });
-  $('inp-years').addEventListener('change',function(){if(rateType==='lpr')generateFullSegInputs()});
+  $('inp-years').addEventListener('change',function(){if(rateType==='lpr'&&$('inp-type').value!=='combined')generateFullSegInputs()});
   $('inp-rate').addEventListener('input',function(){if(rateType==='lpr')generateFullSegInputs()});
   $('inp-com-rate').addEventListener('input',function(){if(rateType==='lpr')generateFullSegInputs()});
+  $('inp-com-years').addEventListener('change',function(){if(rateType==='lpr'&&$('inp-type').value==='combined'){generateFullSegInputs();updateFutureRates('pp');updateFutureRates('inv')}});
+  $('inp-fund-years').addEventListener('change',function(){if(rateType==='lpr'&&$('inp-type').value==='combined'){generateFullSegInputs();updateFutureRates('pp');updateFutureRates('inv')}});
   $('pp-paid').addEventListener('input',function(){updateFutureRates('pp');updateMainSegVisibility()});
   $('inv-paid').addEventListener('input',function(){updateFutureRates('inv');updateMainSegVisibility()});
 
@@ -860,9 +907,9 @@
   var pp=new URLSearchParams(location.search);
   if(pp.has('type')){
     $('inp-type').value=pp.get('type');switchLoanType();
-    if(pp.get('type')==='combined'){if(pp.has('ca'))$('inp-com-amount').value=pp.get('ca');if(pp.has('cr'))$('inp-com-rate').value=pp.get('cr');if(pp.has('fa'))$('inp-fund-amount').value=pp.get('fa');if(pp.has('fr'))$('inp-fund-rate').value=pp.get('fr')}
-    else{if(pp.has('p'))$('inp-amount').value=pp.get('p');if(pp.has('r'))$('inp-rate').value=pp.get('r')}
-    if(pp.has('y'))$('inp-years').value=pp.get('y');if(pp.has('m'))$('pp-method').value=pp.get('m');if(pp.has('k'))$('pp-paid').value=pp.get('k');if(pp.has('a'))$('pp-amount').value=pp.get('a');
+    if(pp.get('type')==='combined'){if(pp.has('ca'))$('inp-com-amount').value=pp.get('ca');if(pp.has('cr'))$('inp-com-rate').value=pp.get('cr');if(pp.has('cy'))$('inp-com-years').value=pp.get('cy');if(pp.has('fa'))$('inp-fund-amount').value=pp.get('fa');if(pp.has('fr'))$('inp-fund-rate').value=pp.get('fr');if(pp.has('fy'))$('inp-fund-years').value=pp.get('fy')}
+    else{if(pp.has('p'))$('inp-amount').value=pp.get('p');if(pp.has('r'))$('inp-rate').value=pp.get('r');if(pp.has('y'))$('inp-years').value=pp.get('y')}
+    if(pp.has('m'))$('pp-method').value=pp.get('m');if(pp.has('k'))$('pp-paid').value=pp.get('k');if(pp.has('a'))$('pp-amount').value=pp.get('a');
     switchTab(1);setTimeout(renderPrepay,300);
   }
 
@@ -875,18 +922,37 @@
 <div style="position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 80px;color:#B0B0D8;font-size:14px;line-height:1.8;">
   <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">工具介绍</h2>
-    <p>支持商业贷款、公积金贷款和组合贷款的还款方式对比、提前还款分析和还贷vs理财收益对比。支持<strong style="color:#00D4FF">固定利率</strong>和<strong style="color:#00D4FF">LPR浮动利率</strong>两种模式。公积金贷款利率由政策定价，不跟随LPR浮动，按固定利率计算。</p>
+    <p>支持商业贷款、公积金贷款和组合贷款的还款方式对比、提前还款分析和还贷vs理财收益对比。支持<strong style="color:#00D4FF">固定利率</strong>和<strong style="color:#00D4FF">LPR浮动利率</strong>两种模式。公积金贷款利率由政策定价，不跟随LPR浮动，按固定利率计算。组合贷款支持商贷和公积金<strong style="color:#00D4FF">独立设置贷款年限</strong>，两部分独立计算后汇总。</p>
   </div>
   <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);margin-bottom:20px;">
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">如何使用</h2>
-    <p><strong style="color:#00D4FF;">1.</strong> 选择贷款类型和利率类型。LPR模式下请预估各时段年利率（默认取您输入的利率，可调高或调低）。</p>
-    <p><strong style="color:#00D4FF;">2. 还款对比：</strong> 点击"开始对比"查看两种还款方式差异。LPR模式会显示各区间月供变化。</p>
+    <p><strong style="color:#00D4FF;">1.</strong> 选择贷款类型和利率类型。组合贷款请分别填写商贷和公积金的金额、利率和<strong>年限</strong>（两者可以不同）。LPR模式下请预估各时段年利率（默认取您输入的利率，可调高或调低）。</p>
+    <p><strong style="color:#00D4FF;">2. 还款对比：</strong> 点击"开始对比"查看两种还款方式差异。组合贷款将按各自年限独立计算后汇总，LPR模式会显示各区间月供变化。</p>
     <p><strong style="color:#00D4FF;">3. 提前还款：</strong> 填写已还期数和提前还款金额。<strong>已开始还款时，请填写银行账单上的当前剩余本金（必填）</strong>，并预估剩余期间利率走势。组合贷款需分别填写商贷和公积金的剩余本金。</p>
     <p><strong style="color:#00D4FF;">4. 还贷vs理财：</strong> 额外输入理财收益率，对比提前还贷节省的利息与理财收益。</p>
   </div>
   <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
     <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:16px;">免责声明</h2>
     <p>本工具计算结果仅供参考，实际还款金额以银行合同为准。LPR浮动利率模式下的分段利率为用户自行预估，实际LPR调整以央行政策为准。建议使用银行账单上的剩余本金以获得最准确结果。</p>
+  </div>
+</div>
+
+<!-- 相关文章 -->
+<div class="related-articles" style="position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px 40px;color:#B0B0D8;font-size:14px;line-height:1.8;">
+  <div style="background:rgba(30,30,66,0.6);backdrop-filter:blur(12px);border-radius:16px;padding:20px;border:1px solid rgba(255,255,255,0.06);">
+    <h2 style="font-size:18px;font-weight:600;color:#FFFFFF;margin-bottom:8px;">相关文章</h2>
+    <p style="color:#94a3b8;margin-bottom:16px;">了解离职赔偿政策、个税计算规则及避坑指南。</p>
+    <ul style="list-style:none;padding:0;margin:0;">
+      <li style="margin-bottom:10px;">
+        <a href="guides/mortgage-payment-types.html" style="color:#00D4FF;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00D4FF'">等额本息和等额本金到底差多少？一张图看懂两种房贷还款方式</a>
+      </li>
+      <li style="margin-bottom:10px;">
+        <a href="guides/early-mortgage-payoff.html" style="color:#00D4FF;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00D4FF'">提前还房贷真的划算吗？缩短年限还是减月供，算清收益再动手</a>
+      </li>
+      <li style="margin-bottom:0;">
+        <a href="guides/combined-loan-tips.html" style="color:#00D4FF;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#7A20FF'" onmouseout="this.style.color='#00D4FF'">组合贷款怎么还款最省利息？优先还商贷还是公积金一文讲透</a>
+      </li>
+    </ul>
   </div>
 </div>
 
