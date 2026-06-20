@@ -34,14 +34,12 @@
     }
 
     body {
-      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg-body);
       color: var(--text-primary);
       line-height: 1.5;
       min-height: 100vh;
       overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     /* ===== Canvas Background ===== */
@@ -127,7 +125,7 @@
     }
 
     .logo-text {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display';
       font-size: 18px;
       font-weight: 500;
       letter-spacing: 0.5px;
@@ -135,7 +133,7 @@
     }
 
     .nav-link {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono';
       font-size: 12px;
       color: var(--text-dim);
       text-decoration: none;
@@ -176,7 +174,7 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-card);
       border-radius: 100px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono';
       font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -193,7 +191,7 @@
     }
 
     .hero-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display';
       font-size: 72px;
       font-weight: 600;
       line-height: 1.1;
@@ -210,8 +208,8 @@
 
     .hero-subtitle {
       font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.3);
+      line-height: 1.625;
       max-width: 500px;
       margin-bottom: 48px;
     }
@@ -236,7 +234,7 @@
     }
 
     .stat-number {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display';
       font-size: 36px;
       font-weight: 600;
       line-height: 1;
@@ -251,7 +249,7 @@
     }
 
     .stat-label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono';
       font-size: 11px;
       color: var(--text-dim);
       letter-spacing: 1px;
@@ -285,7 +283,7 @@
     }
 
     .section-divider-text {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono';
       font-size: 10.4px;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.2);
@@ -331,8 +329,6 @@
 
     .tool-card:hover .tool-card-inner {
       transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.12);
-      background: rgba(26, 26, 44, 0.92);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 40px rgba(251, 191, 36, 0.06);
     }
 
@@ -371,10 +367,10 @@
     }
 
     .card-number {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono';
       font-size: 12px;
-      color: var(--text-dim);
-      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.05em;
     }
 
     .card-icon {
@@ -421,32 +417,27 @@
     }
 
     .card-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display';
       font-size: 20px;
       font-weight: 600;
       line-height: 28px;
-      color: #fff;
+      color: rgba(255, 255, 255, 0.9);
       margin-bottom: 4px;
     }
 
     .card-subtitle {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--text-faint);
-      letter-spacing: 0.6px;
+      font-family: 'JetBrains Mono';
+      font-size: 10.4px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.15em;
       text-transform: uppercase;
     }
 
     .card-description {
-      font-size: 13px;
-      color: var(--text-dim);
-      line-height: 1.6;
+      font-size: 13.12px;
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1.625;
       margin-bottom: 20px;
-      transition: color 0.3s ease;
-    }
-
-    .tool-card:hover .card-description {
-      color: var(--text-muted);
     }
 
     .card-footer {
@@ -461,13 +452,13 @@
     }
 
     .tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      font-family: 'JetBrains Mono';
+      font-size: 9.6px;
       padding: 4px 10px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 10px;
-      color: var(--text-dim);
+      color: rgba(255, 255, 255, 0.25);
       letter-spacing: 0.5px;
     }
 
@@ -518,7 +509,7 @@
     }
 
     .footer-about h3 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display';
       font-size: 20px;
       color: rgba(255, 255, 255, 0.7);
       margin-bottom: 16px;
@@ -553,7 +544,7 @@
 
     .footer-copyright {
       text-align: center;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono';
       font-size: 11px;
       color: rgba(255, 255, 255, 0.15);
       letter-spacing: 0.5px;
@@ -636,6 +627,35 @@
       from { opacity: 1; transform: translateY(0); }
       to { opacity: 0; transform: translateY(20px); }
     }
+
+    /* ===== Entrance Animation ===== */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-up {
+      opacity: 0;
+      animation: fadeUp 0.8s ease-out both;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+    .delay-card-1 { animation-delay: 0.3s; }
+    .delay-card-2 { animation-delay: 0.4s; }
+    .delay-card-3 { animation-delay: 0.5s; }
+    .delay-card-4 { animation-delay: 0.6s; }
+    .delay-card-5 { animation-delay: 0.7s; }
+    .delay-card-6 { animation-delay: 0.8s; }
 
     /* ===== Responsive ===== */
     @media (max-width: 1024px) {
@@ -720,18 +740,18 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="badge">
+      <div class="badge animate-fade-up delay-1">
         <span class="badge-dot"></span>
         Financial Tools Collection
       </div>
-      <h1 class="hero-title">
+      <h1 class="hero-title animate-fade-up delay-2">
         财务<br><span class="highlight">工具箱</span>
       </h1>
-      <p class="hero-subtitle">
+      <p class="hero-subtitle animate-fade-up delay-3">
         将复杂的财务计算转化为简洁优雅的工具<br>
         让每一个财务决策都有据可依
       </p>
-      <div class="stats">
+      <div class="stats animate-fade-up delay-4">
         <div class="stat-item">
           <span class="stat-number">6</span>
           <span class="stat-label">工具</span>
@@ -748,7 +768,7 @@
     </section>
 
     <!-- Section Divider -->
-    <div class="section-divider">
+    <div class="section-divider animate-fade-up delay-5">
       <span class="section-divider-text">精选工具</span>
     </div>
 
@@ -756,7 +776,7 @@
     <section class="tools-section">
       <div class="tools-grid">
         <!-- Tool 1: 年终奖分配优化 -->
-        <a href="bonus-optimizer.html" class="tool-card">
+        <a href="bonus-optimizer.html" class="tool-card animate-fade-up delay-card-1">
           <div class="tool-card-inner">
             <div class="card-glow glow-amber"></div>
             <div class="card-content">
@@ -791,7 +811,7 @@
         </a>
 
         <!-- Tool 2: 我的一小时 -->
-        <a href="time-value.html" class="tool-card">
+        <a href="hour-value.html" class="tool-card animate-fade-up delay-card-2">
           <div class="tool-card-inner">
             <div class="card-glow glow-cyan"></div>
             <div class="card-content">
@@ -826,7 +846,7 @@
         </a>
 
         <!-- Tool 3: 提前还贷计算器 -->
-        <a href="mortgage-calculator.html" class="tool-card">
+        <a href="early-mortgage.html" class="tool-card animate-fade-up delay-card-3">
           <div class="tool-card-inner">
             <div class="card-glow glow-emerald"></div>
             <div class="card-content">
@@ -861,7 +881,7 @@
         </a>
 
         <!-- Tool 4: 提前退休计算器 -->
-        <a href="fire-calculator.html" class="tool-card">
+        <a href="fire-calculator.html" class="tool-card animate-fade-up delay-card-4">
           <div class="tool-card-inner">
             <div class="card-glow glow-violet"></div>
             <div class="card-content">
@@ -896,7 +916,7 @@
         </a>
 
         <!-- Tool 5: 保单收益透视镜 -->
-        <a href="insurance-irr.html" class="tool-card">
+        <a href="insurance-return.html" class="tool-card animate-fade-up delay-card-5">
           <div class="tool-card-inner">
             <div class="card-glow glow-cyan"></div>
             <div class="card-content">
@@ -930,7 +950,7 @@
         </a>
 
         <!-- Tool 6: 离职补偿金计算器 -->
-        <a href="severance-calculator.html" class="tool-card">
+        <a href="severance-calculator.html" class="tool-card animate-fade-up delay-card-6">
           <div class="tool-card-inner">
             <div class="card-glow glow-indigo"></div>
             <div class="card-content">
@@ -1028,11 +1048,9 @@
       }
 
       function drawBackground() {
-        // 基础深色背景
         ctx.fillStyle = '#01020a';
         ctx.fillRect(0, 0, width, height);
 
-        // 绘制渐变底色（非纯色，模拟原版的深蓝黑渐变晕染）
         const grad = ctx.createRadialGradient(
           width * 0.3, height * 0.3, 0,
           width * 0.5, height * 0.5, Math.max(width, height) * 0.8
@@ -1043,7 +1061,6 @@
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, width, height);
 
-        // 紫色光晕（左上区域）
         const glow1 = ctx.createRadialGradient(
           width * 0.2, height * 0.25, 0,
           width * 0.2, height * 0.25, width * 0.5
@@ -1055,7 +1072,6 @@
         ctx.fillStyle = glow1;
         ctx.fillRect(0, 0, width, height);
 
-        // 蓝色光晕（右侧区域）
         const glow2 = ctx.createRadialGradient(
           width * 0.8, height * 0.5, 0,
           width * 0.8, height * 0.5, width * 0.45
@@ -1067,7 +1083,6 @@
         ctx.fillStyle = glow2;
         ctx.fillRect(0, 0, width, height);
 
-        // 青色光晕（底部区域）
         const glow3 = ctx.createRadialGradient(
           width * 0.5, height * 0.85, 0,
           width * 0.5, height * 0.85, width * 0.3
@@ -1078,7 +1093,6 @@
         ctx.fillStyle = glow3;
         ctx.fillRect(0, 0, width, height);
 
-        // 靛蓝色光晕（右上区域）
         const glow6 = ctx.createRadialGradient(
           width * 0.9, height * 0.1, 0,
           width * 0.9, height * 0.1, width * 0.3
@@ -1093,7 +1107,6 @@
       function draw() {
         drawBackground();
 
-        // Draw connections
         for (let i = 0; i < particles.length; i++) {
           let connections = 0;
           for (let j = i + 1; j < particles.length; j++) {
@@ -1115,18 +1128,15 @@
           }
         }
 
-        // Draw particles
         particles.forEach(p => {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(167, 139, 250, ${p.opacity})`;
           ctx.fill();
 
-          // Update position
           p.x += p.vx;
           p.y += p.vy;
 
-          // Bounce off edges
           if (p.x < 0 || p.x > width) p.vx *= -1;
           if (p.y < 0 || p.y > height) p.vy *= -1;
         });
