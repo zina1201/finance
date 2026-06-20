@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我做了个算真实时薪的小工具，结果自己先上头了</title>
+    <meta name="keywords" content="真实时薪怎么算,月薪换算时薪,通勤时间成本,趣味时薪计算器">
+    <meta name="description" content="把通勤时间算进去，你的一小时到底值多少钱？一个打工人做的趣味小工具，把日常消费换算成工作时间，换个视角看待时间与金钱。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --bg:#12122B;--bg-alt:#1A1A3D;--surface:rgba(30,30,66,0.85);--surface-solid:#1E1E42;
+            --border:rgba(255,255,255,0.08);--border-light:rgba(255,255,255,0.06);
+            --text:#FFFFFF;--text-sec:#B0B0D8;--text-muted:#6B6B8D;
+            --green:#00FF88;--purple:#7A20FF;--cyan:#00D4FF;
+            --shadow:0 8px 24px rgba(0,0,0,0.3);--radius:12px;--radius-lg:16px;
+        }
+        body{font-family:'Inter','Noto Sans SC',-apple-system,sans-serif;background:linear-gradient(180deg,#12122B 0%,#1A1A3D 100%);color:var(--text);line-height:1.7;min-height:100vh;padding:20px}
+        .container{max-width:900px;width:95%;margin:0 auto;background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--radius-lg);padding:32px 36px;box-shadow:var(--shadow);border:1px solid var(--border-light)}
+        h1{font-size:26px;text-align:center;margin-bottom:28px;line-height:1.4;background:linear-gradient(135deg,#00D4FF,#7A20FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700}
+        h2{font-size:20px;color:#00D4FF;margin:30px 0 15px;padding-bottom:8px;border-bottom:1px solid rgba(0,212,255,0.15);font-weight:600}
+        p{font-size:16px;margin-bottom:16px;text-align:justify;color:var(--text-sec);line-height:1.8}
+        strong{color:#00D4FF;font-weight:700}
+        .key-num{color:#00FF88;font-size:1.1em;font-weight:700}
+        .core-quote{text-align:center;font-size:19px;font-weight:600;color:#00D4FF;margin:25px 0;padding:20px;background:rgba(0,212,255,0.06);border-radius:10px;border:1px solid rgba(0,212,255,0.1)}
+        .consume-list{margin:20px 0 20px 10px;list-style:none;padding-left:0;color:var(--text-sec)}
+        .consume-list li{padding:10px 0;border-bottom:1px dashed rgba(255,255,255,0.08);font-size:16px}
+        .consume-list li:last-child{border-bottom:none}
+        .btn-wrap{text-align:center;margin:35px 0 10px}
+        .calc-btn{display:inline-block;padding:12px 36px;background:linear-gradient(90deg,#00D4FF,#7A20FF);color:#fff;text-decoration:none;border-radius:30px;font-size:16px;font-weight:500;transition:opacity 0.2s}
+        .calc-btn:hover{opacity:0.9}
+        .article-bottom-section{max-width:900px;width:95%;margin:0 auto;padding:24px 0 20px}
+        .article-bottom-card{background:var(--surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--radius-lg);padding:24px 28px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid var(--border-light)}
+        .article-bottom-card h2{font-size:18px;font-weight:600;color:#FFFFFF;margin:0 0 8px;padding:0;border:none}
+        .article-bottom-card .desc{color:var(--text-muted);font-size:14px;margin-bottom:16px;line-height:1.6}
+        .article-bottom-card .tool-link{display:inline-block;color:#00D4FF;text-decoration:none;font-size:15px;font-weight:500;transition:color 0.2s}
+        .article-bottom-card .tool-link:hover{color:#7A20FF}
+        .article-legal-footer{max-width:900px;width:95%;margin:0 auto;text-align:center;padding:30px 0 40px;border-top:1px solid rgba(255,255,255,0.08)}
+        .article-legal-footer a{font-family:Inter,sans-serif;font-size:13px;color:rgba(255,255,255,0.5);text-decoration:none;margin:0 14px;transition:color 0.2s}
+        .article-legal-footer a:hover{color:rgba(255,255,255,0.9)}
+        .article-legal-footer .copyright{font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:0.5px;margin-top:16px}
+        @media(max-width:600px){
+            .container{padding:20px}
+            h1{font-size:22px}
+            h2{font-size:18px}
+            .key-num{font-size:1.05em}
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>我做了个算真实时薪的小工具，结果自己先上头了</h1>
+
+        <p>如果有人问你，一小时值多少钱，你会怎么回答？</p>
+        <p>我原本以为自己知道答案。</p>
+        <p>直到那天，我真的算了一遍。</p>
+
+        <p>数字出来的那一刻我愣了一下，又确认了一遍——没算错。</p>
+        <p>但转念一想不对，通勤那一个半小时呢？这也是我每天实实在在搭进去的时间，不比坐在工位上自由多少。把通勤也算进去重新一算，时薪又矮了一截。</p>
+
+        <p>当时我就一个想法：<strong>这种快乐不能我一个人承受。</strong></p>
+        <p>回家之后我就做了个小计算器，输入月薪、上下班时间、通勤时长，一键出结果。就是想让大家也玩玩，看看自己的1小时到底被标了个什么价。</p>
+
+        <h2>当钱被换算成时间，感觉完全不一样了</h2>
+        <p>算完真实时薪后，我又顺手把消费换算成时间。</p>
+
+        <ul class="consume-list">
+            <li>☕ 一杯奶茶 = <span class="key-num">20分钟工位时间</span></li>
+            <li>🚕 一次打车 = <span class="key-num">42分钟劳动</span></li>
+            <li>📱 一台手机 = <span class="key-num">半个月的班</span></li>
+        </ul>
+
+        <p>看着这些数字，我突然发现：</p>
+        <p>钱好像又变成了时间。</p>
+
+        <p>看到"一杯奶茶 = 20分钟"的时候，我摸了摸桌上刚买的霸王茶姬，心情复杂。</p>
+        <p>奶茶钱不多，谁都在花。但20分钟的工位时间——想象一下，周一早上坐在工位上盯着屏幕等下班，度秒如年的那20分钟。</p>
+        <p>你愿意用那20分钟，换这杯奶茶吗？</p>
+
+        <p>如果把每天一杯奶茶省下来，按长期3%年化收益简单估算，算30年。</p>
+        <p>结果跳出来一个数字：<span class="key-num">40多万</span>。</p>
+
+        <p>我盯着这个数字看了很久。40多万，不是天上掉的，是一滴一滴攒出来的。</p>
+        <p>那一刻我突然理解了什么叫<strong>"拿铁因子"</strong>——不是咖啡本身有多贵，而是你对它毫无感知。</p>
+
+        <h2>但这个工具不是在劝你省钱</h2>
+        <p>我们上班，真的只是为了挣这点钱吗？</p>
+        <p>是的。</p>
+        <p>我上班就是为了挣钱。</p>
+
+        <p>但是上班路上听的那些播客，可能正在悄悄改变看问题的方式。处理过的那些烂摊子，正在悄悄变成解决问题的能力——平时感觉不到，但关键时刻它自己会冒出来。</p>
+        <p>这些都没法折算成时薪，但它们真实存在。</p>
+
+        <p>所以当我看到那个时薪数字的时候，我第一反应是上头，第二反应是——</p>
+
+        <div class="core-quote">
+            工资只是你时间的一种定价方式，不是唯一的。
+        </div>
+
+        <h2>那这个工具到底想说什么？</h2>
+        <p>它不是想劝我少花钱。</p>
+        <p>该喝的奶茶喝，该打的车打，该买的手机买。人生不是一道减法题，不是把所有消费都砍掉就赢了。</p>
+
+        <p>它只是想提供一个平时不太会想到的视角——花出去的每一块钱，本质上都是生命的一部分。认识到这件事之后，可能会更清楚自己真正在意的是什么。</p>
+
+        <p>一杯奶茶，如果能让我在加班的时候心情愉悦一会，那这20分钟花得比什么都值。</p>
+        <p>但如果没那么想喝，只是顺手点了一杯，那省下来也没损失什么。</p>
+
+        <p><strong>不是"少花钱"，是"花在真正让我快乐的地方"。</strong></p>
+        <p>这个小玩意能做的，就是帮助建立这个意识。剩下的，你自己决定。</p>
+
+    </div>
+
+    <!-- 相关工具 -->
+    <div class="article-bottom-section">
+        <div class="article-bottom-card">
+            <h2>相关工具</h2>
+            <p class="desc">根据月薪、通勤时间等等计算时薪</p>
+            <a href="../hour-value" class="tool-link" target="_blank" rel="noopener">你的一小时</a>
+        </div>
+    </div>
+
+    <!-- 统一页脚 -->
+    <div class="article-legal-footer">
+        <div>
+            <a href="../about.html">关于我们</a>
+            <a href="../privacy.html">隐私政策</a>
+            <a href="../terms.html">使用条款</a>
+            <a href="../disclaimer.html">免责声明</a>
+        </div>
+        <div class="copyright">&copy; 2026 罗伯特大毛腿 财务工具箱</div>
+    </div>
+</body>
+</html>
