@@ -169,7 +169,7 @@
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       padding: 8px 20px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-card);
@@ -548,6 +548,37 @@
       font-size: 11px;
       color: rgba(255, 255, 255, 0.15);
       letter-spacing: 0.5px;
+    }
+
+    .footer-filing {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      font-size: 0;
+    }
+
+    .footer-filing a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.25);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-filing a:hover {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-filing img {
+      width: 20px;
+      height: 20px;
+      vertical-align: middle;
     }
 
     /* ===== Cookie Banner ===== */
@@ -1002,6 +1033,9 @@
         <a href="privacy.html">隐私政策</a>
         <a href="disclaimer.html">免责声明</a>
       </nav>
+      <div class="footer-filing">
+        <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010502061405" rel="noreferrer" target="_blank"><img src="备案图标.png" alt="公安备案">京公网安备11010502061405号</a><a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2026035955号-1</a>
+      </div>
       <div class="footer-copyright">
         &copy; 2026 罗伯特大毛腿 财务工具箱 · Built with HTML + CSS
       </div>

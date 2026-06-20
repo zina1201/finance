@@ -209,8 +209,23 @@
             text-align: center;
             padding: 24px;
             background: linear-gradient(135deg, rgba(26, 31, 46, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%);
-            border-radius: 16px;
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .footer-nav:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 0 20px rgba(99, 102, 241, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .footer-nav a {
@@ -228,6 +243,37 @@
         .footer-nav a.active {
             color: var(--accent-cyan);
             font-weight: 600;
+        }
+
+        .footer-filing {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            font-size: 0;
+        }
+
+        .footer-filing a {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-filing a:hover {
+            color: var(--text-secondary);
+        }
+
+        .footer-filing img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
         }
 
         @media (max-width: 768px) {
@@ -292,8 +338,11 @@
         <a href="contact.html">联系我们</a>
         <a href="privacy.html" class="active">隐私政策</a>
         <a href="disclaimer.html">免责声明</a>
-        <div style="margin-top: 16px; color: var(--text-muted); font-size: 12px;">© 2026 罗伯特大毛腿 财务工具箱. All rights reserved.</div>
     </div>
+    <div class="footer-filing">
+        <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010502061405" rel="noreferrer" target="_blank"><img src="备案图标.png" alt="公安备案">京公网安备11010502061405号</a><a href="https://beian.miit.gov.cn/" target="_blank">京ICP备2026035955号-1</a>
+    </div>
+    <div style="margin-top: 16px; color: var(--text-muted); font-size: 12px; text-align: center;">© 2026 罗伯特大毛腿 财务工具箱. All rights reserved.</div>
 </div>
 </body>
 </html>
