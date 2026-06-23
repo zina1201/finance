@@ -58,69 +58,27 @@
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 32px;
-            background: linear-gradient(135deg, rgba(26, 31, 46, 0.8) 0%, rgba(17, 24, 39, 0.9) 100%);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-purple), var(--accent-blue), transparent);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+            padding: 40px 20px 36px;
         }
 
         .header-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            display: inline-block;
-            filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5));
+            display: none;
         }
 
         h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 14px;
             background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -0.5px;
         }
 
         .subtitle {
-            color: var(--text-secondary);
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .subtitle::before {
-            content: '';
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: var(--accent-cyan);
-            box-shadow: 0 0 8px var(--accent-cyan);
+            color: #B0B0D8;
+            font-size: 0.95rem;
+            font-weight: 400;
         }
 
         .tabs {
