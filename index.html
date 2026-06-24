@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="zina1201 财务工具箱 — 免费在线财务计算工具集合，包括年终奖最优分配、房贷提前还款、离职补偿金计算、养车成本对比、FIRE提前退休规划、时薪换算等功能。所有工具浏览器本地运行，数据不上传服务器。">
-  <meta name="keywords" content="财务工具,年终奖计算器,房贷计算器,提前还款,离职补偿金,养车成本,FIRE退休,时薪计算,免费在线工具">
+  <meta name="description" content="zina1201 财务工具箱 — 免费在线财务计算工具集合，包括年终奖最优分配、房贷提前还款、离职补偿金计算、养车成本对比、FIRE提前退休规划、时薪换算、工资计算器、劳务计算器等功能。所有工具浏览器本地运行，数据不上传服务器。">
+  <meta name="keywords" content="财务工具,年终奖计算器,房贷计算器,提前还款,离职补偿金,养车成本,FIRE退休,时薪计算,工资计算器,劳务计算器,免费在线工具">
   <meta name="author" content="zina1201">
   <meta name="robots" content="index, follow">
   <title>zina1201 — 财务工具</title>
@@ -687,6 +687,50 @@
     .delay-card-4 { animation-delay: 0.6s; }
     .delay-card-5 { animation-delay: 0.7s; }
     .delay-card-6 { animation-delay: 0.8s; }
+    .delay-card-7 { animation-delay: 0.9s; }
+    .delay-card-8 { animation-delay: 1.0s; }
+    .delay-card-9 { animation-delay: 1.1s; }
+
+    /* ===== Coming Soon Card ===== */
+    .tool-card-coming-soon {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .tool-card-coming-soon .tool-card-inner {
+      opacity: 0.45;
+      filter: grayscale(0.3);
+    }
+
+    .tool-card-coming-soon:hover .tool-card-inner {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .tool-card-coming-soon:hover .card-icon {
+      transform: none;
+      filter: none;
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.06);
+      box-shadow: none;
+    }
+
+    .tool-card-coming-soon:hover .card-icon svg {
+      transform: none;
+      color: rgba(255, 255, 255, 0.5);
+      filter: none;
+    }
+
+    .tool-card-coming-soon:hover .card-arrow {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.06);
+      filter: none;
+    }
+
+    .tool-card-coming-soon:hover .card-arrow svg {
+      transform: none;
+      color: rgba(255, 255, 255, 0.4);
+    }
 
     /* ===== Responsive ===== */
     @media (max-width: 1024px) {
@@ -791,7 +835,7 @@
       </p>
       <div class="stats animate-fade-up delay-4">
         <div class="stat-item">
-          <span class="stat-number">6</span>
+          <span class="stat-number">9</span>
           <span class="stat-label">工具</span>
         </div>
         <div class="stat-item">
@@ -1021,6 +1065,112 @@
             </div>
           </div>
         </a>
+
+        <!-- Tool 7: 工资计算器 -->
+        <a href="salary-calc.html" class="tool-card animate-fade-up delay-card-7">
+          <div class="tool-card-inner">
+            <div class="card-glow glow-amber"></div>
+            <div class="card-content">
+              <div class="card-header">
+                <span class="card-number">07</span>
+                <div class="card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-title-area">
+                <h3 class="card-title">工资计算器</h3>
+                <p class="card-subtitle">Salary Calculator</p>
+              </div>
+              <p class="card-description">快速计算税前税后工资，支持五险一金扣除，清晰展示薪资明细与实际到手金额</p>
+              <div class="card-footer">
+                <div class="card-tags">
+                  <span class="tag">HTML</span>
+                  <span class="tag">v1.0</span>
+                </div>
+                <div class="card-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                    <polyline points="7 7 17 7 17 17"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Tool 8: 劳务计算器 -->
+        <a href="labor-calc.html" class="tool-card animate-fade-up delay-card-8">
+          <div class="tool-card-inner">
+            <div class="card-glow glow-emerald"></div>
+            <div class="card-content">
+              <div class="card-header">
+                <span class="card-number">08</span>
+                <div class="card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                    <line x1="8" y1="6" x2="16" y2="6"></line>
+                    <line x1="8" y1="10" x2="16" y2="10"></line>
+                    <line x1="8" y1="14" x2="12" y2="14"></line>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-title-area">
+                <h3 class="card-title">劳务计算器</h3>
+                <p class="card-subtitle">Labor Calculator</p>
+              </div>
+              <p class="card-description">计算劳务报酬所得税，支持多次劳务收入合并计税，精准核算应纳税额与税后收入</p>
+              <div class="card-footer">
+                <div class="card-tags">
+                  <span class="tag">HTML</span>
+                  <span class="tag">v1.0</span>
+                </div>
+                <div class="card-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                    <polyline points="7 7 17 7 17 17"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Tool 9: 敬请期待 -->
+        <div class="tool-card tool-card-coming-soon animate-fade-up delay-card-9">
+          <div class="tool-card-inner">
+            <div class="card-glow glow-violet"></div>
+            <div class="card-content">
+              <div class="card-header">
+                <span class="card-number">09</span>
+                <div class="card-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-title-area">
+                <h3 class="card-title">敬请期待</h3>
+                <p class="card-subtitle">Coming Soon</p>
+              </div>
+              <p class="card-description">更多实用财务工具正在开发中，敬请期待后续更新与功能扩展</p>
+              <div class="card-footer">
+                <div class="card-tags">
+                  <span class="tag">开发中</span>
+                </div>
+                <div class="card-arrow">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                    <polyline points="7 7 17 7 17 17"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
