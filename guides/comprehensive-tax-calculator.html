@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026多收入综合个税计算器：增值税+附加税+预扣+汇算清缴全流程解析</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #222838;
+            --accent-cyan: #00d4ff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0f172a 50%, #1a103c 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(145deg, var(--bg-card) 0%, rgba(26, 31, 46, 0.8) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            background: linear-gradient(135deg, #00D4FF 0%, #7A20FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin: 36px 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        }
+
+        h3 {
+            font-size: 17px;
+            color: var(--text-primary);
+            margin: 24px 0 12px;
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 16px;
+            text-align: justify;
+            color: var(--text-secondary);
+        }
+
+        .warn-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .safe-box {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid #10b981;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--accent-blue);
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        .tip-box {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid #f59e0b;
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 28px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+
+        table th, table td {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        table th {
+            background: rgba(59, 130, 246, 0.12);
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        strong {
+            color: var(--accent-cyan);
+        }
+
+        a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--accent-purple);
+        }
+
+        /* 兼容原文中的 class */
+        .key-num {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        .key-word {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .policy-box {
+            background: rgba(59, 130, 246, 0.08);
+            border-left: 4px solid var(--accent-blue);
+            padding: 18px 22px;
+            margin: 18px 0;
+            border-radius: 0 12px 12px 0;
+            backdrop-filter: blur(8px);
+        }
+        .policy-box strong {
+            color: var(--text-primary);
+        }
+        .case-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 18px 0;
+        }
+        .case-box .case-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .container {
+                padding: 20px;
+                border-radius: 16px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            table th, table td {
+                padding: 8px 4px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2026多收入综合个税计算器（劳务报酬/稿酬/著作权/特许权）：增值税+附加税+预扣+汇算清缴全流程解析</h1>
+
+        <p>身兼数职的自由职业者、斜杠从业者往往同时持有多类收入：接项目拿劳务报酬、写文章收稿酬、授权著作权/专利取得特许权使用费。每类收入计税规则各不相同，预扣预缴要分开核算，还要叠加增值税与附加税，年底汇算清缴又需全部并入综合所得重新计税。手动核算不仅要记忆多套税率表，还容易遗漏最新优惠政策，最终到手收入算不准。</p>
+
+        <div class="policy-box">
+            <strong>政策依据：</strong>《财政部 税务总局关于增值税法施行后增值税优惠政策衔接事项的公告》（2026年第10号）<br>
+            自2026年1月1日至2027年12月31日：
+            <ul>
+                <li>自然人按次纳税增值税起征点提升至<span class="key-num">1000元</span>（每次/日，不含税口径）</li>
+                <li>按期纳税月销售额<span class="key-num">10万元</span>以下免征增值税</li>
+                <li>小规模纳税人<span class="key-num">1%</span>征收率、六税两费减半优惠同步延续</li>
+            </ul>
+        </div>
+
+        <p>这款<strong class="key-word">多收入综合个税计算器</strong>已同步更新全部最新政策参数，可一站式覆盖劳务报酬、稿酬、特许权使用费（含著作权）全类型收入，自动联动增值税及附加税计算，支持预扣预缴与年度汇算清缴双模式，输入金额即可一键得出精准结果。本文结合计算器功能，拆解全流程计税逻辑与实操方法。</p>
+
+        <h2>一、四类收入预扣预缴：规则不同，计算器自动适配</h2>
+        <p>劳务报酬、稿酬、特许权使用费（含著作权授权）同属个税综合所得，但预扣预缴的计算规则差异很大，也是手动算税最容易出错的环节。计算器内置全部计税公式，选择对应收入类型即可自动套用，无需手动查表。</p>
+
+        <h3>1. 劳务报酬所得</h3>
+        <p>适用三级超额累进预扣率（<span class="key-num">20%/30%/40%</span>），减除费用分两档：单次收入≤4000元定额减<span class="key-num">800元</span>，＞4000元按<span class="key-num">20%</span>比例减除。计算器中选择「劳务报酬」类型，会自动匹配减除档位与速算扣除数。</p>
+
+        <h3>2. 稿酬所得</h3>
+        <p>减除费用规则与劳务报酬一致，但应纳税所得额可减按<span class="key-num">70%</span>计算，预扣率固定20%，实际预扣税负为14%。计算器选择「稿酬」类型，自动享受减征优惠，无需手动折算。</p>
+
+        <h3>3. 特许权使用费所得（含著作权、专利授权）</h3>
+        <p>减除费用规则与劳务报酬一致，预扣率固定为<span class="key-num">20%</span>，没有累进档位。涉及著作权授权、商标/专利使用费等收入，在计算器中选择「特许权使用费」即可精准计算。</p>
+
+        <p>传统简易计算器仅支持单一劳务报酬测算，这款综合计算器支持同时录入多类收入，分别展示单项预扣税额，也可汇总查看月度/单次总税负，适配多渠道收入人群的核算需求。</p>
+
+        <h2>二、增值税+附加税自动联动：到手收入算得更准</h2>
+        <p>绝大多数人算劳务收入只扣个税，却忽略了增值税及附加税——这也是实际到账金额和手动计算结果常有出入的核心原因。</p>
+
+        <div class="policy-box">
+            <strong>2026年现行优惠政策（有效期至2027年底）</strong>
+            <ul>
+                <li><strong>按次纳税：</strong>每次（日）<span class="key-num">不含税销售额1000元</span>以下免征增值税；一日内发生多笔应税交易的，按当日合计销售额判定，不可拆分避税。</li>
+                <li><strong>按期纳税：</strong>自然人发生同一项目连续性收入、出租不动产等6类特定情形，适用月销售额<span class="key-num">10万元</span>免征标准，不再按次计算。</li>
+                <li>超出免征额度的部分，增值税按<span class="key-num">1%</span>征收率计征。</li>
+                <li>随增值税附征的城建税、教育费附加等，继续享受小规模纳税人"六税两费"减半优惠。</li>
+            </ul>
+        </div>
+
+        <p>计算器的核心优势在于<strong class="key-word">无需手动判断免征条件与计税口径</strong>：选择「自然人/个体工商户」主体、「按次/按期」结算方式，输入含税收入后，系统自动换算不含税销售额、匹配最新政策规则，同步算出增值税、附加税金额，最终展示的「到手收入」已扣除全部税费，不用分步核算。</p>
+
+        <h2>三、年度汇算清缴：多类收入合并计税一键测算</h2>
+        <p>预扣预缴只是预缴税额，并非最终税负。每年3-6月个税汇算时，劳务报酬、稿酬、特许权使用费会全部并入综合所得，与工资薪金合并后，适用<span class="key-num">3%-45%</span>七级超额累进税率，扣除<span class="key-num">6万元</span>基本减除费用、社保、专项附加扣除后重新计税，实行多退少补。</p>
+
+        <p>多类收入分散在不同支付方时，个人手动汇总容易漏项，也很难精准测算退补税金额。计算器的「年度汇算」模块解决了这个问题：</p>
+        <ul>
+            <li>可分别录入全年工资薪金、劳务报酬总额、稿酬总额、特许权使用费总额</li>
+            <li>支持填写专项扣除、专项附加扣除、年终奖计税方式（单独/合并计税）等参数</li>
+            <li>一键算出全年应纳税额、累计已预缴税额、应退/应补税额，提前规划汇算资金</li>
+        </ul>
+
+        <p>对于同时有主业工资+副业多类收入的人群，还可以直接对比年终奖两种计税方式的税负差异，选出最优方案。</p>
+
+        <h2>四、全流程实操演示：计算器1秒替代手动核算</h2>
+
+        <div class="case-box">
+            <div class="case-title">案例：多类收入月度结算测算</div>
+            <p>自由职业者某月取得劳务报酬15000元、稿酬5000元、著作权授权收入8000元，均为同一长期合作项目的月度结算，无其他扣除。</p>
+
+            <p><strong>1. 预扣预缴个税</strong></p>
+            <ul>
+                <li>劳务报酬：15000×(1-20%)×20% = <span class="key-num">2400元</span></li>
+                <li>稿酬：5000×(1-20%)×70%×20% = <span class="key-num">560元</span></li>
+                <li>特许权使用费：8000×(1-20%)×20% = <span class="key-num">1280元</span></li>
+                <li>当月预扣个税合计：<span class="key-num">4240元</span></li>
+            </ul>
+
+            <p><strong>2. 增值税及附加</strong></p>
+            <p>当月合计收入28000元，属于同一项目连续性收入，适用按期月10万免征标准，<strong>增值税及附加全免</strong>。</p>
+
+            <p><strong>3. 当月实际到手收入：</strong><span class="key-num">23760元</span></p>
+        </div>
+
+        <p>以上全部计算，在计算器中分别选择对应收入类型、录入金额，选择「按期计税-自然人」，1秒即可得出完整明细，无需手动套用公式、核对政策。</p>
+
+        <p>年度汇算延伸：若全年该类收入合计20万元，主业工资10万元，专项附加扣除2.4万元，切换至汇算模块录入数据，可直接算出全年应纳税额与预缴税额的差额，提前知晓退税金额。</p>
+    </div>
+
+    <!-- 相关工具 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:8px;">相关工具</h2>
+        <p style="color:#94a3b8;margin-bottom:12px;">本工具根据现行个人所得税法，采用累计预扣法逐月精确计算工资薪金个税，支持五险一金、专项附加扣除、企业年金等完整扣除项，并提供年终奖单独计税与并入综合所得的对比优化。</p>
+        <a href="../labor-calc.html" target="_blank" style="color:#00d4ff;text-decoration:none;font-weight:500;transition:color 0.2s;">工资计算器 →</a>
+    </div>
+
+    <!-- 相关文章 -->
+    <div style="max-width:1100px;width:100%;margin:24px auto;background:linear-gradient(145deg,rgba(26,31,46,0.8) 0%,rgba(17,24,39,0.9) 100%);padding:24px 40px;border-radius:20px;border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);position:relative;z-index:1;">
+        <h2 style="font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:12px;">相关文章</h2>
+        <ul style="list-style:none;padding:0;margin:0;">
+            <li style="margin-bottom:10px;"><a href="freelance-income-taxguide.html" style="color:#00d4ff;text-decoration:none;transition:color 0.2s;">自由职业与兼职必看：劳务报酬个税怎么算？按次/按期规则、1000元起征点与实际到手收入一键拆解教程</a></li>
+        </ul>
+    </div>
+
+    <!-- 统一页脚 -->
+    <div id="legal-footer-nav" style="text-align:center;padding:40px 20px 120px 20px;border-top:1px solid rgba(255,255,255,0.2);background:rgba(8,8,24,0.9);margin-top:20px;">
+        <div style="margin-bottom:20px;">
+            <a href="../about.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;">关于我们</a>
+            <a href="../privacy.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;">隐私政策</a>
+            <a href="../terms.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;">使用条款</a>
+            <a href="../disclaimer.html" style="font-family:Inter,sans-serif;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none;margin:0 16px;transition:color 0.2s;">免责声明</a>
+        </div>
+        <div style="display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:16px;font-size:0;">
+            <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010502061405" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s;"><img src="备案图标.png" alt="公安备案" style="width:20px;height:20px;vertical-align:middle;">京公网安备11010502061405号</a><a href="https://beian.miit.gov.cn/" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:rgba(255,255,255,0.3);text-decoration:none;transition:color 0.2s;">京ICP备2026035955号-1</a>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;">© 2026 罗伯特大毛腿 财务工具箱 · Built with React + Tailwind CSS</div>
+    </div>
+</body>
+</html>
